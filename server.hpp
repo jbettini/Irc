@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/11 16:44:55 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/15 16:58:01 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/16 17:52:26 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,9 @@
 #include <iostream>
 #include <sys/socket.h>
 #include <poll.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <cstring>
 
 class server {
 
@@ -26,6 +29,8 @@ class server {
                 ~server(void);
                 server(int port, std::string pswd);
 
+                void        run(void);
+
                 server  &   operator=(server & rhs);
 
                 int         getPort(void) {
@@ -34,10 +39,19 @@ class server {
                 std::string getPassword(void) {
                     return (this->_password);
                 }
+                class   serverException : public std::exception {
+                    virtual const char* what() const throw() {
+                        return ("Error from server !");
+                    }
+                };
+                int   MAX_CLIENTS;
+                int   MAX_BUFFER_SIZE;
 
     private :
+                int         _socket;
                 int         _port;
                 std::string _password; 
+
 };
 
 #endif

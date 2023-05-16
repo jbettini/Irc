@@ -18,6 +18,7 @@ Client
 
 
 
+
 Operator
 
 mode: Permet de modifier les modes d'un canal ou d'un utilisateur. Par exemple, /mode #channel +o Utilisateur donnera le statut d'opérateur à "Utilisateur" sur le canal "#channel".

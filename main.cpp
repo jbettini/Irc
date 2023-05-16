@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:18:29 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/15 17:06:03 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/16 17:44:14 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ int main (int ac, char **av) {
             std::cout << "invalid port, please select a port between 1024 and 65535" << std::endl;
         else {
             server  serv(port,  av[2]);
+            serv.run();
         }
     }
 }
