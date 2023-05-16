@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/11 16:44:55 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/16 17:52:26 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/16 21:20:15 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,11 +39,6 @@ class server {
                 std::string getPassword(void) {
                     return (this->_password);
                 }
-                class   serverException : public std::exception {
-                    virtual const char* what() const throw() {
-                        return ("Error from server !");
-                    }
-                };
                 int   MAX_CLIENTS;
                 int   MAX_BUFFER_SIZE;
 
@@ -53,5 +48,51 @@ class server {
                 std::string _password; 
 
 };
+
+                class   serverException : public std::exception {
+                    virtual const char* what() const throw() {
+                        return ("Error : from server !");
+                    }
+                };
+                class   pollException : public std::exception {
+                    virtual const char* what() const throw() {
+                        return ("Error : from poll !");
+                    }
+                };
+                class   socketException : public std::exception {
+                    virtual const char* what() const throw() {
+                        return ("Error : from  socket !");
+                    }
+                };
+
+                class   bindException : public std::exception {
+                    virtual const char* what() const throw() {
+                        return ("Error : from  bind !");
+                    }
+                }; 
+
+                class   listenException : public std::exception {
+                    virtual const char* what() const throw() {
+                        return ("Error : from listen !");
+                    }
+                };
+
+                class   acceptException : public std::exception {
+                    virtual const char* what() const throw() {
+                        return ("Error : from accept !");
+                    }
+                };
+
+                class   recvException : public std::exception {
+                    virtual const char* what() const throw() {
+                        return ("Error : from recv !");
+                    }
+                };
+
+                class   sendException : public std::exception {
+                    virtual const char* what() const throw() {
+                        return ("Error : from  !");
+                    }
+                };
 
 #endif
