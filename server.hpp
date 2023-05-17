@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/11 16:44:55 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/17 20:53:02 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/17 23:07:14 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 #include <cstring>
 #include <vector>
 #include <list>
+#include <sstream>
 #include "Client.hpp"
 
 class   server {
@@ -57,6 +58,16 @@ class   server {
 
 };
 
+std::vector<std::string>    splitBuffer(char *buffer, char delimiter) {
+
+    std::vector<std::string>    splited;
+    std::stringstream           ss(buffer);
+    std::string                 tmp;
+
+    while (std::getline(ss, tmp, delimiter))
+        splited.push_back(tmp);
+    return splited;
+}
                 class   serverException : public std::exception {
                     virtual const char* what() const throw() {
                         return ("Error : from server !");
