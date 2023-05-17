@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/11 16:44:55 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/16 21:20:15 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/17 20:03:48 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,11 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <cstring>
+#include <vector>
+#include <list>
+#include "Client.hpp"
 
-class server {
+class   server {
 
     public :
                 server(void);
@@ -30,6 +33,7 @@ class server {
                 server(int port, std::string pswd);
 
                 void        run(void);
+                void        init_socket(void);
 
                 server  &   operator=(server & rhs);
 
@@ -39,13 +43,16 @@ class server {
                 std::string getPassword(void) {
                     return (this->_password);
                 }
-                int   MAX_CLIENTS;
-                int   MAX_BUFFER_SIZE;
+
+                int     MAX_CLIENTS;
+                int     MAX_BUFFER_SIZE;
 
     private :
-                int         _socket;
-                int         _port;
-                std::string _password; 
+                int                     _socket;
+                int                     _port;
+                std::string             _password; 
+                struct  sockaddr_in     _serverAddress;
+                std::vector<Client>     _ClientList;
 
 };
 
