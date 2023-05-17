@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/17 19:31:19 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/17 20:26:35 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/17 21:16:01 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,10 @@ class   Client {
         ~Client(void);
 
         Client &    operator=(const Client & rhs);
+
+        int         getCS(void) {
+                    return (this->_ClientSocket);
+                }
 
     private:
             int         _ClientSocket;

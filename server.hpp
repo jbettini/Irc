@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/11 16:44:55 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/17 20:03:48 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/17 20:53:02 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ class   server {
 
                 void        run(void);
                 void        init_socket(void);
+                void        disconnectClient(struct pollfd & ClientFd);
 
                 server  &   operator=(server & rhs);
 

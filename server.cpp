@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:43:40 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/17 20:23:23 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/17 21:15:05 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,20 @@ void    server::init_socket(void) {
         throw listenException();
 }
 
+void        server::disconnectClient(struct pollfd & ClientFd) {
+    // this->_ClientList.eraseClient(ClientFd.fd);
+    for (std::vector<Client>::iterator it = this->_ClientList.begin(); it != this->_ClientList.end(); it++)
+        if (it->getCS() == ClientFd.fd) {
+            this->_ClientList.erase(it);
+            break;
+        }
+    close(ClientFd.fd);
+    ClientFd.fd = 0;
+    ClientFd.events = 0;
+    ClientFd.revents = 0;
+    std::cout << "Client disconnect !" << std::endl;
+}
+
 void    server::run(void) {
     int     newClient;
     char    buffer[this->MAX_BUFFER_SIZE];
@@ -99,10 +113,8 @@ void    server::run(void) {
                     buffer[bytesRead] = '\0';
                     if (bytesRead < 0)
                         throw recvException();
-                    else if (bytesRead == 0) {
-                        close(ClientFd[i].fd);
-                        std::cout << "Client disconnect !" << std::endl;
-                    }
+                    else if (bytesRead == 0)
+                        this->disconnectClient(ClientFd[i]);
                     else
                         std::cout << "msg recu : " << buffer << std::endl;
             }
