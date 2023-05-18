@@ -6,7 +6,7 @@
 #    By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/05/15 17:49:10 by jbettini          #+#    #+#              #
-#    Updated: 2023/05/17 20:07:42 by jbettini         ###   ########.fr        #
+#    Updated: 2023/05/18 19:38:15 by jbettini         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,8 @@ CFLAGS	=	-Wall -Wextra -Werror -std=c++98 -g
 NAME	=	ircserver	
 SRC		=	server.cpp	\
 			main.cpp	\
-			Client.cpp	
+			Client.cpp	\
+			Channel.cpp	
 
 OBJ		=	$(SRC:%.cpp=%.o)
 

@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:43:40 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/17 21:15:05 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/18 21:26:20 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,8 @@
 
 server::server(void) :  MAX_CLIENTS(10) ,MAX_BUFFER_SIZE(4097), _port(6667), _password("4242")   {}
 
-server::server(int port, std::string pswd) :   MAX_CLIENTS(10) ,MAX_BUFFER_SIZE(4097), _port(port), _password(pswd) {}
+server::server(int port, std::string pswd) :   MAX_CLIENTS(10) ,MAX_BUFFER_SIZE(4097), _port(port), _password(pswd) {
+}
 
 server &    server::operator=(server & rhs) {
     this->_port = rhs.getPort();
@@ -31,46 +32,6 @@ server::server(server & rhs) {
 server::~server(void) {
     close(this->_socket);
 };
-
-void    server::init_socket(void) {
-
-    // Création du socket
-    this->_socket = socket(AF_INET, SOCK_STREAM, 0);
-    if (this->_socket == -1)
-        throw socketException();
-
-    // Parametrage du socket
-    int reuse = 1;
-    if (setsockopt(this->_socket, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0)
-        throw socketException();
-    
-    // Configuration de l'adresse serveur
-    this->_serverAddress.sin_family = AF_INET;
-    this->_serverAddress.sin_addr.s_addr = INADDR_ANY;
-    this->_serverAddress.sin_port = htons(this->_port);
-
-    // Attachement du socket à l'adresse et au port
-    if (bind(this->_socket, reinterpret_cast<struct sockaddr*>(&(this->_serverAddress)), sizeof(this->_serverAddress)) < 0)
-        throw bindException();
-    
-    // Écoute des connexions entrantes
-    if (listen(this->_socket, this->MAX_CLIENTS) < 0)
-        throw listenException();
-}
-
-void        server::disconnectClient(struct pollfd & ClientFd) {
-    // this->_ClientList.eraseClient(ClientFd.fd);
-    for (std::vector<Client>::iterator it = this->_ClientList.begin(); it != this->_ClientList.end(); it++)
-        if (it->getCS() == ClientFd.fd) {
-            this->_ClientList.erase(it);
-            break;
-        }
-    close(ClientFd.fd);
-    ClientFd.fd = 0;
-    ClientFd.events = 0;
-    ClientFd.revents = 0;
-    std::cout << "Client disconnect !" << std::endl;
-}
 
 void    server::run(void) {
     int     newClient;
@@ -116,7 +77,80 @@ void    server::run(void) {
                     else if (bytesRead == 0)
                         this->disconnectClient(ClientFd[i]);
                     else
-                        std::cout << "msg recu : " << buffer << std::endl;
+                        this->parseInput(splitBuffer(buffer, ' '), this->getClient(newClient));
             }
     }
+}
+
+//  Server Funct
+
+
+void    server::init_socket(void) {
+
+    // Création du socket
+    this->_socket = socket(AF_INET, SOCK_STREAM, 0);
+    if (this->_socket == -1)
+        throw socketException();
+
+    // Parametrage du socket
+    int reuse = 1;
+    if (setsockopt(this->_socket, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0)
+        throw socketException();
+    
+    // Configuration de l'adresse serveur
+    this->_serverAddress.sin_family = AF_INET;
+    this->_serverAddress.sin_addr.s_addr = INADDR_ANY;
+    this->_serverAddress.sin_port = htons(this->_port);
+
+    // Attachement du socket à l'adresse et au port
+    if (bind(this->_socket, reinterpret_cast<struct sockaddr*>(&(this->_serverAddress)), sizeof(this->_serverAddress)) < 0)
+        throw bindException();
+    
+    // Écoute des connexions entrantes
+    if (listen(this->_socket, this->MAX_CLIENTS) < 0)
+        throw listenException();
+}
+
+void        server::disconnectClient(struct pollfd & ClientFd) {
+    for (std::vector<Client>::iterator it = this->_ClientList.begin(); it != this->_ClientList.end(); it++)
+        if (it->getCS() == ClientFd.fd) {
+            this->_ClientList.erase(it);
+            break;
+        }
+    close(ClientFd.fd);
+    ClientFd.fd = 0;
+    ClientFd.events = 0;
+    ClientFd.revents = 0;
+    std::cout << "Client disconnect !" << std::endl;
+}
+
+void        server::parseInput(std::vector<std::string> clientInput, Client client) {
+    if (client.getUsername() == "anonyme" && clientInput[0] != "/nick")
+
+
+}
+
+// Channel function
+
+void    server::addChannel(std::string  name) {
+    Channel newChannel(name);
+    this->_ChannelList.push_back(newChannel);
+}
+
+void    server::printChannel(void) {
+        std::cout << "Channel List : " << std::endl;
+    for (std::vector<Channel>::iterator it = _ChannelList.begin(); it != _ChannelList.end(); it++)
+        std::cout << "#" << it->getName() << std::endl;
+}
+// Utils
+
+std::vector<std::string>    splitBuffer(char *buffer, char delimiter){
+
+    std::vector<std::string>    splited;
+    std::stringstream           ss(buffer);
+    std::string                 tmp;
+
+    while (std::getline(ss, tmp, delimiter))
+        splited.push_back(tmp);
+    return splited;
 }

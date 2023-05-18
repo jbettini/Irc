@@ -1,16 +1,17 @@
-
-
 Liste des commande :
+
 
 Client 
 
+
+
 /nick: Change votre pseudonyme. Par exemple, /nick MonPseudo modifiera votre pseudonyme en "MonPseudo".
+
+/list: Affiche la liste des canaux disponibles sur le serveur.
 
 /join: Rejoint un canal spécifique. Par exemple, /join #channel vous fera rejoindre le canal "#channel".
 
 /part: Quitte un canal. Par exemple, /part #channel vous fera quitter le canal "#channel".
-
-/list: Affiche la liste des canaux disponibles sur le serveur.
 
 /msg: Envoie un message privé à un utilisateur spécifique. Par exemple, /msg Utilisateur Salut ! enverra le message "Salut !" à "Utilisateur".
 
@@ -19,9 +20,9 @@ Client
 
 
 
+
 Operator
 
-mode: Permet de modifier les modes d'un canal ou d'un utilisateur. Par exemple, /mode #channel +o Utilisateur donnera le statut d'opérateur à "Utilisateur" sur le canal "#channel".
 
 /kick: Permet d'expulser un utilisateur d'un canal. Par exemple, /kick #channel Utilisateur Raison expulsera "Utilisateur" du canal "#channel" avec la raison spécifiée.
 
@@ -38,5 +39,4 @@ mode: Permet de modifier les modes d'un canal ou d'un utilisateur. Par exemple, 
 
 /unsilence: Lève le silence pour un utilisateur sur un canal. Par exemple, /unsilence #channel Utilisateur permettra à "Utilisateur" de publier des messages à nouveau sur le canal "#channel".
 
-/oper: Permet de vous authentifier en tant qu'opérateur sur le serveur IRC. La syntaxe exacte peut varier en fonction de la configuration du serveur. Par exemple, /oper MonNom MotDePasse vous authentifiera en tant qu'opérateur avec le nom "MonNom" et le mot de passe "MotDePasse".
 

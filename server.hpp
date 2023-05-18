@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/11 16:44:55 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/17 23:07:14 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/18 21:22:59 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 #include <list>
 #include <sstream>
 #include "Client.hpp"
+#include "Channel.hpp"
 
 class   server {
 
@@ -36,6 +37,9 @@ class   server {
                 void        run(void);
                 void        init_socket(void);
                 void        disconnectClient(struct pollfd & ClientFd);
+                void        addChannel(std::string name);
+                void        printChannel(void);
+                void        parseInput(std::vector<std::string> clientInput, Client client);
 
                 server  &   operator=(server & rhs);
 
@@ -44,6 +48,11 @@ class   server {
                 }
                 std::string getPassword(void) {
                     return (this->_password);
+                }
+                Client      getClient(int newClient) {
+                    for (std::vector<Client>::iterator it = this->_ClientList.begin(); it != this->_ClientList.end(); it++)
+                        if (it->getCS() == newClient)
+                            return (*it);
                 }
 
                 int     MAX_CLIENTS;
@@ -55,19 +64,11 @@ class   server {
                 std::string             _password; 
                 struct  sockaddr_in     _serverAddress;
                 std::vector<Client>     _ClientList;
+                std::vector<Channel>    _ChannelList;
 
 };
 
-std::vector<std::string>    splitBuffer(char *buffer, char delimiter) {
-
-    std::vector<std::string>    splited;
-    std::stringstream           ss(buffer);
-    std::string                 tmp;
-
-    while (std::getline(ss, tmp, delimiter))
-        splited.push_back(tmp);
-    return splited;
-}
+std::vector<std::string>    splitBuffer(char *buffer, char delimiter);
                 class   serverException : public std::exception {
                     virtual const char* what() const throw() {
                         return ("Error : from server !");
