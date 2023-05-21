@@ -1,5 +1,11 @@
-Liste des commande :
+Task :
 
+Need to do all commande in our code, and next do 3 fonction :
+Check if client is irssi or nc.
+Convert the fonction "displayClient" in a version for irssi and nc
+
+
+Liste des commande :
 
 Client 
 

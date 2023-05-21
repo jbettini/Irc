@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/11 16:44:55 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/18 21:22:59 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/22 00:32:22 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,9 @@
 #include "Client.hpp"
 #include "Channel.hpp"
 
+#define NC 0
+#define IRSSI 1
+
 class   server {
 
     public :
@@ -39,7 +42,8 @@ class   server {
                 void        disconnectClient(struct pollfd & ClientFd);
                 void        addChannel(std::string name);
                 void        printChannel(void);
-                void        parseInput(std::vector<std::string> clientInput, Client client);
+                void        parseInput(std::vector<std::string> clientInput, Client & client);
+                void        displayClient(std::string   msg, Client client, int clientType);
 
                 server  &   operator=(server & rhs);
 
@@ -50,9 +54,13 @@ class   server {
                     return (this->_password);
                 }
                 Client      getClient(int newClient) {
-                    for (std::vector<Client>::iterator it = this->_ClientList.begin(); it != this->_ClientList.end(); it++)
+                    std::vector<Client>::iterator it = this->_ClientList.begin();
+                    while (it != this->_ClientList.end()) {
                         if (it->getCS() == newClient)
                             return (*it);
+                        it++;
+                    }
+                    return (*it);
                 }
 
                 int     MAX_CLIENTS;
@@ -109,10 +117,10 @@ std::vector<std::string>    splitBuffer(char *buffer, char delimiter);
                     }
                 };
 
-                class   sendException : public std::exception {
-                    virtual const char* what() const throw() {
-                        return ("Error : from  !");
-                    }
-                };
+                // class   Exception : public std::exception {
+                //     virtual const char* what() const throw() {
+                //         return ("Error : from  !");
+                //     }
+                // };
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:43:40 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/18 21:26:20 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/22 00:33:54 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ server::~server(void) {
 void    server::run(void) {
     int     newClient;
     char    buffer[this->MAX_BUFFER_SIZE];
-    struct  pollfd      ClientFd[MAX_CLIENTS];
+    struct  pollfd      ClientFd[MAX_CLIENTS + 1];
     
     this->init_socket();    
     // Initialisation du tableau des descripteurs de fichiers pour la fonction poll
@@ -124,8 +124,17 @@ void        server::disconnectClient(struct pollfd & ClientFd) {
     std::cout << "Client disconnect !" << std::endl;
 }
 
-void        server::parseInput(std::vector<std::string> clientInput, Client client) {
+void    server::displayClient(std::string   msg, Client client, int clientType) {
+    // need to send to irssi and nc 
+    (void)clientType;
+    send(client.getCS(), msg.c_str(), msg.size(), 0);
+
+}
+
+void        server::parseInput(std::vector<std::string> clientInput, Client & client) {
     if (client.getUsername() == "anonyme" && clientInput[0] != "/nick")
+        this->displayClient("Error: you need to set a nick with \"/nick MonPseudo modifiera votre pseudonyme en MonPseudo\"\n", client, NC);
+    else if (clientInput[0] == "/nick")
 
 
 }
@@ -142,6 +151,7 @@ void    server::printChannel(void) {
     for (std::vector<Channel>::iterator it = _ChannelList.begin(); it != _ChannelList.end(); it++)
         std::cout << "#" << it->getName() << std::endl;
 }
+
 // Utils
 
 std::vector<std::string>    splitBuffer(char *buffer, char delimiter){
