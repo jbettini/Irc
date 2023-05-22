@@ -42,9 +42,10 @@ class   server {
                 void        disconnectClient(struct pollfd & ClientFd);
                 void        addChannel(std::string name);
                 void        printChannel(void);
-                void        parseInput(std::vector<std::string> clientInput, Client client);
+                void        parseInput(std::vector<std::string> clientInput, Client & client);
                 void        displayClient(std::string   msg, Client client, int clientType);
-
+                void        defineClientUsername(Client & client, std::string name);
+                
                 server  &   operator=(server & rhs);
 
                 int         getPort(void) {
@@ -53,7 +54,7 @@ class   server {
                 std::string getPassword(void) {
                     return (this->_password);
                 }
-                Client      getClient(int newClient) {
+                Client    &  getClient(int newClient) {
                     std::vector<Client>::iterator it = this->_ClientList.begin();
                     while (it != this->_ClientList.end()) {
                         if (it->getCS() == newClient)

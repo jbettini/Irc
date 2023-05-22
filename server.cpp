@@ -46,7 +46,6 @@ void    server::run(void) {
     std::cout << "Server Irc Operationel !" << std::endl;
     while(true) {
         // Attente des événements
-        newClient = 0;
         int event = poll(ClientFd, this->MAX_CLIENTS + 1, -1);
         if (event < 0)
             throw pollException();
@@ -68,19 +67,18 @@ void    server::run(void) {
                     break;
                 }
         }
-        else if (newClient != 0) {
         // Lecture et traitement des données des Clients connectés
-                for (int i = 1; i < MAX_CLIENTS + 1; ++i)
-                    if (ClientFd[i].fd > 0 && ClientFd[i].revents & POLLIN) {
-                        size_t bytesRead = recv(ClientFd[i].fd, buffer, this->MAX_BUFFER_SIZE, 0);
-                        buffer[bytesRead] = '\0';
-                        if (bytesRead < 0)
-                            throw recvException();
-                        else if (bytesRead == 0)
-                            this->disconnectClient(ClientFd[i]);
-                        else
-                            this->parseInput(splitBuffer(buffer, ' '),  (this->getClient(newClient)));
-                }
+        for (int i = 1; i < MAX_CLIENTS + 1; ++i) {
+            if (ClientFd[i].fd > 0 && ClientFd[i].revents & POLLIN) {
+                size_t bytesRead = recv(ClientFd[i].fd, buffer, this->MAX_BUFFER_SIZE, 0);
+                buffer[bytesRead] = '\0';
+                if (bytesRead < 0)
+                    throw recvException();
+                else if (bytesRead == 0)
+                    this->disconnectClient(ClientFd[i]);
+                else
+                    this->parseInput(splitBuffer(buffer, ' '),  (this->getClient(newClient)));
+            }
         }
     }
 }
@@ -94,13 +92,30 @@ void    server::displayClient(std::string   msg, Client client, int clientType) 
 
 }
 
-void        server::parseInput(std::vector<std::string> clientInput, Client client) {
-    if (client.getUsername() == "anonyme" && clientInput[0] != "/nick")
+void        server::defineClientUsername(Client & client, std::string name) {
+    std::vector<Client>::iterator it;
+    for (it = this->_ClientList.begin(); it != this->_ClientList.end(); it++) {
+
+        if ((*it).getUsername() == name) {
+            this->displayClient("Error: this username isn't available\n", client, NC);
+            return;
+        }
+    }
+    client.setName(name);
+}
+
+void        server::parseInput(std::vector<std::string> clientInput, Client & client) {
+    
+    if (client.getUsername() == "anonyme" && clientInput[0] != "/nick") {
         this->displayClient("Error: you need to set a nick with \"/nick MonPseudo modifiera votre pseudonyme en MonPseudo\"\n", client, NC);
-    // else if (clientInput[0] == "/nick") {
-    //     if (clientInput.size() > 2)
-    //         this->displayClient()
-    // }
+    
+    }
+    else if (clientInput[0] == "/nick") {
+        if (clientInput.size() != 2)
+            this->displayClient("Error: Command no valid\n", client, NC);
+        else
+            this->defineClientUsername(client, clientInput[1]);
+    }
 
 }
 

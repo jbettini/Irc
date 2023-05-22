@@ -11,8 +11,6 @@ Cote Serv {
 
     Client 
 
-
-
     /nick: Change votre pseudonyme. Par exemple, /nick MonPseudo modifiera votre pseudonyme en "MonPseudo".
 
     /list: Affiche la liste des canaux disponibles sur le serveur.
