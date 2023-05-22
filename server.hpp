@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/11 16:44:55 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/22 00:32:22 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/22 17:28:38 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ class   server {
                 void        disconnectClient(struct pollfd & ClientFd);
                 void        addChannel(std::string name);
                 void        printChannel(void);
-                void        parseInput(std::vector<std::string> clientInput, Client & client);
+                void        parseInput(std::vector<std::string> clientInput, Client client);
                 void        displayClient(std::string   msg, Client client, int clientType);
 
                 server  &   operator=(server & rhs);

@@ -1,48 +1,50 @@
 Task :
 
-Need to do all commande in our code, and next do 3 fonction :
+Need to do all commande in our code, and after do 3 fonction :
 Check if client is irssi or nc.
 Convert the fonction "displayClient" in a version for irssi and nc
 
 
-Liste des commande :
+Cote Serv {
 
-Client 
+    Liste des commande :
 
-
-
-/nick: Change votre pseudonyme. Par exemple, /nick MonPseudo modifiera votre pseudonyme en "MonPseudo".
-
-/list: Affiche la liste des canaux disponibles sur le serveur.
-
-/join: Rejoint un canal spécifique. Par exemple, /join #channel vous fera rejoindre le canal "#channel".
-
-/part: Quitte un canal. Par exemple, /part #channel vous fera quitter le canal "#channel".
-
-/msg: Envoie un message privé à un utilisateur spécifique. Par exemple, /msg Utilisateur Salut ! enverra le message "Salut !" à "Utilisateur".
+    Client 
 
 
 
+    /nick: Change votre pseudonyme. Par exemple, /nick MonPseudo modifiera votre pseudonyme en "MonPseudo".
+
+    /list: Affiche la liste des canaux disponibles sur le serveur.
+
+    /join: Rejoint un canal spécifique. Par exemple, /join #channel vous fera rejoindre le canal "#channel".
+
+    /part: Quitte un canal. Par exemple, /part #channel vous fera quitter le canal "#channel".
+
+    /msg: Envoie un message privé à un utilisateur spécifique. Par exemple, /msg Utilisateur Salut ! enverra le message "Salut !" à "Utilisateur".
 
 
+    Operator
 
 
-Operator
+    /kick: Permet d'expulser un utilisateur d'un canal. Par exemple, /kick #channel Utilisateur Raison expulsera "Utilisateur" du canal "#channel" avec la raison spécifiée.
 
+    /ban: Ajoute un bannissement pour un utilisateur ou un masque d'hôte. Par exemple, /ban #channel Utilisateur interdira à "Utilisateur" d'accéder au canal "#channel".
 
-/kick: Permet d'expulser un utilisateur d'un canal. Par exemple, /kick #channel Utilisateur Raison expulsera "Utilisateur" du canal "#channel" avec la raison spécifiée.
+    /unban: Supprime un bannissement pour un utilisateur ou un masque d'hôte. Par exemple, /unban #channel Utilisateur lèvera l'interdiction pour "Utilisateur" sur le canal "#channel".
 
-/ban: Ajoute un bannissement pour un utilisateur ou un masque d'hôte. Par exemple, /ban #channel Utilisateur interdira à "Utilisateur" d'accéder au canal "#channel".
-/unban: Supprime un bannissement pour un utilisateur ou un masque d'hôte. Par exemple, /unban #channel Utilisateur lèvera l'interdiction pour "Utilisateur" sur le canal "#channel".
+    /kill: Tue la connexion d'un utilisateur sur le serveur IRC. Par exemple, /kill Utilisateur Raison déconnectera "Utilisateur" du serveur IRC avec la raison spécifiée.
 
-/kill: Tue la connexion d'un utilisateur sur le serveur IRC. Par exemple, /kill Utilisateur Raison déconnectera "Utilisateur" du serveur IRC avec la raison spécifiée.
+    /op: Donne le statut d'opérateur à un utilisateur sur un canal. Par exemple, /op #channel Utilisateur donnera le statut d'opérateur à "Utilisateur" sur le canal "#channel".
 
-/op: Donne le statut d'opérateur à un utilisateur sur un canal. Par exemple, /op #channel Utilisateur donnera le statut d'opérateur à "Utilisateur" sur le canal "#channel".
+    /deop: Retire le statut d'opérateur à un utilisateur sur un canal. Par exemple, /deop #channel Utilisateur retirera le statut d'opérateur à "Utilisateur" sur le canal "#channel".
 
-/deop: Retire le statut d'opérateur à un utilisateur sur un canal. Par exemple, /deop #channel Utilisateur retirera le statut d'opérateur à "Utilisateur" sur le canal "#channel".
+    /silence: Empêche un utilisateur de publier des messages sur un canal. Par exemple, /silence #channel Utilisateur silencera "Utilisateur" sur le canal "#channel".
 
-/silence: Empêche un utilisateur de publier des messages sur un canal. Par exemple, /silence #channel Utilisateur silencera "Utilisateur" sur le canal "#channel".
+    /unsilence: Lève le silence pour un utilisateur sur un canal. Par exemple, /unsilence #channel Utilisateur permettra à "Utilisateur" de publier des messages à nouveau sur le canal "#channel".
 
-/unsilence: Lève le silence pour un utilisateur sur un canal. Par exemple, /unsilence #channel Utilisateur permettra à "Utilisateur" de publier des messages à nouveau sur le canal "#channel".
+}
 
+Cote Client 
 
+/connect : faire comprendre a irssi lorsaue le client est accepter sur le serv 

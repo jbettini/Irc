@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:43:40 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/22 00:33:54 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/22 17:34:46 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ void    server::run(void) {
     std::cout << "Server Irc Operationel !" << std::endl;
     while(true) {
         // Attente des événements
+        newClient = 0;
         int event = poll(ClientFd, this->MAX_CLIENTS + 1, -1);
         if (event < 0)
             throw pollException();
@@ -67,23 +68,41 @@ void    server::run(void) {
                     break;
                 }
         }
+        else if (newClient != 0) {
         // Lecture et traitement des données des Clients connectés
-        for (int i = 1; i < MAX_CLIENTS + 1; ++i)
-            if (ClientFd[i].fd > 0 && ClientFd[i].revents & POLLIN) {
-                size_t bytesRead = recv(ClientFd[i].fd, buffer, this->MAX_BUFFER_SIZE, 0);
-                    buffer[bytesRead] = '\0';
-                    if (bytesRead < 0)
-                        throw recvException();
-                    else if (bytesRead == 0)
-                        this->disconnectClient(ClientFd[i]);
-                    else
-                        this->parseInput(splitBuffer(buffer, ' '), this->getClient(newClient));
-            }
+                for (int i = 1; i < MAX_CLIENTS + 1; ++i)
+                    if (ClientFd[i].fd > 0 && ClientFd[i].revents & POLLIN) {
+                        size_t bytesRead = recv(ClientFd[i].fd, buffer, this->MAX_BUFFER_SIZE, 0);
+                        buffer[bytesRead] = '\0';
+                        if (bytesRead < 0)
+                            throw recvException();
+                        else if (bytesRead == 0)
+                            this->disconnectClient(ClientFd[i]);
+                        else
+                            this->parseInput(splitBuffer(buffer, ' '),  (this->getClient(newClient)));
+                }
+        }
     }
 }
 
 //  Server Funct
 
+void    server::displayClient(std::string   msg, Client client, int clientType) {
+    // need to send to irssi and nc 
+    (void)clientType;
+    send(client.getCS(), msg.c_str(), msg.size(), 0);
+
+}
+
+void        server::parseInput(std::vector<std::string> clientInput, Client client) {
+    if (client.getUsername() == "anonyme" && clientInput[0] != "/nick")
+        this->displayClient("Error: you need to set a nick with \"/nick MonPseudo modifiera votre pseudonyme en MonPseudo\"\n", client, NC);
+    // else if (clientInput[0] == "/nick") {
+    //     if (clientInput.size() > 2)
+    //         this->displayClient()
+    // }
+
+}
 
 void    server::init_socket(void) {
 
@@ -124,20 +143,7 @@ void        server::disconnectClient(struct pollfd & ClientFd) {
     std::cout << "Client disconnect !" << std::endl;
 }
 
-void    server::displayClient(std::string   msg, Client client, int clientType) {
-    // need to send to irssi and nc 
-    (void)clientType;
-    send(client.getCS(), msg.c_str(), msg.size(), 0);
 
-}
-
-void        server::parseInput(std::vector<std::string> clientInput, Client & client) {
-    if (client.getUsername() == "anonyme" && clientInput[0] != "/nick")
-        this->displayClient("Error: you need to set a nick with \"/nick MonPseudo modifiera votre pseudonyme en MonPseudo\"\n", client, NC);
-    else if (clientInput[0] == "/nick")
-
-
-}
 
 // Channel function
 
