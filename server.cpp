@@ -38,11 +38,13 @@ void    server::run(void) {
     char    buffer[this->MAX_BUFFER_SIZE];
     struct  pollfd      ClientFd[MAX_CLIENTS + 1];
     
-    this->init_socket();    
+    this->init_socket();
+    this->initFunLst();
     // Initialisation du tableau des descripteurs de fichiers pour la fonction poll
     memset(ClientFd, 0, sizeof(ClientFd));
     ClientFd[0].fd = this->_socket;
     ClientFd[0].events = POLLIN;
+    this->_ClientFd = ClientFd;
     std::cout << "Server Irc Operationel !" << std::endl;
     while(true) {
         // Attente des événements
@@ -72,15 +74,34 @@ void    server::run(void) {
             if (ClientFd[i].fd > 0 && ClientFd[i].revents & POLLIN) {
                 size_t bytesRead = recv(ClientFd[i].fd, buffer, this->MAX_BUFFER_SIZE, 0);
                 buffer[bytesRead] = '\0';
+                if (buffer[0] == 10 && buffer[1] == '\0')
+                    break;
                 if (bytesRead < 0)
                     throw recvException();
                 else if (bytesRead == 0)
-                    this->disconnectClient(ClientFd[i]);
+                    this->disconnectClient(this->getClient(ClientFd[i].fd), "");
                 else
                     this->parseInput(splitBuffer(buffer, ' '),  (this->getClient(newClient)));
             }
         }
     }
+}
+
+void    server::initFunLst(void)
+{
+    this->_FunLst["/nick"] = &server::defineClientUsername;
+    // this->_FunLst["/list"] = &server::;
+    // this->_FunLst["/join"] = &server::;
+    // this->_FunLst["/part"] = &server::;
+    // this->_FunLst["/msg"] = &server::;
+    // this->_FunLst["/kick"] = &server::;
+    // this->_FunLst["/ban"] = &server::;
+    // this->_FunLst["/unban"] = &server::;
+    this->_FunLst["/exit"] = &server::disconnectClient;
+    // this->_FunLst["/op"] = &server::;
+    // this->_FunLst["/deop"] = &server::;
+    // this->_FunLst["/silence"] = &server::;
+    // this->_FunLst["/unsilence"] = &server::;
 }
 
 //  Server Funct
@@ -104,19 +125,29 @@ void        server::defineClientUsername(Client & client, std::string name) {
     client.setName(name);
 }
 
+
+
 void        server::parseInput(std::vector<std::string> clientInput, Client & client) {
     
     if (client.getUsername() == "anonyme" && clientInput[0] != "/nick") {
         this->displayClient("Error: you need to set a nick with \"/nick MonPseudo modifiera votre pseudonyme en MonPseudo\"\n", client, NC);
-    
+        return ;
     }
-    else if (clientInput[0] == "/nick") {
-        if (clientInput.size() != 2)
-            this->displayClient("Error: Command no valid\n", client, NC);
+    if (clientInput.size() == 1) {
+        if (clientInput[0] == "/exit")
+            (this->*_FunLst["/exit"])(client, "");
         else
-            this->defineClientUsername(client, clientInput[1]);
+            this->displayClient("Error: Command no valid\n", client, NC);
     }
-
+    else if (clientInput.size() == 2) {
+        if (clientInput[0] == "/nick")
+            (this->*_FunLst["/nick"])(client, clientInput[1]);
+        else
+            this->displayClient("Error: Command no valid\n", client, NC);
+    }
+    else
+        this->displayClient("Error: Command no valid\n", client, NC);
+   
 }
 
 void    server::init_socket(void) {
@@ -144,17 +175,19 @@ void    server::init_socket(void) {
     if (listen(this->_socket, this->MAX_CLIENTS) < 0)
         throw listenException();
 }
+//REMOVE CHANNEL USER WHEN DC /WARNING
 
-void        server::disconnectClient(struct pollfd & ClientFd) {
+void        server::disconnectClient(Client & client, std::string name) {
+    (void)name;
+    this->_ClientFd[client.getPollFd()].fd = 0;
+    this->_ClientFd[client.getPollFd()].events = 0;
+    this->_ClientFd[client.getPollFd()].revents = 0;
+    close(client.getCS());
     for (std::vector<Client>::iterator it = this->_ClientList.begin(); it != this->_ClientList.end(); it++)
-        if (it->getCS() == ClientFd.fd) {
+        if (it->getCS() == client.getCS()) {
             this->_ClientList.erase(it);
             break;
         }
-    close(ClientFd.fd);
-    ClientFd.fd = 0;
-    ClientFd.events = 0;
-    ClientFd.revents = 0;
     std::cout << "Client disconnect !" << std::endl;
 }
 
@@ -181,7 +214,9 @@ std::vector<std::string>    splitBuffer(char *buffer, char delimiter){
     std::stringstream           ss(buffer);
     std::string                 tmp;
 
-    while (std::getline(ss, tmp, delimiter))
+    while (std::getline(ss, tmp, delimiter)) {
         splited.push_back(tmp);
+    }
+        
     return splited;
 }

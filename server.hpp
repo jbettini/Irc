@@ -22,6 +22,7 @@
 #include <cstring>
 #include <vector>
 #include <list>
+#include <map>
 #include <sstream>
 #include "Client.hpp"
 #include "Channel.hpp"
@@ -29,22 +30,28 @@
 #define NC 0
 #define IRSSI 1
 
+
+
 class   server {
+
+
 
     public :
                 server(void);
                 server(server & rhs);
                 ~server(void);
                 server(int port, std::string pswd);
+                void    initFunLst(void);
+
 
                 void        run(void);
                 void        init_socket(void);
-                void        disconnectClient(struct pollfd & ClientFd);
                 void        addChannel(std::string name);
                 void        printChannel(void);
                 void        parseInput(std::vector<std::string> clientInput, Client & client);
                 void        displayClient(std::string   msg, Client client, int clientType);
                 void        defineClientUsername(Client & client, std::string name);
+                void        disconnectClient(Client & client, std::string name);
                 
                 server  &   operator=(server & rhs);
 
@@ -68,12 +75,15 @@ class   server {
                 int     MAX_BUFFER_SIZE;
 
     private :
-                int                     _socket;
-                int                     _port;
-                std::string             _password; 
-                struct  sockaddr_in     _serverAddress;
-                std::vector<Client>     _ClientList;
-                std::vector<Channel>    _ChannelList;
+                int                         _socket;
+                int                         _port;
+                std::string                 _password; 
+                struct  sockaddr_in         _serverAddress;
+                std::vector<Client>         _ClientList;
+                std::vector<Channel>        _ChannelList;
+                struct  pollfd              *_ClientFd;
+                typedef void (server::*Fun)(Client &, std::string);
+                std::map<std::string, Fun>  _FunLst;
 
 };
 

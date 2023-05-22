@@ -36,6 +36,9 @@ class   Client {
         void        setName(std::string name) {
             this->_username = name;
         }
+        int         getPollFd(void) { 
+            return (this->_pollFd);
+        }
 
     private :
             int         _ClientSocket;

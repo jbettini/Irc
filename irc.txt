@@ -22,6 +22,8 @@ Cote Serv {
     /msg: Envoie un message privé à un utilisateur spécifique. Par exemple, /msg Utilisateur Salut ! enverra le message "Salut !" à "Utilisateur".
 
 
+
+
     Operator
 
 
@@ -45,4 +47,8 @@ Cote Serv {
 
 Cote Client 
 
-/connect : faire comprendre a irssi lorsaue le client est accepter sur le serv 
+/connect : faire comprendre a irssi lorsaue le client est accepter sur le serv
+
+renvoie les erreur de commande uniquement aux denier client connecte 
+
+a check "/nick " ne renvoie pas d'erreur
