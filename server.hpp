@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/11 16:44:55 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/23 21:53:12 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/23 22:23:14 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,9 @@ class   server {
                 void        printChannel(void);
                 void        parseInput(std::vector<std::string> clientInput, Client & client);
                 void        displayClient(std::string   msg, Client client);
-                void        defineClientUsername(Client & client, std::string name);
-                void        disconnectClient(Client & client, std::string name);
+                void        defineClientUsername(Client & client, std::vector<std::string> clientInput);
+                void        disconnectClient(Client & client);
+                void        exitClient(Client & client, std::vector<std::string> clientInput);
                 
                 server  &   operator=(server & rhs);
 
@@ -82,7 +83,7 @@ class   server {
                 std::vector<Client>         _ClientList;
                 std::vector<Channel>        _ChannelList;
                 struct  pollfd              *_ClientFd;
-                typedef void (server::*Fun)(Client &, std::string);
+                typedef void (server::*Fun)(Client &, std::vector<std::string>);
                 std::map<std::string, Fun>  _FunLst;
 
 };
