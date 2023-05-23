@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/11 16:44:55 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/22 17:28:38 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/23 21:53:12 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ class   server {
                 void        addChannel(std::string name);
                 void        printChannel(void);
                 void        parseInput(std::vector<std::string> clientInput, Client & client);
-                void        displayClient(std::string   msg, Client client, int clientType);
+                void        displayClient(std::string   msg, Client client);
                 void        defineClientUsername(Client & client, std::string name);
                 void        disconnectClient(Client & client, std::string name);
                 
@@ -88,6 +88,8 @@ class   server {
 };
 
 std::vector<std::string>    splitBuffer(char *buffer, char delimiter);
+std::vector<std::string>    removeWhitespace(std::vector<std::string>& strings);
+void                        printVecStr(std::vector<std::string> strings);
                 class   serverException : public std::exception {
                     virtual const char* what() const throw() {
                         return ("Error : from server !");

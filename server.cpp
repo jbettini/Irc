@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:43:40 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/22 17:34:46 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/23 22:12:58 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,9 +106,8 @@ void    server::initFunLst(void)
 
 //  Server Funct
 
-void    server::displayClient(std::string   msg, Client client, int clientType) {
+void    server::displayClient(std::string   msg, Client client) {
     // need to send to irssi and nc 
-    (void)clientType;
     send(client.getCS(), msg.c_str(), msg.size(), 0);
 
 }
@@ -118,7 +117,7 @@ void        server::defineClientUsername(Client & client, std::string name) {
     for (it = this->_ClientList.begin(); it != this->_ClientList.end(); it++) {
 
         if ((*it).getUsername() == name) {
-            this->displayClient("Error: this username isn't available\n", client, NC);
+            this->displayClient("Error: this username isn't available\n", client);
             return;
         }
     }
@@ -130,23 +129,23 @@ void        server::defineClientUsername(Client & client, std::string name) {
 void        server::parseInput(std::vector<std::string> clientInput, Client & client) {
     
     if (client.getUsername() == "anonyme" && clientInput[0] != "/nick") {
-        this->displayClient("Error: you need to set a nick with \"/nick MonPseudo modifiera votre pseudonyme en MonPseudo\"\n", client, NC);
+        this->displayClient("Error: you need to set a nick with \"/nick MonPseudo modifiera votre pseudonyme en MonPseudo\"\n", client);
         return ;
     }
     if (clientInput.size() == 1) {
         if (clientInput[0] == "/exit")
             (this->*_FunLst["/exit"])(client, "");
         else
-            this->displayClient("Error: Command no valid\n", client, NC);
+            this->displayClient("Error: Command no valid\n", client);
     }
     else if (clientInput.size() == 2) {
         if (clientInput[0] == "/nick")
             (this->*_FunLst["/nick"])(client, clientInput[1]);
         else
-            this->displayClient("Error: Command no valid\n", client, NC);
+            this->displayClient("Error: Command no valid\n", client);
     }
     else
-        this->displayClient("Error: Command no valid\n", client, NC);
+        this->displayClient("Error: Command no valid\n", client);
    
 }
 
@@ -208,6 +207,27 @@ void    server::printChannel(void) {
 
 // Utils
 
+void printVecStr(std::vector<std::string> strings) {
+    for (size_t i = 0; i < strings.size(); ++i)
+        std::cout << "\" str = " + strings[i] + "\""<< std::endl;
+}
+
+std::vector<std::string> removeWhitespace(std::vector<std::string>& strings) {
+    for (size_t i = 0; i < strings.size(); ++i) {
+        std::string& str = strings[i];
+        std::string::iterator iter = str.begin();
+        while (iter != str.end()) {
+            int id = *iter;
+            if (*iter == ' ' || (*iter >= 9 && *iter <= 13)) {
+                iter = str.erase(iter);
+            } else {
+                ++iter;
+            }
+        }
+    }
+    return strings;
+}
+
 std::vector<std::string>    splitBuffer(char *buffer, char delimiter){
 
     std::vector<std::string>    splited;
@@ -217,6 +237,6 @@ std::vector<std::string>    splitBuffer(char *buffer, char delimiter){
     while (std::getline(ss, tmp, delimiter)) {
         splited.push_back(tmp);
     }
-        
+    splited = removeWhitespace(splited);
     return splited;
 }
