@@ -57,7 +57,7 @@ void    server::run(void) {
                 throw acceptException();
             else
                 std::cout << "new Client" << std::endl;
-            std::string welcomeMsg = "Welcome to Our Server IRC\n";;
+            std::string welcomeMsg = "/msg ffiliz Vous êtes connecté avec succès à mon serveur\n";;
             send(newClient, welcomeMsg.c_str(), welcomeMsg.size(), 0);
               // Ajout du nouveau Client à la liste
             for (int i = 1; i < this->MAX_CLIENTS + 1; i++)
