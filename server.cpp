@@ -57,8 +57,6 @@ void    server::run(void) {
                 throw acceptException();
             else
                 std::cout << "new Client" << std::endl;
-            std::string welcomeMsg = "/msg ffiliz Vous êtes connecté avec succès à mon serveur\n";;
-            send(newClient, welcomeMsg.c_str(), welcomeMsg.size(), 0);
               // Ajout du nouveau Client à la liste
             for (int i = 1; i < this->MAX_CLIENTS + 1; i++)
                 if (ClientFd[i].fd == 0) {
@@ -74,16 +72,29 @@ void    server::run(void) {
             if (ClientFd[i].fd > 0 && ClientFd[i].revents & POLLIN) {
                 size_t bytesRead = recv(ClientFd[i].fd, buffer, this->MAX_BUFFER_SIZE, 0);
                 buffer[bytesRead] = '\0';
-                if (buffer[0] == 10 && buffer[1] == '\0')
-                    break;
-                if (bytesRead < 0)
-                    throw recvException();
-                else if (bytesRead == 0)
-                    this->disconnectClient(this->getClient(ClientFd[i].fd), "");
-                else
-                    this->parseInput(splitBuffer(buffer, ' '),  (this->getClient(ClientFd[i].fd)));
+                if (strncmp("MODE", buffer, 4) != 0)
+                {
+                    if (buffer[0] == 10 && buffer[1] == '\0')
+                        break;
+                    if (bytesRead < 0)
+                        throw recvException();
+                    else if (bytesRead == 0)
+                        this->disconnectClient(this->getClient(ClientFd[i].fd), "");
+                    else {
+                        // this->parseInput(splitBuffer(buffer, ' '),  (this->getClient(ClientFd[i].fd)));
+                        if (strncmp("PING", buffer, 4) == 0)
+                        {
+                            send(ClientFd[i].fd, "PONG\r\n", 7, 0);
+                            std::cout << buffer << "---" <<ClientFd[i].fd << std::endl;
+                            std::cout << "PONG SUCEED" << std::endl; 
+                        }
+                        std::string welcomeMsg = ":127.0.0.1 001 <USERNAME> :Vous êtes connecté avec succès à mon serveur ffiliz!ffiliz@127.0.0.1\r\n";
+                        send(ClientFd[i].fd, welcomeMsg.c_str(), welcomeMsg.size(), 0);
+                    }
+                }
             }
         }
+
     }
 }
 
@@ -217,7 +228,6 @@ std::vector<std::string> removeWhitespace(std::vector<std::string>& strings) {
         std::string& str = strings[i];
         std::string::iterator iter = str.begin();
         while (iter != str.end()) {
-            int id = *iter;
             if (*iter == ' ' || (*iter >= 9 && *iter <= 13)) {
                 iter = str.erase(iter);
             } else {
