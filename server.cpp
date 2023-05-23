@@ -81,7 +81,7 @@ void    server::run(void) {
                 else if (bytesRead == 0)
                     this->disconnectClient(this->getClient(ClientFd[i].fd), "");
                 else
-                    this->parseInput(splitBuffer(buffer, ' '),  (this->getClient(newClient)));
+                    this->parseInput(splitBuffer(buffer, ' '),  (this->getClient(ClientFd[i].fd)));
             }
         }
     }
