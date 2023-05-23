@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:43:40 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/23 22:12:58 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/23 23:07:40 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ void    server::run(void) {
                 if (bytesRead < 0)
                     throw recvException();
                 else if (bytesRead == 0)
-                    this->disconnectClient(this->getClient(ClientFd[i].fd), "");
+                    this->disconnectClient(this->getClient(ClientFd[i].fd));
                 else
                     this->parseInput(splitBuffer(buffer, ' '),  (this->getClient(ClientFd[i].fd)));
             }
@@ -97,7 +97,7 @@ void    server::initFunLst(void)
     // this->_FunLst["/kick"] = &server::;
     // this->_FunLst["/ban"] = &server::;
     // this->_FunLst["/unban"] = &server::;
-    this->_FunLst["/exit"] = &server::disconnectClient;
+    // this->_FunLst["/exit"] = &server::;
     // this->_FunLst["/op"] = &server::;
     // this->_FunLst["/deop"] = &server::;
     // this->_FunLst["/silence"] = &server::;
@@ -112,16 +112,16 @@ void    server::displayClient(std::string   msg, Client client) {
 
 }
 
-void        server::defineClientUsername(Client & client, std::string name) {
+void        server::defineClientUsername(Client & client, std::vector<std::string> clientInput) {
     std::vector<Client>::iterator it;
     for (it = this->_ClientList.begin(); it != this->_ClientList.end(); it++) {
 
-        if ((*it).getUsername() == name) {
+        if ((*it).getUsername() ==  clientInput[1]) {
             this->displayClient("Error: this username isn't available\n", client);
             return;
         }
     }
-    client.setName(name);
+    client.setName(clientInput[1]);
 }
 
 
@@ -132,21 +132,6 @@ void        server::parseInput(std::vector<std::string> clientInput, Client & cl
         this->displayClient("Error: you need to set a nick with \"/nick MonPseudo modifiera votre pseudonyme en MonPseudo\"\n", client);
         return ;
     }
-    if (clientInput.size() == 1) {
-        if (clientInput[0] == "/exit")
-            (this->*_FunLst["/exit"])(client, "");
-        else
-            this->displayClient("Error: Command no valid\n", client);
-    }
-    else if (clientInput.size() == 2) {
-        if (clientInput[0] == "/nick")
-            (this->*_FunLst["/nick"])(client, clientInput[1]);
-        else
-            this->displayClient("Error: Command no valid\n", client);
-    }
-    else
-        this->displayClient("Error: Command no valid\n", client);
-   
 }
 
 void    server::init_socket(void) {
@@ -176,8 +161,21 @@ void    server::init_socket(void) {
 }
 //REMOVE CHANNEL USER WHEN DC /WARNING
 
-void        server::disconnectClient(Client & client, std::string name) {
-    (void)name;
+void        server::disconnectClient(Client & client) {
+    this->_ClientFd[client.getPollFd()].fd = 0;
+    this->_ClientFd[client.getPollFd()].events = 0;
+    this->_ClientFd[client.getPollFd()].revents = 0;
+    close(client.getCS());
+    for (std::vector<Client>::iterator it = this->_ClientList.begin(); it != this->_ClientList.end(); it++)
+        if (it->getCS() == client.getCS()) {
+            this->_ClientList.erase(it);
+            break;
+        }
+    std::cout << "Client disconnect !" << std::endl;
+}
+
+void        server::exitClient(Client & client, std::vector<std::string> clientInput) {
+    (void)clientInput;
     this->_ClientFd[client.getPollFd()].fd = 0;
     this->_ClientFd[client.getPollFd()].events = 0;
     this->_ClientFd[client.getPollFd()].revents = 0;
@@ -217,7 +215,6 @@ std::vector<std::string> removeWhitespace(std::vector<std::string>& strings) {
         std::string& str = strings[i];
         std::string::iterator iter = str.begin();
         while (iter != str.end()) {
-            int id = *iter;
             if (*iter == ' ' || (*iter >= 9 && *iter <= 13)) {
                 iter = str.erase(iter);
             } else {
