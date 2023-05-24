@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   client.cpp                                         :+:      :+:    :+:   */
+/*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/17 18:51:52 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/18 19:38:24 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/24 21:15:40 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ struct ThreadData {
     int value;
 };
 
-Client::Client(void) :    _ClientSocket(0), _type(USER), _pollFd(-1), _username("anonyme"), _channel("NoChannel"){}
+Client::Client(void) :    _ClientSocket(0), _type(USER), _pollFd(-1), _username("anonyme"), _channel("NoChannel"), _pass(0){}
 
 void    *ping(void * args)
 {
@@ -30,13 +30,7 @@ void    *ping(void * args)
     }
 }
 
-Client::Client(int socketNum, int pollFd) :   _ClientSocket(socketNum), _type(USER), _pollFd(pollFd), _username("anonyme"), _channel("NoChannel") {
-    ;
-    ThreadData data;
-    data.value = socketNum;
-
-    pthread_create(&this->_myThread, NULL, ping, &data);
-}
+Client::Client(int socketNum, int pollFd) :   _ClientSocket(socketNum), _type(USER), _pollFd(pollFd), _username("anonyme"), _channel("NoChannel"), _pass(0) {}
 
 Client &    Client::operator=(const Client & rhs) {
     
@@ -46,6 +40,18 @@ Client &    Client::operator=(const Client & rhs) {
     this->_username = rhs._username;
     this->_channel = rhs._channel;
     return *this;
+}
+
+bool Client::isSetup() const {
+    return (_username.size() && _pass && _nick.size());
+}
+
+void Client::startPinging()
+{
+    ThreadData data;
+    data.value = _ClientSocket;
+
+    pthread_create(&this->_myThread, NULL, ping, &data);
 }
 
 Client::Client(const Client & rhs) {

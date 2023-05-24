@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/17 19:31:19 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/22 15:55:30 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/24 21:14:55 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ class   Client {
         Client &    operator=(const Client & rhs);
 
 
+        void        startPinging(void);
+        bool        isSetup(void) const;
         int         getCS(void) { 
             return (this->_ClientSocket);
         }
@@ -44,14 +46,22 @@ class   Client {
         pthread_t   &   getThread() {
             return this->_myThread;
         }
+        std::string     getNick(void) { 
+            return (this->_nick);
+        }
+        int             getPass(void) { 
+            return (this->_pass);
+        }
 
     private :
             int         _ClientSocket;
             int         _type;
             int         _pollFd;
             std::string _username;
+            std::string _nick;
             std::string _channel;
             pthread_t   _myThread;
+            int         _pass;
 };
 
 #endif

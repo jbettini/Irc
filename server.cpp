@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:43:40 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/23 23:07:40 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/24 21:17:18 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,35 +75,45 @@ void    server::run(void) {
             if (ClientFd[i].fd > 0 && ClientFd[i].revents & POLLIN) {
                 size_t bytesRead = recv(ClientFd[i].fd, buffer, this->MAX_BUFFER_SIZE, 0);
                 buffer[bytesRead] = '\0';
-                //if (strncmp("MODE", buffer, 4) != 0)
-                //{
-                    if (buffer[0] == 10 && buffer[1] == '\0')
-                        break;
-                    if (bytesRead < 0)
-                        throw recvException();
-                    else if (bytesRead == 0)
-                        this->disconnectClient(this->getClient(ClientFd[i].fd));
-                    else {
-                        // this->parseInput(splitBuffer(buffer, ' '),  (this->getClient(ClientFd[i].fd)));
-                        if (strncmp("MODE", buffer, 4) == 0)
-                            send(ClientFd[i].fd, ":127.0.0.1 221 ffiliz :+i\r\n", 28, 0);
-                        if (strncmp("PING", buffer, 4) == 0)
-                        {
-                            std::cout << "0 " << buffer << std::endl;
-                            send(ClientFd[i].fd, "PONG :127.0.0.1\r\n", 18, 0);
-                        }
-                    }
-                //}
+                if (buffer[0] == 10 && buffer[1] == '\0')
+                    break;
+                if (bytesRead < 0)
+                    throw recvException();
+                else if (bytesRead == 0)
+                    this->disconnectClient(this->getClient(ClientFd[i].fd));
+                else 
+                    this->execInput(splitBuffer(buffer, ' '),  (this->getClient(ClientFd[i].fd)));
             }
         }
 
     }
 }
 
+// Client    server::tryToCreateClient(int clientFd, int i)
+// {
+//     std::string welcomeMsg = ":127.0.0.1 001 ffiliz :Vous êtes connecté avec succès à mon serveur\r\n";
+//     send(clientFd, welcomeMsg.c_str(), welcomeMsg.size(), 0);
+
+//     Client newUser(clientFd, i);   
+// }
+
+void    server::modeFun(Client & client, std::vector<std::string> clientInput) {
+    std::string mode = clientInput[clientInput.size() - 1];
+    if (mode == "+i"){
+        std::string tmp = ":127.0.0.1 221 " + client.getNick() + " :+i\r\n"; 
+        send(client.getCS(), tmp.c_str(), 28, 0); 
+    }
+}
+
+void    server::pingFun(Client & client, std::vector<std::string> clientInput) {
+    (void)clientInput;
+    send(client.getCS(), "PONG :127.0.0.1\r\n", 18, 0);  
+}
+
 void    server::initFunLst(void)
 {
-    this->_FunLst["/nick"] = &server::defineClientUsername;
-    // this->_FunLst["/list"] = &server::;
+    this->_FunLst["MODE"] = &server::modeFun;
+    this->_FunLst["PING"] = &server::pingFun;
     // this->_FunLst["/join"] = &server::;
     // this->_FunLst["/part"] = &server::;
     // this->_FunLst["/msg"] = &server::;
@@ -139,12 +149,13 @@ void        server::defineClientUsername(Client & client, std::vector<std::strin
 
 
 
-void        server::parseInput(std::vector<std::string> clientInput, Client & client) {
-    
-    if (client.getUsername() == "anonyme" && clientInput[0] != "/nick") {
-        this->displayClient("Error: you need to set a nick with \"/nick MonPseudo modifiera votre pseudonyme en MonPseudo\"\n", client);
-        return ;
-    }
+void        server::execInput(std::vector<std::string> clientInput, Client & client) {
+
+        Fun fun = _FunLst[clientInput[0]];
+        if (fun) {
+            (this->*fun)(client, clientInput);
+        }
+        printVecStr(clientInput);
 }
 
 void    server::init_socket(void) {

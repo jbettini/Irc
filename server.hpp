@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/11 16:44:55 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/23 22:23:14 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/24 20:48:51 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,11 +48,13 @@ class   server {
                 void        init_socket(void);
                 void        addChannel(std::string name);
                 void        printChannel(void);
-                void        parseInput(std::vector<std::string> clientInput, Client & client);
+                void        execInput(std::vector<std::string> clientInput, Client & client);
                 void        displayClient(std::string   msg, Client client);
                 void        defineClientUsername(Client & client, std::vector<std::string> clientInput);
                 void        disconnectClient(Client & client);
                 void        exitClient(Client & client, std::vector<std::string> clientInput);
+                void        modeFun(Client & client, std::vector<std::string> clientInput);
+                void        pingFun(Client & client, std::vector<std::string> clientInput);
                 
                 server  &   operator=(server & rhs);
 
