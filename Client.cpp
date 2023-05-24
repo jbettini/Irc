@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/17 18:51:52 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/24 21:15:40 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/25 01:20:02 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,9 @@ struct ThreadData {
     int value;
 };
 
-Client::Client(void) :    _ClientSocket(0), _type(USER), _pollFd(-1), _username("anonyme"), _channel("NoChannel"), _pass(0){}
+Client::Client(void) :    _ClientSocket(0), _type(USER), _pollFd(-1), _username("*"), _nick("*"), _channel("NoChannel"), _pass(0){}
+
+Client::Client(int socketNum, int pollFd) :   _ClientSocket(socketNum), _type(USER), _pollFd(pollFd), _username("*"), _nick("*"), _channel("NoChannel"), _pass(0) {}
 
 void    *ping(void * args)
 {
@@ -29,8 +31,6 @@ void    *ping(void * args)
         sleep(10);
     }
 }
-
-Client::Client(int socketNum, int pollFd) :   _ClientSocket(socketNum), _type(USER), _pollFd(pollFd), _username("anonyme"), _channel("NoChannel"), _pass(0) {}
 
 Client &    Client::operator=(const Client & rhs) {
     

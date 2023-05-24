@@ -47,8 +47,5 @@ Cote Serv {
 
 Cote Client 
 
-/connect : faire comprendre a irssi lorsaue le client est accepter sur le serv
 
 renvoie les erreur de commande uniquement aux denier client connecte 
-
-a check "/nick " ne renvoie pas d'erreur

@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/11 16:44:55 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/24 20:48:51 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/25 00:50:38 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,8 @@ class   server {
                 void        exitClient(Client & client, std::vector<std::string> clientInput);
                 void        modeFun(Client & client, std::vector<std::string> clientInput);
                 void        pingFun(Client & client, std::vector<std::string> clientInput);
+                void        nickFun(Client & client, std::vector<std::string> clientInput);
+                void        userFun(Client & client, std::vector<std::string> clientInput);
                 
                 server  &   operator=(server & rhs);
 
@@ -91,7 +93,7 @@ class   server {
 
 };
 
-std::vector<std::string>    splitBuffer(char *buffer, char delimiter);
+std::vector<std::string>    splitBuffer(char* buffer, const std::string& delimiters);
 std::vector<std::string>    removeWhitespace(std::vector<std::string>& strings);
 void                        printVecStr(std::vector<std::string> strings);
                 class   serverException : public std::exception {

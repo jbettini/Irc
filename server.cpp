@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:43:40 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/24 21:17:18 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/25 01:32:24 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,11 +62,8 @@ void    server::run(void) {
                 if (ClientFd[i].fd == 0) {
                     ClientFd[i].fd = newClient;
                     ClientFd[i].events = POLLIN;
-
-                    std::string welcomeMsg = ":127.0.0.1 001 ffiliz :Vous êtes connecté avec succès à mon serveur\r\n";
-                    send(ClientFd[i].fd, welcomeMsg.c_str(), welcomeMsg.size(), 0);
                     Client newUser(newClient, i);
-                    this->_ClientList.push_back(newUser); 
+                    this->_ClientList.push_back(newUser);
                     break;
                 }
         }
@@ -82,40 +79,50 @@ void    server::run(void) {
                 else if (bytesRead == 0)
                     this->disconnectClient(this->getClient(ClientFd[i].fd));
                 else 
-                    this->execInput(splitBuffer(buffer, ' '),  (this->getClient(ClientFd[i].fd)));
+                    this->execInput(splitBuffer(buffer, " \v\n\t\r\f"),  (this->getClient(ClientFd[i].fd)));
             }
         }
 
     }
 }
-
-// Client    server::tryToCreateClient(int clientFd, int i)
-// {
-//     std::string welcomeMsg = ":127.0.0.1 001 ffiliz :Vous êtes connecté avec succès à mon serveur\r\n";
-//     send(clientFd, welcomeMsg.c_str(), welcomeMsg.size(), 0);
-
-//     Client newUser(clientFd, i);   
-// }
+//                     std::string welcomeMsg = ":127.0.0.1 001 ffiliz :Vous êtes connecté avec succès à mon serveur\r\n";
+//                     send(ClientFd[i].fd, welcomeMsg.c_str(), welcomeMsg.size(), 0);
 
 void    server::modeFun(Client & client, std::vector<std::string> clientInput) {
     std::string mode = clientInput[clientInput.size() - 1];
     if (mode == "+i"){
-        std::string tmp = ":127.0.0.1 221 " + client.getNick() + " :+i\r\n"; 
-        send(client.getCS(), tmp.c_str(), 28, 0); 
+        std::string tmp = ":127.0.0.1 221 " + client.getNick() + " :+i\r\n";
+        this->displayClient(tmp, client);
     }
 }
 
 void    server::pingFun(Client & client, std::vector<std::string> clientInput) {
     (void)clientInput;
-    send(client.getCS(), "PONG :127.0.0.1\r\n", 18, 0);  
+    this->displayClient("PONG :127.0.0.1\r\n", client);
+}
+
+void    server::nickFun(Client & client, std::vector<std::string> clientInput) {
+    std::vector<Client>::iterator it;
+    for (it = this->_ClientList.begin(); it != this->_ClientList.end(); it++) {
+
+        if ((*it).getUsername() ==  clientInput[1]) {
+            this->displayClient(":127.0.0.1 433 " + client.getNick() + " " + clientInput[1] + " :Nickname is already in use.\r\n", client);
+            return;
+        }
+    }
+    client.setNick(clientInput[1]);
+}
+
+void    server::userFun(Client & client, std::vector<std::string> clientInput) {
+    client.setUsername(clientInput[1]);
 }
 
 void    server::initFunLst(void)
 {
     this->_FunLst["MODE"] = &server::modeFun;
     this->_FunLst["PING"] = &server::pingFun;
-    // this->_FunLst["/join"] = &server::;
-    // this->_FunLst["/part"] = &server::;
+    this->_FunLst["NICK"] = &server::nickFun;
+    this->_FunLst["USER"] = &server::userFun;
     // this->_FunLst["/msg"] = &server::;
     // this->_FunLst["/kick"] = &server::;
     // this->_FunLst["/ban"] = &server::;
@@ -135,18 +142,6 @@ void    server::displayClient(std::string   msg, Client client) {
 
 }
 
-void        server::defineClientUsername(Client & client, std::vector<std::string> clientInput) {
-    std::vector<Client>::iterator it;
-    for (it = this->_ClientList.begin(); it != this->_ClientList.end(); it++) {
-
-        if ((*it).getUsername() ==  clientInput[1]) {
-            this->displayClient("Error: this username isn't available\n", client);
-            return;
-        }
-    }
-    client.setName(clientInput[1]);
-}
-
 
 
 void        server::execInput(std::vector<std::string> clientInput, Client & client) {
@@ -155,7 +150,10 @@ void        server::execInput(std::vector<std::string> clientInput, Client & cli
         if (fun) {
             (this->*fun)(client, clientInput);
         }
+        else
+            this->displayClient(":127.0.0.1 421 " + client.getNick() + " " + clientInput[0] + " :Unknow command\r\n", client);
         printVecStr(clientInput);
+        std::cout << "------ "<< client.getNick() << " --------"<< std::endl;
 }
 
 void    server::init_socket(void) {
@@ -182,6 +180,7 @@ void    server::init_socket(void) {
     if (listen(this->_socket, this->MAX_CLIENTS) < 0)
         throw listenException();
 }
+
 //REMOVE CHANNEL USER WHEN DC /WARNING
 
 void        server::disconnectClient(Client & client) {
@@ -249,15 +248,31 @@ std::vector<std::string> removeWhitespace(std::vector<std::string>& strings) {
     return strings;
 }
 
-std::vector<std::string>    splitBuffer(char *buffer, char delimiter){
-
-    std::vector<std::string>    splited;
-    std::stringstream           ss(buffer);
-    std::string                 tmp;
-
-    while (std::getline(ss, tmp, delimiter)) {
-        splited.push_back(tmp);
+std::vector<std::string> splitBuffer(char* buffer, const std::string& delimiters) {
+    std::vector<std::string> splited;
+    std::string tmp(buffer);
+    size_t pos = 0;
+    
+    while ((pos = tmp.find_first_of(delimiters)) != std::string::npos) {
+        std::string token = tmp.substr(0, pos);
+        tmp.erase(0, pos + 1);
+        splited.push_back(token);
     }
+    
+    splited.push_back(tmp);
     splited = removeWhitespace(splited);
     return splited;
 }
+
+// std::vector<std::string>    splitBuffer(char *buffer, char delimiter){
+
+//     std::vector<std::string>    splited;
+//     std::stringstream           ss(buffer);
+//     std::string                 tmp;
+
+//     while (std::getline(ss, tmp, delimiter)) {
+//         splited.push_back(tmp);
+//     }
+//     splited = removeWhitespace(splited);
+//     return splited;
+// }

@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/17 19:31:19 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/24 21:14:55 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/25 00:56:31 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,23 +31,38 @@ class   Client {
 
         void        startPinging(void);
         bool        isSetup(void) const;
+
+        //seter
+
+        void        setNick(std::string nick) {
+            this->_nick = nick;
+        }
+        void        setUsername(std::string username) {
+            this->_username = username;
+        }
+
+        //geter
+
         int         getCS(void) { 
             return (this->_ClientSocket);
         }
-        std::string         getUsername(void) { 
-            return (this->_username);
-        }
-        void        setName(std::string name) {
-            this->_username = name;
+        int         getType(void) { 
+            return (this->_type);
         }
         int         getPollFd(void) { 
             return (this->_pollFd);
         }
-        pthread_t   &   getThread() {
-            return this->_myThread;
+        std::string         getUsername(void) { 
+            return (this->_username);
         }
         std::string     getNick(void) { 
             return (this->_nick);
+        }
+        std::string     getChannel(void) { 
+            return (this->_channel);
+        }
+        pthread_t   &   getThread() {
+            return this->_myThread;
         }
         int             getPass(void) { 
             return (this->_pass);
