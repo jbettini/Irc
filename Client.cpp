@@ -12,9 +12,31 @@
 
 #include "server.hpp"
 
+struct ThreadData {
+    int value;
+};
+
 Client::Client(void) :    _ClientSocket(0), _type(USER), _pollFd(-1), _username("anonyme"), _channel("NoChannel"){}
 
-Client::Client(int socketNum, int pollFd) :   _ClientSocket(socketNum), _type(USER), _pollFd(pollFd), _username("anonyme"), _channel("NoChannel") {}
+void    *ping(void * args)
+{
+    ThreadData* data = static_cast<ThreadData*>(args);
+    int fd = data->value;
+    while(1)
+    {
+        std::cout << "ping" << fd << std::endl;
+        send(fd, "PING 127.0.0.1\r\n", 17, 0);
+        sleep(10);
+    }
+}
+
+Client::Client(int socketNum, int pollFd) :   _ClientSocket(socketNum), _type(USER), _pollFd(pollFd), _username("anonyme"), _channel("NoChannel") {
+    ;
+    ThreadData data;
+    data.value = socketNum;
+
+    pthread_create(&this->_myThread, NULL, ping, &data);
+}
 
 Client &    Client::operator=(const Client & rhs) {
     

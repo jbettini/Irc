@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "server.hpp"
+#include <thread>
 
 #ifndef CLIENT_HPP
     #define CLIENT_HPP
@@ -27,6 +28,7 @@ class   Client {
 
         Client &    operator=(const Client & rhs);
 
+
         int         getCS(void) { 
             return (this->_ClientSocket);
         }
@@ -39,6 +41,9 @@ class   Client {
         int         getPollFd(void) { 
             return (this->_pollFd);
         }
+        pthread_t   &   getThread() {
+            return this->_myThread;
+        }
 
     private :
             int         _ClientSocket;
@@ -46,8 +51,7 @@ class   Client {
             int         _pollFd;
             std::string _username;
             std::string _channel;
-
-
+            pthread_t   _myThread;
 };
 
 #endif

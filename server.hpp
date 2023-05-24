@@ -85,6 +85,7 @@ class   server {
                 struct  pollfd              *_ClientFd;
                 typedef void (server::*Fun)(Client &, std::vector<std::string>);
                 std::map<std::string, Fun>  _FunLst;
+                void static   *ping(void * args);
 
 };
 

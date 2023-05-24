@@ -62,6 +62,9 @@ void    server::run(void) {
                 if (ClientFd[i].fd == 0) {
                     ClientFd[i].fd = newClient;
                     ClientFd[i].events = POLLIN;
+
+                    std::string welcomeMsg = ":127.0.0.1 001 ffiliz :Vous êtes connecté avec succès à mon serveur\r\n";
+                    send(ClientFd[i].fd, welcomeMsg.c_str(), welcomeMsg.size(), 0);
                     Client newUser(newClient, i);
                     this->_ClientList.push_back(newUser); 
                     break;
@@ -72,26 +75,25 @@ void    server::run(void) {
             if (ClientFd[i].fd > 0 && ClientFd[i].revents & POLLIN) {
                 size_t bytesRead = recv(ClientFd[i].fd, buffer, this->MAX_BUFFER_SIZE, 0);
                 buffer[bytesRead] = '\0';
-                if (strncmp("MODE", buffer, 4) != 0)
-                {
+                //if (strncmp("MODE", buffer, 4) != 0)
+                //{
                     if (buffer[0] == 10 && buffer[1] == '\0')
                         break;
                     if (bytesRead < 0)
                         throw recvException();
                     else if (bytesRead == 0)
-                        this->disconnectClient(this->getClient(ClientFd[i].fd), "");
+                        this->disconnectClient(this->getClient(ClientFd[i].fd));
                     else {
                         // this->parseInput(splitBuffer(buffer, ' '),  (this->getClient(ClientFd[i].fd)));
+                        if (strncmp("MODE", buffer, 4) == 0)
+                            send(ClientFd[i].fd, ":127.0.0.1 221 ffiliz :+i\r\n", 28, 0);
                         if (strncmp("PING", buffer, 4) == 0)
                         {
-                            send(ClientFd[i].fd, "PONG\r\n", 7, 0);
-                            std::cout << buffer << "---" <<ClientFd[i].fd << std::endl;
-                            std::cout << "PONG SUCEED" << std::endl; 
+                            std::cout << "0 " << buffer << std::endl;
+                            send(ClientFd[i].fd, "PONG :127.0.0.1\r\n", 18, 0);
                         }
-                        std::string welcomeMsg = ":127.0.0.1 001 <USERNAME> :Vous êtes connecté avec succès à mon serveur ffiliz!ffiliz@127.0.0.1\r\n";
-                        send(ClientFd[i].fd, welcomeMsg.c_str(), welcomeMsg.size(), 0);
                     }
-                }
+                //}
             }
         }
 
@@ -146,7 +148,6 @@ void        server::parseInput(std::vector<std::string> clientInput, Client & cl
 }
 
 void    server::init_socket(void) {
-
     // Création du socket
     this->_socket = socket(AF_INET, SOCK_STREAM, 0);
     if (this->_socket == -1)
@@ -177,6 +178,7 @@ void        server::disconnectClient(Client & client) {
     this->_ClientFd[client.getPollFd()].events = 0;
     this->_ClientFd[client.getPollFd()].revents = 0;
     close(client.getCS());
+    pthread_detach(client.getThread());
     for (std::vector<Client>::iterator it = this->_ClientList.begin(); it != this->_ClientList.end(); it++)
         if (it->getCS() == client.getCS()) {
             this->_ClientList.erase(it);
