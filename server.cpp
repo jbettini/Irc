@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:43:40 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/25 02:29:17 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/25 02:33:22 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,7 +130,9 @@ void    server::userFun(Client & client, std::vector<std::string> clientInput) {
 }
 
 void    server::passFun(Client & client, std::vector<std::string> clientInput)  {
-    if (clientInput[1] == this->_password)
+    if (client.getPass() == 1)
+        this->displayClient(":127.0.0.1 462 " + client.getNick() + " :You may not reregister.\r\n", client);
+    else if (clientInput[1] == this->_password)
         client.setPass(1);
     else
         this->displayClient(":127.0.0.1 464 " + client.getNick() + " :Incorrect Password.\r\n", client);
