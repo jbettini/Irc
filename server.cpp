@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:43:40 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/25 02:23:13 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/25 02:29:17 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,21 +220,6 @@ void        server::disconnectClient(Client & client) {
         }
     std::cout << "Client disconnect !" << std::endl;
 }
-
-void        server::exitFun(Client & client, std::vector<std::string> clientInput) {
-    (void)clientInput;
-    this->_ClientFd[client.getPollFd()].fd = 0;
-    this->_ClientFd[client.getPollFd()].events = 0;
-    this->_ClientFd[client.getPollFd()].revents = 0;
-    close(client.getCS());
-    for (std::vector<Client>::iterator it = this->_ClientList.begin(); it != this->_ClientList.end(); it++)
-        if (it->getCS() == client.getCS()) {
-            this->_ClientList.erase(it);
-            break;
-        }
-    std::cout << "Client disconnect !" << std::endl;
-}
-
 
 
 // Channel function
