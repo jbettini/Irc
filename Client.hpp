@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/17 19:31:19 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/25 01:50:45 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/25 05:17:36 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,9 @@ class   Client {
         void        setPass(int i) {
             this->_pass = i;
         }
+        void        setWelcome() {
+            this->_welcome++;
+        }
 
         //geter
 
@@ -70,6 +73,9 @@ class   Client {
         int             getPass(void) { 
             return (this->_pass);
         }
+        int             getWelcome(void) { 
+            return (this->_welcome);
+        }
 
     private :
             int         _ClientSocket;
@@ -80,6 +86,7 @@ class   Client {
             std::string _channel;
             pthread_t   _myThread;
             int         _pass;
+            int         _welcome;
 };
 
 #endif

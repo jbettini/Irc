@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/11 16:44:55 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/25 02:29:14 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/25 04:48:27 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,8 @@ class   server {
                 void        nickFun(Client & client, std::vector<std::string> clientInput);
                 void        userFun(Client & client, std::vector<std::string> clientInput);
                 void        passFun(Client & client, std::vector<std::string> clientInput);
+                void        capFun(Client & client, std::vector<std::string> clientInput);
+                
                 
                 server  &   operator=(server & rhs);
 
@@ -96,7 +98,9 @@ class   server {
 
 std::vector<std::string>    splitBuffer(char* buffer, const std::string& delimiters);
 std::vector<std::string>    removeWhitespace(std::vector<std::string>& strings);
+std::vector<std::string>    makeVecKey(std::vector<std::string> strings, std::string toFind);
 void                        printVecStr(std::vector<std::string> strings);
+int                         findString(std::vector<std::string> strings, std::string toFind);
                 class   serverException : public std::exception {
                     virtual const char* what() const throw() {
                         return ("Error : from server !");

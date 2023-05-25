@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:43:40 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/25 02:33:22 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/25 05:23:42 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,10 +101,6 @@ void    server::pingFun(Client & client, std::vector<std::string> clientInput) {
 }
 
 void    server::nickFun(Client & client, std::vector<std::string> clientInput) {
-    if (client.getPass() == 0) {
-        this->displayClient(":127.0.0.1 464 " + client.getNick() + " :Please enter Password at first .\r\n", client);
-        return ;
-    }
     std::vector<Client>::iterator it;
     for (it = this->_ClientList.begin(); it != this->_ClientList.end(); it++) {
 
@@ -114,34 +110,44 @@ void    server::nickFun(Client & client, std::vector<std::string> clientInput) {
         }
     }
     client.setNick(clientInput[1]);
-    if (client.isSetup())
+    if (client.isSetup() && client.getWelcome() == 0)
         this->welcomeMsg(client);
 
 }
-
+                                                                                                                                                                                                                                                                                                          
 void    server::userFun(Client & client, std::vector<std::string> clientInput) {
-    if (client.getPass() == 0) {
-        this->displayClient(":127.0.0.1 464 " + client.getNick() + " :Please enter Password at first .\r\n", client);
-        return ;
-    }
     client.setUsername(clientInput[1]);
-    if (client.isSetup())
+    if (client.isSetup() && client.getWelcome() == 0)
         this->welcomeMsg(client);
 }
 
 void    server::passFun(Client & client, std::vector<std::string> clientInput)  {
     if (client.getPass() == 1)
         this->displayClient(":127.0.0.1 462 " + client.getNick() + " :You may not reregister.\r\n", client);
-    else if (clientInput[1] == this->_password)
+    if (clientInput[1] == this->_password)
         client.setPass(1);
     else
         this->displayClient(":127.0.0.1 464 " + client.getNick() + " :Incorrect Password.\r\n", client);
+    if (client.isSetup() && client.getWelcome() == 0)
+        this->welcomeMsg(client);
 }
 
 void        server::welcomeMsg(Client & client){
-    this->displayClient(":127.0.0.1 001 " + client.getNick() + " :Vous êtes connecté avec succès à mon serveur\r\n", client);
+    this->displayClient(":127.0.0.1 001 " + client.getNick() + " :Vous êtes connecté avec succès à mon serveur\r\n", client);   
 }
-//                     std::string welcomeMsg = ":127.0.0.1 001 ffiliz :Vous êtes connecté avec succès à mon serveur\r\n";
+
+// void        server::capFun(Client & client, std::vector<std::string> clientInput) {
+//     std::vector<std::string>    tmp = makeVecKey(clientInput, "PASS");
+//     if (tmp != clientInput)
+//         (this->*_FunLst[tmp[0]])(client, tmp);
+//     tmp = makeVecKey(clientInput, "USER");
+//     if (tmp != clientInput)
+//         (this->*_FunLst[tmp[0]])(client, tmp);
+//     tmp = makeVecKey(clientInput, "NICK");
+//     if (tmp != clientInput)
+//         (this->*_FunLst[tmp[0]])(client, tmp);
+
+// }
 
 void    server::initFunLst(void)
 {
@@ -150,7 +156,7 @@ void    server::initFunLst(void)
     this->_FunLst["NICK"] = &server::nickFun;
     this->_FunLst["USER"] = &server::userFun;
     this->_FunLst["PASS"] = &server::passFun;
-    // this->_FunLst["CAP"] = &server::;
+    this->_FunLst["CAP"] =  &server::capFun;
     // this->_FunLst["/ban"] = &server::;
     // this->_FunLst["/unban"] = &server::;
     // this->_FunLst["/exit"] = &server::;
@@ -173,6 +179,7 @@ void    server::displayClient(std::string   msg, Client client) {
 void        server::execInput(std::vector<std::string> clientInput, Client & client) {
 
         // std::cout << "------ "<< client.getNick() << " -------- " << client.getCS() << " ------"<< std::endl;
+        // printVecStr(clientInput);
         Fun fun = _FunLst[clientInput[0]];
         if (fun) {
             (this->*fun)(client, clientInput);
@@ -244,6 +251,34 @@ void printVecStr(std::vector<std::string> strings) {
         std::cout << "\" str = " + strings[i] + "\""<< std::endl;
 }
 
+int findString(std::vector<std::string> strings, std::string toFind) {
+    for (std::vector<std::string>::iterator it = strings.begin(); it != strings.end();it++)
+        if (*it == toFind)
+            return (1);
+    return (0);
+}
+
+std::string retAfterFind(std::vector<std::string> strings, std::string toFind) {
+    for (std::vector<std::string>::iterator it = strings.begin(); it != strings.end();it++)
+        if (*it == toFind)
+            return (*(++it));
+    return (toFind);
+}
+
+std::vector<std::string> makeVecKey(std::vector<std::string> strings, std::string toFind) {
+    if (findString(strings, toFind)) {
+        std::vector<std::string>    ret;
+        ret.push_back(toFind);
+        std::string after = retAfterFind(strings, toFind);
+        if (after != toFind)
+            ret.push_back(after);
+        else
+            return strings;
+        return ret;
+    }
+    return strings;
+}
+
 std::vector<std::string> removeWhitespace(std::vector<std::string>& strings) {
     for (size_t i = 0; i < strings.size(); ++i) {
         std::string& str = strings[i];
@@ -274,16 +309,3 @@ std::vector<std::string> splitBuffer(char* buffer, const std::string& delimiters
     splited = removeWhitespace(splited);
     return splited;
 }
-
-// std::vector<std::string>    splitBuffer(char *buffer, char delimiter){
-
-//     std::vector<std::string>    splited;
-//     std::stringstream           ss(buffer);
-//     std::string                 tmp;
-
-//     while (std::getline(ss, tmp, delimiter)) {
-//         splited.push_back(tmp);
-//     }
-//     splited = removeWhitespace(splited);
-//     return splited;
-// }
