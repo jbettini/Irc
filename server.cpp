@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:43:40 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/25 19:42:02 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/25 21:35:14 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,13 +59,17 @@ void    server::run(void) {
                 std::cout << "new Client" << std::endl;
               // Ajout du nouveau Client à la liste
             for (int i = 1; i < this->MAX_CLIENTS + 1; i++)
+            {
+                std::cout << " MAX CLIENT = " << this->MAX_CLIENTS << std::endl;
                 if (ClientFd[i].fd == 0) {
                     ClientFd[i].fd = newClient;
                     ClientFd[i].events = POLLIN;
                     Client newUser(newClient, i);
                     this->_ClientList.push_back(newUser);
+                    this->getClient(newClient).setNick("*"); // Mystere incomprehensible
                     break;
                 }
+            }
         }
         // Lecture et traitement des données des Clients connectés
         for (int i = 1; i < MAX_CLIENTS + 1; ++i) {
@@ -78,8 +82,10 @@ void    server::run(void) {
                     throw recvException();
                 else if (bytesRead == 0)
                     this->disconnectClient(this->getClient(ClientFd[i].fd));
-                else 
+                else {
+                    std::cout << buffer << std::endl;
                     this->execInput(splitBuffer(buffer, " \v\n\t\r\f"),  (this->getClient(ClientFd[i].fd)));
+                }
             }
         }
 
@@ -109,18 +115,18 @@ void    server::nickFun(Client & client, std::vector<std::string> clientInput) {
             return;
         }
     }
-    printVecStr(clientInput);
-    std::cout << "END" << std::endl;
     client.setNick(clientInput[1]);
-    if (client.isSetup() && client.getWelcome() == 0)
+    if (client.isSetup() && client.getWelcome() == 0) {
         this->welcomeMsg(client);
+    }
 
 }
                                                                                                                                                                                                                                                                                                           
 void    server::userFun(Client & client, std::vector<std::string> clientInput) {
     client.setUsername(clientInput[1]);
-    if (client.isSetup() && client.getWelcome() == 0)
+    if (client.isSetup() && client.getWelcome() == 0) {
         this->welcomeMsg(client);
+    }
 }
 
 void    server::passFun(Client & client, std::vector<std::string> clientInput)  {
@@ -130,8 +136,9 @@ void    server::passFun(Client & client, std::vector<std::string> clientInput)  
         client.setPass(1);
     else
         this->displayClient(":127.0.0.1 464 " + client.getNick() + " :Incorrect Password.\r\n", client);
-    if (client.isSetup() && client.getWelcome() == 0)
+    if (client.isSetup() && client.getWelcome() == 0) {
         this->welcomeMsg(client);
+    }
 }
 
 void        server::welcomeMsg(Client & client){
@@ -178,7 +185,6 @@ void    server::displayClient(std::string   msg, Client client) {
 
 
 void        server::execInput(std::vector<std::string> clientInput, Client & client) {
-
         Fun fun = _FunLst[clientInput[0]];
         if (fun) {
             (this->*fun)(client, clientInput);
@@ -218,13 +224,13 @@ void        server::disconnectClient(Client & client) {
     this->_ClientFd[client.getPollFd()].fd = 0;
     this->_ClientFd[client.getPollFd()].events = 0;
     this->_ClientFd[client.getPollFd()].revents = 0;
-    close(client.getCS());
     pthread_detach(client.getThread());
     for (std::vector<Client>::iterator it = this->_ClientList.begin(); it != this->_ClientList.end(); it++)
         if (it->getCS() == client.getCS()) {
             this->_ClientList.erase(it);
             break;
         }
+    close(client.getCS());
     std::cout << "Client disconnect !" << std::endl;
 }
 
@@ -247,6 +253,14 @@ void    server::printChannel(void) {
 void printVecStr(std::vector<std::string> strings) {
     for (size_t i = 0; i < strings.size(); ++i)
         std::cout << "\" str = " + strings[i] + "\""<< std::endl;
+}
+
+void printClient(std::vector<Client> strings) {
+    for (size_t i = 0; i < strings.size(); ++i) {
+        std::cout << "ClientSocket : " << strings[i].getCS()<< std::endl;
+        std::cout << "ClientUsername : " << strings[i].getUsername() << std::endl;
+        std::cout << "ClientNick : " << "\"" << strings[i].getNick() << "\"" <<std::endl;
+    }
 }
 
 int findString(std::vector<std::string> strings, std::string toFind) {

@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/17 18:51:52 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/25 05:18:29 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/25 21:27:27 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,8 @@ struct ThreadData {
 
 Client::Client(void) :    _ClientSocket(0), _type(USER), _pollFd(-1), _username("*"), _nick("*"), _channel("NoChannel"), _pass(0), _welcome(0) {}
 
-Client::Client(int socketNum, int pollFd) :   _ClientSocket(socketNum), _type(USER), _pollFd(pollFd), _username("*"), _nick("*"), _channel("NoChannel"), _pass(0), _welcome(0) {}
-
+Client::Client(int socketNum, int pollFd) :   _ClientSocket(socketNum), _type(USER), _pollFd(pollFd), _username("*"), _nick("*"), _channel("NoChannel"), _pass(0), _welcome(0) {
+}
 void    *ping(void * args)
 {
     ThreadData* data = static_cast<ThreadData*>(args);
@@ -43,7 +43,7 @@ Client &    Client::operator=(const Client & rhs) {
 }
 
 bool Client::isSetup(void) const {
-    if (this->_username == "*" || this->_nick == "*" || this->_pass == 0)
+    if (this->_username == "*" || this->_nick == "" || this->_nick == "*"|| this->_pass == 0)
         return (0);
     return (1);
 }

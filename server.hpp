@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/11 16:44:55 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/25 19:33:34 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/25 21:02:47 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,58 @@
 #define NC 0
 #define IRSSI 1
 
+    class   ClientNotFoundException : public std::exception {
+        virtual const char* what() const throw() {
+            return ("Error : from  Get Client, client not find!");
+        }
+    };
 
+    class   serverException : public std::exception {
+        virtual const char* what() const throw() {
+            return ("Error : from server !");
+        }
+    };
+    class   pollException : public std::exception {
+        virtual const char* what() const throw() {
+            return ("Error : from poll !");
+        }
+    };
+    class   socketException : public std::exception {
+        virtual const char* what() const throw() {
+            return ("Error : from  socket !");
+        }
+    };
+
+    class   bindException : public std::exception {
+        virtual const char* what() const throw() {
+            return ("Error : from  bind !");
+        }
+    }; 
+
+    class   listenException : public std::exception {
+        virtual const char* what() const throw() {
+            return ("Error : from listen !");
+        }
+    };
+
+    class   acceptException : public std::exception {
+        virtual const char* what() const throw() {
+            return ("Error : from accept !");
+        }
+    };
+
+    class   recvException : public std::exception {
+        virtual const char* what() const throw() {
+            return ("Error : from recv !");
+        }
+    };
+
+
+    // class   Exception : public std::exception {
+    //     virtual const char* what() const throw() {
+    //         return ("Error : from  !");
+    //     }
+    // };
 
 class   server {
 
@@ -70,13 +121,12 @@ class   server {
                     return (this->_password);
                 }
                 Client    &  getClient(int newClient) {
-                    std::vector<Client>::iterator it = this->_ClientList.begin();
-                    while (it != this->_ClientList.end()) {
-                        if (it->getCS() == newClient)
-                            return (*it);
-                        it++;
+                    for (size_t i = 0; i != this->_ClientList.size(); i++) {
+                        if (this->_ClientList[i].getCS() == newClient)
+                            return (this->_ClientList[i]);
                     }
-                    return (*it);
+                    throw ClientNotFoundException();
+                    return (this->_ClientList[0]);
                 }
 
                 int     MAX_CLIENTS;
@@ -102,50 +152,6 @@ std::vector<std::string>    makeVecKey(std::vector<std::string> strings, std::st
 std::string                 getMsg(std::string first, std::string last, Client & client);
 void                        printVecStr(std::vector<std::string> strings);
 int                         findString(std::vector<std::string> strings, std::string toFind);
-                class   serverException : public std::exception {
-                    virtual const char* what() const throw() {
-                        return ("Error : from server !");
-                    }
-                };
-                class   pollException : public std::exception {
-                    virtual const char* what() const throw() {
-                        return ("Error : from poll !");
-                    }
-                };
-                class   socketException : public std::exception {
-                    virtual const char* what() const throw() {
-                        return ("Error : from  socket !");
-                    }
-                };
-
-                class   bindException : public std::exception {
-                    virtual const char* what() const throw() {
-                        return ("Error : from  bind !");
-                    }
-                }; 
-
-                class   listenException : public std::exception {
-                    virtual const char* what() const throw() {
-                        return ("Error : from listen !");
-                    }
-                };
-
-                class   acceptException : public std::exception {
-                    virtual const char* what() const throw() {
-                        return ("Error : from accept !");
-                    }
-                };
-
-                class   recvException : public std::exception {
-                    virtual const char* what() const throw() {
-                        return ("Error : from recv !");
-                    }
-                };
-
-                // class   Exception : public std::exception {
-                //     virtual const char* what() const throw() {
-                //         return ("Error : from  !");
-                //     }
-                // };
+void                        printClient(std::vector<Client> strings);
 
 #endif

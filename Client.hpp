@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/17 19:31:19 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/25 19:49:16 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/25 21:02:51 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ class   Client {
         //seter
 
         void        setNick(std::string nick) {
-            std::cout << "In set nick = " << nick << "----" << std::endl;
             this->_nick = nick;
         }
         void        setUsername(std::string username) {
@@ -62,7 +61,8 @@ class   Client {
         std::string         getUsername(void) { 
             return (this->_username);
         }
-        std::string   const  getNick(void) const{ 
+        std::string   const  getNick(void) const{
+            //std::cout << " THIS NICK = " << this->_nick << std::endl;
             return (this->_nick);
         }
         std::string     getChannel(void) { 
