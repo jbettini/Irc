@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:43:40 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/25 05:23:42 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/25 19:42:02 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,15 +100,17 @@ void    server::pingFun(Client & client, std::vector<std::string> clientInput) {
     this->displayClient("PONG :127.0.0.1\r\n", client);
 }
 
+// Faire la taille max = 9
 void    server::nickFun(Client & client, std::vector<std::string> clientInput) {
     std::vector<Client>::iterator it;
     for (it = this->_ClientList.begin(); it != this->_ClientList.end(); it++) {
-
-        if ((*it).getUsername() ==  clientInput[1]) {
+        if ((*it).getNick() ==  clientInput[1]) {
             this->displayClient(":127.0.0.1 433 " + client.getNick() + " " + clientInput[1] + " :Nickname is already in use.\r\n", client);
             return;
         }
     }
+    printVecStr(clientInput);
+    std::cout << "END" << std::endl;
     client.setNick(clientInput[1]);
     if (client.isSetup() && client.getWelcome() == 0)
         this->welcomeMsg(client);
@@ -124,7 +126,7 @@ void    server::userFun(Client & client, std::vector<std::string> clientInput) {
 void    server::passFun(Client & client, std::vector<std::string> clientInput)  {
     if (client.getPass() == 1)
         this->displayClient(":127.0.0.1 462 " + client.getNick() + " :You may not reregister.\r\n", client);
-    if (clientInput[1] == this->_password)
+    else if (clientInput[1] == this->_password)
         client.setPass(1);
     else
         this->displayClient(":127.0.0.1 464 " + client.getNick() + " :Incorrect Password.\r\n", client);
@@ -133,21 +135,21 @@ void    server::passFun(Client & client, std::vector<std::string> clientInput)  
 }
 
 void        server::welcomeMsg(Client & client){
-    this->displayClient(":127.0.0.1 001 " + client.getNick() + " :Vous êtes connecté avec succès à mon serveur\r\n", client);   
+    this->displayClient(":127.0.0.1 001 " +  client.getNick() + " :Vous êtes connecté avec succès à mon serveur\r\n", client);   
+    client.setWelcome();
 }
 
-// void        server::capFun(Client & client, std::vector<std::string> clientInput) {
-//     std::vector<std::string>    tmp = makeVecKey(clientInput, "PASS");
-//     if (tmp != clientInput)
-//         (this->*_FunLst[tmp[0]])(client, tmp);
-//     tmp = makeVecKey(clientInput, "USER");
-//     if (tmp != clientInput)
-//         (this->*_FunLst[tmp[0]])(client, tmp);
-//     tmp = makeVecKey(clientInput, "NICK");
-//     if (tmp != clientInput)
-//         (this->*_FunLst[tmp[0]])(client, tmp);
-
-// }
+void        server::capFun(Client & client, std::vector<std::string> clientInput) {
+    std::vector<std::string>    tmp = makeVecKey(clientInput, "PASS");
+    if (tmp != clientInput)
+        (this->*_FunLst[tmp[0]])(client, tmp);
+    tmp = makeVecKey(clientInput, "USER");
+    if (tmp != clientInput)
+        (this->*_FunLst[tmp[0]])(client, tmp);
+    tmp = makeVecKey(clientInput, "NICK");
+    if (tmp != clientInput)
+        (this->*_FunLst[tmp[0]])(client, tmp);
+}
 
 void    server::initFunLst(void)
 {
@@ -169,7 +171,6 @@ void    server::initFunLst(void)
 //  Server Funct
 
 void    server::displayClient(std::string   msg, Client client) {
-    // need to send to irssi and nc 
     send(client.getCS(), msg.c_str(), msg.size(), 0);
 
 }
@@ -178,15 +179,12 @@ void    server::displayClient(std::string   msg, Client client) {
 
 void        server::execInput(std::vector<std::string> clientInput, Client & client) {
 
-        // std::cout << "------ "<< client.getNick() << " -------- " << client.getCS() << " ------"<< std::endl;
-        // printVecStr(clientInput);
         Fun fun = _FunLst[clientInput[0]];
         if (fun) {
             (this->*fun)(client, clientInput);
         }
         else
             this->displayClient(":127.0.0.1 421 " + client.getNick() + " " + clientInput[0] + " :Unknow command\r\n", client);
-        // printVecStr(clientInput);
 }
 
 void    server::init_socket(void) {
@@ -262,8 +260,10 @@ std::string retAfterFind(std::vector<std::string> strings, std::string toFind) {
     for (std::vector<std::string>::iterator it = strings.begin(); it != strings.end();it++)
         if (*it == toFind)
             return (*(++it));
+      
     return (toFind);
 }
+
 
 std::vector<std::string> makeVecKey(std::vector<std::string> strings, std::string toFind) {
     if (findString(strings, toFind)) {

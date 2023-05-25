@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/17 19:31:19 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/25 05:17:36 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/25 19:44:37 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ class   Client {
         std::string         getUsername(void) { 
             return (this->_username);
         }
-        std::string     getNick(void) { 
+        std::string   const  getNick(void) const{ 
             return (this->_nick);
         }
         std::string     getChannel(void) { 

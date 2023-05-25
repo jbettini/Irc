@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/11 16:44:55 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/25 04:48:27 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/25 19:33:34 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,7 @@ class   server {
 std::vector<std::string>    splitBuffer(char* buffer, const std::string& delimiters);
 std::vector<std::string>    removeWhitespace(std::vector<std::string>& strings);
 std::vector<std::string>    makeVecKey(std::vector<std::string> strings, std::string toFind);
+std::string                 getMsg(std::string first, std::string last, Client & client);
 void                        printVecStr(std::vector<std::string> strings);
 int                         findString(std::vector<std::string> strings, std::string toFind);
                 class   serverException : public std::exception {
