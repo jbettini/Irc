@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/11 16:44:55 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/25 00:50:38 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/25 02:16:41 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,11 +52,13 @@ class   server {
                 void        displayClient(std::string   msg, Client client);
                 void        defineClientUsername(Client & client, std::vector<std::string> clientInput);
                 void        disconnectClient(Client & client);
-                void        exitClient(Client & client, std::vector<std::string> clientInput);
+                void        welcomeMsg(Client & client);
+                void        exitFun(Client & client, std::vector<std::string> clientInput);
                 void        modeFun(Client & client, std::vector<std::string> clientInput);
                 void        pingFun(Client & client, std::vector<std::string> clientInput);
                 void        nickFun(Client & client, std::vector<std::string> clientInput);
                 void        userFun(Client & client, std::vector<std::string> clientInput);
+                void        passFun(Client & client, std::vector<std::string> clientInput);
                 
                 server  &   operator=(server & rhs);
 

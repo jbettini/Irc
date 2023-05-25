@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/17 19:31:19 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/25 00:56:31 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/25 01:50:45 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,9 @@ class   Client {
         }
         void        setUsername(std::string username) {
             this->_username = username;
+        }
+        void        setPass(int i) {
+            this->_pass = i;
         }
 
         //geter

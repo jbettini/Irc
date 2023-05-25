@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:43:40 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/25 01:32:24 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/25 02:23:13 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,8 +85,7 @@ void    server::run(void) {
 
     }
 }
-//                     std::string welcomeMsg = ":127.0.0.1 001 ffiliz :Vous êtes connecté avec succès à mon serveur\r\n";
-//                     send(ClientFd[i].fd, welcomeMsg.c_str(), welcomeMsg.size(), 0);
+
 
 void    server::modeFun(Client & client, std::vector<std::string> clientInput) {
     std::string mode = clientInput[clientInput.size() - 1];
@@ -102,6 +101,10 @@ void    server::pingFun(Client & client, std::vector<std::string> clientInput) {
 }
 
 void    server::nickFun(Client & client, std::vector<std::string> clientInput) {
+    if (client.getPass() == 0) {
+        this->displayClient(":127.0.0.1 464 " + client.getNick() + " :Please enter Password at first .\r\n", client);
+        return ;
+    }
     std::vector<Client>::iterator it;
     for (it = this->_ClientList.begin(); it != this->_ClientList.end(); it++) {
 
@@ -111,11 +114,32 @@ void    server::nickFun(Client & client, std::vector<std::string> clientInput) {
         }
     }
     client.setNick(clientInput[1]);
+    if (client.isSetup())
+        this->welcomeMsg(client);
+
 }
 
 void    server::userFun(Client & client, std::vector<std::string> clientInput) {
+    if (client.getPass() == 0) {
+        this->displayClient(":127.0.0.1 464 " + client.getNick() + " :Please enter Password at first .\r\n", client);
+        return ;
+    }
     client.setUsername(clientInput[1]);
+    if (client.isSetup())
+        this->welcomeMsg(client);
 }
+
+void    server::passFun(Client & client, std::vector<std::string> clientInput)  {
+    if (clientInput[1] == this->_password)
+        client.setPass(1);
+    else
+        this->displayClient(":127.0.0.1 464 " + client.getNick() + " :Incorrect Password.\r\n", client);
+}
+
+void        server::welcomeMsg(Client & client){
+    this->displayClient(":127.0.0.1 001 " + client.getNick() + " :Vous êtes connecté avec succès à mon serveur\r\n", client);
+}
+//                     std::string welcomeMsg = ":127.0.0.1 001 ffiliz :Vous êtes connecté avec succès à mon serveur\r\n";
 
 void    server::initFunLst(void)
 {
@@ -123,8 +147,8 @@ void    server::initFunLst(void)
     this->_FunLst["PING"] = &server::pingFun;
     this->_FunLst["NICK"] = &server::nickFun;
     this->_FunLst["USER"] = &server::userFun;
-    // this->_FunLst["/msg"] = &server::;
-    // this->_FunLst["/kick"] = &server::;
+    this->_FunLst["PASS"] = &server::passFun;
+    // this->_FunLst["CAP"] = &server::;
     // this->_FunLst["/ban"] = &server::;
     // this->_FunLst["/unban"] = &server::;
     // this->_FunLst["/exit"] = &server::;
@@ -146,14 +170,14 @@ void    server::displayClient(std::string   msg, Client client) {
 
 void        server::execInput(std::vector<std::string> clientInput, Client & client) {
 
+        // std::cout << "------ "<< client.getNick() << " -------- " << client.getCS() << " ------"<< std::endl;
         Fun fun = _FunLst[clientInput[0]];
         if (fun) {
             (this->*fun)(client, clientInput);
         }
         else
             this->displayClient(":127.0.0.1 421 " + client.getNick() + " " + clientInput[0] + " :Unknow command\r\n", client);
-        printVecStr(clientInput);
-        std::cout << "------ "<< client.getNick() << " --------"<< std::endl;
+        // printVecStr(clientInput);
 }
 
 void    server::init_socket(void) {
@@ -197,7 +221,7 @@ void        server::disconnectClient(Client & client) {
     std::cout << "Client disconnect !" << std::endl;
 }
 
-void        server::exitClient(Client & client, std::vector<std::string> clientInput) {
+void        server::exitFun(Client & client, std::vector<std::string> clientInput) {
     (void)clientInput;
     this->_ClientFd[client.getPollFd()].fd = 0;
     this->_ClientFd[client.getPollFd()].events = 0;

@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/17 18:51:52 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/25 01:20:02 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/25 02:13:38 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,9 @@ Client &    Client::operator=(const Client & rhs) {
 }
 
 bool Client::isSetup() const {
-    return (_username.size() && _pass && _nick.size());
+    if (this->_username == "*" || this->_nick == "*" || this->_pass == 0)
+        return (0);
+    return (1);
 }
 
 void Client::startPinging()
