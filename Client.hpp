@@ -97,7 +97,6 @@ class   Client {
         }
 
     private :
-<<<<<<< HEAD
             int             _ClientSocket;
             int             _type;
             int             _pollFd;
@@ -109,18 +108,6 @@ class   Client {
             bool            _isOp;
             std::string    _channel;
             std::vector<std::string> _allChannel; 
-=======
-            int                         _ClientSocket;
-            int                         _type;
-            int                         _pollFd;
-            std::string                 _username;
-            std::string                 _nick;
-            pthread_t                   _myThread;
-            int                         _pass;
-            int                         _welcome;
-            bool                        _admin;
-            std::vector<std::string>    _allChannel;
->>>>>>> 7053133fd71dc10ef458b817e6fb2c3b0264854f
 };
 
 #endif

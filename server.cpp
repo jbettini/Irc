@@ -281,15 +281,10 @@ void    server::joinFun(Client & client, std::vector<std::string> clientInput) {
         {
             if (!(it)->addUser(client))
                 return;
-<<<<<<< HEAD
 
             //Sending a Topic message to client to confirm joining.
             this->displayClient(":127.0.0.1 332 " + client.getNick() + (*it).getChannelName() + " :Joined topic.\r\n", client);
             // send client lst on channel
-=======
-            else
-                this->welcomeToChannel(client, channelName);
->>>>>>> 7053133fd71dc10ef458b817e6fb2c3b0264854f
             return;
         }
     }
@@ -297,12 +292,9 @@ void    server::joinFun(Client & client, std::vector<std::string> clientInput) {
     Channel channel(channelName);
     channel.addUser(client);
     channel.setOp(client);
-<<<<<<< HEAD
 
     //Sending a Topic message to client to confirm joining.
     this->displayClient(":127.0.0.1 332 " + client.getNick() + channel.getChannelName() + " :Created topic.\r\n", client);
-=======
->>>>>>> 7053133fd71dc10ef458b817e6fb2c3b0264854f
     _ChannelList.push_back(channel);
     this->welcomeToChannel(client, channelName);
 
@@ -317,12 +309,8 @@ void    server::initFunLst(void)
     this->_FunLst["PASS"] = &server::passFun;
     this->_FunLst["CAP"] =  &server::capFun;
     this->_FunLst["JOIN"] =  &server::joinFun;
-<<<<<<< HEAD
     this->_FunLst["QUIT"] =  &server::quitFun;
     // this->_FunLst["/ban"] = &server::;
-=======
-    // this->_FunLst["PRIVMSG"] = &server::;
->>>>>>> 7053133fd71dc10ef458b817e6fb2c3b0264854f
     // this->_FunLst["/unban"] = &server::;
     // this->_FunLst["/exit"] = &server::;
     // this->_FunLst["/silence"] = &server::;
@@ -335,7 +323,6 @@ void    server::displayClient(std::string   msg, Client client) {
     send(client.getCS(), msg.c_str(), msg.size(), 0);
 }
 
-<<<<<<< HEAD
 void    server::sendChannelMessage(Client & client, std::vector<std::string> clientInput)
 {
     for (std::vector<Channel>::iterator it = this->_ChannelList.begin(); it != this->_ChannelList.end(); it++)
@@ -353,9 +340,6 @@ void    server::sendChannelMessage(Client & client, std::vector<std::string> cli
     this->displayClient(":127.0.0.1 421 " + client.getNick() + " " + clientInput[0] + " :Unknow command\r\n", client);
 }
 
-=======
-//  WARNING AVEC NC EXECUTE LES FONCTION MEME SI LES NICK USER ET PASS N'ONT PAS ETE SET
->>>>>>> 7053133fd71dc10ef458b817e6fb2c3b0264854f
 void        server::execInput(std::vector<std::string> clientInput, Client & client) {
         Fun fun = _FunLst[clientInput[0]];
         if (fun) 

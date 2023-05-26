@@ -24,11 +24,6 @@ class   Channel {
 
         Channel &       operator=(const Channel & rhs);
 
-<<<<<<< HEAD
-=======
-        bool            addUser(Client& client);
-
->>>>>>> 7053133fd71dc10ef458b817e6fb2c3b0264854f
         std::string         getChannelName(void) {
                     return (this->_nameChannel);
         }
