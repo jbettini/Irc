@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mgoudin <mgoudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/11 16:44:55 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/26 03:46:25 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/26 16:26:49 by mgoudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,9 @@ class   server {
                 void        userFun(Client & client, std::vector<std::string> clientInput);
                 void        passFun(Client & client, std::vector<std::string> clientInput);
                 void        capFun(Client & client, std::vector<std::string> clientInput);
+                void        joinFun(Client & client, std::vector<std::string> clientInput);
                 
+                void        sendChannelMessage(Client & client, std::vector<std::string> clientInput);
                 
                 server  &   operator=(server & rhs);
 
