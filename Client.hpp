@@ -85,6 +85,9 @@ class   Client {
         bool             isOp(void) { 
             return (this->_isOp);
         }
+        std::vector<std::string> getAllChannel(void){
+            return this->_allChannel;
+        }
 
         //OPERATORS
 
@@ -103,6 +106,7 @@ class   Client {
             int             _welcome;
             bool            _isOp;
             std::string    _channel;
+            std::vector<std::string> _allChannel; 
 };
 
 #endif

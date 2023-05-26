@@ -24,7 +24,7 @@ class   Channel {
 
         Channel &    operator=(const Channel & rhs);
 
-        std::string         getName(void) {
+        std::string         getChannelName(void) {
                     return (this->_nameChannel);
         }
 
@@ -93,6 +93,10 @@ class   Channel {
                 if ((it)->getCS() != client.getCS())
                     send((*it).getCS(), msg.c_str(), msg.size(), 0);
             }
+        }
+
+        std::vector<Client> getChannelUser(void) {
+            return (this->_Users);
         }
 
         //OPERATORS

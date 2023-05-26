@@ -111,9 +111,11 @@ class   server {
                 void        passFun(Client & client, std::vector<std::string> clientInput);
                 void        capFun(Client & client, std::vector<std::string> clientInput);
                 void        joinFun(Client & client, std::vector<std::string> clientInput);
-                
+                void        quitFun(Client & client, std::vector<std::string> clientInput);
                 void        sendChannelMessage(Client & client, std::vector<std::string> clientInput);
-                
+                void        sendToAllUserInChannel(std::string channelName, std::string msg, Client & client);
+                void        sendToAllClientChannel(Client & client, std::vector<std::string> clientInput, int check);
+
                 server  &   operator=(server & rhs);
 
                 int         getPort(void) {

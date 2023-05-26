@@ -95,6 +95,41 @@ void    server::run(void) {
     }
 }
 
+void    server::sendToAllClientChannel(Client & client, std::vector<std::string> clientInput, int check)
+{
+    std::cout << " dans quit INPUT DE 0 ->" <<  clientInput[0] << "<-" << std::endl;
+    if (check == 0) {
+        for(std::vector<std::string>::iterator it = client.getAllChannel().begin(); it != client.getAllChannel().end(); it++){
+            this->sendToAllUserInChannel(*it, ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1.ip QUIT :Quit: " + client.getNick() + "\r\n", client);
+        }
+    }
+    else {
+        for(std::vector<std::string>::iterator it = client.getAllChannel().begin(); it != client.getAllChannel().end(); it++){
+            this->sendToAllUserInChannel(*it, ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1.ip QUIT :Quit: " + clientInput[1], client);
+        }
+    }
+    disconnectClient(client);
+}
+
+void    server::quitFun(Client & client, std::vector<std::string> clientInput) {
+    if (clientInput.size() - 1 == 0)
+        sendToAllClientChannel(client, clientInput, 0);
+    else {
+        sendToAllClientChannel(client, clientInput, 1);
+    }
+}
+
+void    server::sendToAllUserInChannel(std::string channelName, std::string msg, Client & client) {
+    for(std::vector<Channel>::iterator it = this->_ChannelList.begin(); it != this->_ChannelList.end(); it++) {
+        if ((*it).getChannelName() == channelName) {
+            for (std::vector<Client>::iterator it2 = (*it).getChannelUser().begin(); it2 != (*it).getChannelUser().end(); it2++) {
+                if ((*it2).getNick() != client.getNick())
+                    this->displayClient(msg, *it2);
+            }
+        }
+    }
+}
+
 
 void    server::modeFun(Client & client, std::vector<std::string> clientInput) {
     std::string mode = clientInput[clientInput.size() - 1];
@@ -186,13 +221,13 @@ void    server::joinFun(Client & client, std::vector<std::string> clientInput) {
     //Check if channel exist
     for (std::vector<Channel>::iterator it = this->_ChannelList.begin(); it != this->_ChannelList.end(); it++)
     {
-        if ((it)->getName() == channelName)
+        if ((it)->getChannelName() == channelName)
         {
             if (!(it)->addUser(client))
                 return;
 
             //Sending a Topic message to client to confirm joining.
-            this->displayClient(":127.0.0.1 332 " + client.getNick() + (*it).getName() + " :Joined topic.\r\n", client);
+            this->displayClient(":127.0.0.1 332 " + client.getNick() + (*it).getChannelName() + " :Joined topic.\r\n", client);
             // send client lst on channel
             return;
         }
@@ -204,7 +239,7 @@ void    server::joinFun(Client & client, std::vector<std::string> clientInput) {
     channel.setOp(client);
 
     //Sending a Topic message to client to confirm joining.
-    this->displayClient(":127.0.0.1 332 " + client.getNick() + channel.getName() + " :Created topic.\r\n", client);
+    this->displayClient(":127.0.0.1 332 " + client.getNick() + channel.getChannelName() + " :Created topic.\r\n", client);
     _ChannelList.push_back(channel);
 }
 
@@ -217,6 +252,7 @@ void    server::initFunLst(void)
     this->_FunLst["PASS"] = &server::passFun;
     this->_FunLst["CAP"] =  &server::capFun;
     this->_FunLst["JOIN"] =  &server::joinFun;
+    this->_FunLst["QUIT"] =  &server::quitFun;
     // this->_FunLst["/ban"] = &server::;
     // this->_FunLst["/unban"] = &server::;
     // this->_FunLst["/exit"] = &server::;
@@ -234,7 +270,7 @@ void    server::sendChannelMessage(Client & client, std::vector<std::string> cli
 {
     for (std::vector<Channel>::iterator it = this->_ChannelList.begin(); it != this->_ChannelList.end(); it++)
     {
-        if ((it)->getName() == client.getChannel())
+        if ((it)->getChannelName() == client.getChannel())
         {
             std::string res;
             for (std::vector<std::string>::const_iterator it = clientInput.begin(); it != clientInput.end(); ++it)
@@ -307,7 +343,7 @@ void    server::addChannel(std::string  name) {
 void    server::printChannel(void) {
         std::cout << "Channel List : " << std::endl;
     for (std::vector<Channel>::iterator it = _ChannelList.begin(); it != _ChannelList.end(); it++)
-        std::cout << "#" << it->getName() << std::endl;
+        std::cout << "#" << it->getChannelName() << std::endl;
 }
 
 // Utils
