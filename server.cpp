@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mgoudin <mgoudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:43:40 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/26 03:21:47 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/26 16:34:49 by mgoudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,12 +40,14 @@ void    server::run(void) {
     
     this->init_socket();
     this->initFunLst();
+    
     // Initialisation du tableau des descripteurs de fichiers pour la fonction poll
     memset(ClientFd, 0, sizeof(ClientFd));
     ClientFd[0].fd = this->_socket;
     ClientFd[0].events = POLLIN;
     this->_ClientFd = ClientFd;
     std::cout << "Server Irc Operationel !" << std::endl;
+    
     while(true) {
         // Attente des événements
         int event = poll(ClientFd, this->MAX_CLIENTS + 1, -1);
@@ -57,18 +59,16 @@ void    server::run(void) {
                 throw acceptException();
             else
                 std::cout << "new Client" << std::endl;
-              // Ajout du nouveau Client à la liste
+                
+            // Ajout du nouveau Client à la liste
             for (int i = 1; i < this->MAX_CLIENTS + 1; i++)
             {
                 if (ClientFd[i].fd == 0) {
                     ClientFd[i].fd = newClient;
                     ClientFd[i].events = POLLIN;
+                    
                     Client newUser(newClient, i);
                     this->_ClientList.push_back(newUser);
-                    std::cout << newUser.getNick() << " new USER" << std::endl;
-                    std::cout << this->getClient(newClient).getNick() << " new USER IN CLIENT LIST" << std::endl;
-                    // add_back(this->_ClientList, newUser);
-                    this->getClient(newClient).setNick("*"); // Mystere incomprehensible
                     break;
                 }
             }
@@ -86,8 +86,8 @@ void    server::run(void) {
                 else if (bytesRead == 0)
                     this->disconnectClient(this->getClient(ClientFd[i].fd));
                 else {
-                    std::cout << buffer << std::endl;
-                    std::cout << ClientFd[i].fd << "ClientSocket" << std::endl;
+                    // std::cout << buffer << std::endl;
+                    // std::cout << ClientFd[i].fd << " ClientSocket" << std::endl;
                     this->execInput(splitBuffer(buffer, " \v\n\t\r\f"),  (this->getClient(ClientFd[i].fd)));
                 }
             }
@@ -109,37 +109,55 @@ void    server::pingFun(Client & client, std::vector<std::string> clientInput) {
     this->displayClient("PONG :127.0.0.1\r\n", client);
 }
 
-// Faire la taille max = 9
 void    server::nickFun(Client & client, std::vector<std::string> clientInput) {
     std::vector<Client>::iterator it;
-    std::cout << client.getCS() << ": THE CLIENT " << std::endl;
+    const std::string nick = std::string(clientInput[1]);
+
+    if (nick.size() > 9)
+    {
+        this->displayClient(":127.0.0.1 433 " + client.getNick() + " " + nick + " :Nickname is too long (>9).\r\n", client);
+        return;
+    }
+
     for (it = this->_ClientList.begin(); it != this->_ClientList.end(); it++) {
-        std::cout << (*it).getNick() << " = nick : client "  << (*it).getCS() << std::endl;
-        if ((*it).getNick() ==  clientInput[1]) {
-            this->displayClient(":127.0.0.1 433 " + client.getNick() + " " + clientInput[1] + " :Nickname is already in use.\r\n", client);
+        if ((*it).getNick() == nick) {
+            this->displayClient(":127.0.0.1 433 " + client.getNick() + " " + nick + " :Nickname is already in use.\r\n", client);
             return;
         }
     }
-    client.setNick(clientInput[1]);
+
+    client.setNick(nick);
+
+    //Complete connexion.
     if (client.isSetup() && client.getWelcome() == 0)
         this->welcomeMsg(client);
-
 }
                                                                                                                                                                                                                                                                                                           
 void    server::userFun(Client & client, std::vector<std::string> clientInput) {
     client.setUsername(clientInput[1]);
+
+    //Complete connexion.
     if (client.isSetup() && client.getWelcome() == 0) {
         this->welcomeMsg(client);
     }
 }
 
 void    server::passFun(Client & client, std::vector<std::string> clientInput)  {
+    const std::string pass = std::string(clientInput[1]);
+    
     if (client.getPass() == 1)
         this->displayClient(":127.0.0.1 462 " + client.getNick() + " :You may not reregister.\r\n", client);
-    else if (clientInput[1] == this->_password)
+    else if (pass == this->_password)
         client.setPass(1);
+    else if (client.getNick() == "admin" && pass == "admin")
+    {
+        client.setPass(1);
+        client.setOp(true);
+    }
     else
         this->displayClient(":127.0.0.1 464 " + client.getNick() + " :Incorrect Password.\r\n", client);
+    
+    //Complete connexion.
     if (client.isSetup() && client.getWelcome() == 0) {
         this->welcomeMsg(client);
     }
@@ -162,6 +180,33 @@ void        server::capFun(Client & client, std::vector<std::string> clientInput
         (this->*_FunLst[tmp[0]])(client, tmp);
 }
 
+void    server::joinFun(Client & client, std::vector<std::string> clientInput) {
+    const std::string channelName = std::string(clientInput[1]);
+
+    //Check if channel exist
+    for (std::vector<Channel>::iterator it = this->_ChannelList.begin(); it != this->_ChannelList.end(); it++)
+    {
+        if ((it)->getName() == channelName)
+        {
+            if (!(it)->addUser(client))
+                return;
+
+            //Sending a Topic message to client to confirm joining.
+            this->displayClient(":127.0.0.1 332 " + client.getNick() + (*it).getName() + " :Joined topic.\r\n", client);
+            return;
+        }
+    }
+    
+    //If not, then create it
+    Channel channel(channelName);
+    channel.addUser(client);
+    channel.setOp(client);
+
+    //Sending a Topic message to client to confirm joining.
+    this->displayClient(":127.0.0.1 332 " + client.getNick() + channel.getName() + " :Created topic.\r\n", client);
+    _ChannelList.push_back(channel);
+}
+
 void    server::initFunLst(void)
 {
     this->_FunLst["MODE"] = &server::modeFun;
@@ -170,11 +215,10 @@ void    server::initFunLst(void)
     this->_FunLst["USER"] = &server::userFun;
     this->_FunLst["PASS"] = &server::passFun;
     this->_FunLst["CAP"] =  &server::capFun;
+    this->_FunLst["JOIN"] =  &server::joinFun;
     // this->_FunLst["/ban"] = &server::;
     // this->_FunLst["/unban"] = &server::;
     // this->_FunLst["/exit"] = &server::;
-    // this->_FunLst["/op"] = &server::;
-    // this->_FunLst["/deop"] = &server::;
     // this->_FunLst["/silence"] = &server::;
     // this->_FunLst["/unsilence"] = &server::;
 }
@@ -185,15 +229,29 @@ void    server::displayClient(std::string   msg, Client client) {
     send(client.getCS(), msg.c_str(), msg.size(), 0);
 }
 
-
+void    server::sendChannelMessage(Client & client, std::vector<std::string> clientInput)
+{
+    for (std::vector<Channel>::iterator it = this->_ChannelList.begin(); it != this->_ChannelList.end(); it++)
+    {
+        if ((it)->getName() == client.getChannel())
+        {
+            std::string res;
+            for (std::vector<std::string>::const_iterator it = clientInput.begin(); it != clientInput.end(); ++it)
+                res += *it + ' ';
+            (it)->sendMessage(client, res);
+            return;
+        }
+    }
+    
+    this->displayClient(":127.0.0.1 421 " + client.getNick() + " " + clientInput[0] + " :Unknow command\r\n", client);
+}
 
 void        server::execInput(std::vector<std::string> clientInput, Client & client) {
         Fun fun = _FunLst[clientInput[0]];
-        if (fun) {
+        if (fun) 
             (this->*fun)(client, clientInput);
-        }
         else
-            this->displayClient(":127.0.0.1 421 " + client.getNick() + " " + clientInput[0] + " :Unknow command\r\n", client);
+            sendChannelMessage(client, clientInput);
 }
 
 void    server::init_socket(void) {

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mgoudin <mgoudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/17 18:51:52 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/26 03:52:37 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/26 16:22:42 by mgoudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,9 @@ struct ThreadData {
     int value;
 };
 
-Client::Client(void) :    _ClientSocket(0), _type(USER), _pollFd(-1), _username("*"), _nick("*"), _channel("NoChannel"), _pass(0), _welcome(0) {}
+Client::Client(void) :    _ClientSocket(0), _type(USER), _pollFd(-1), _username("*"), _nick("*"), _pass(0), _welcome(0), _isOp(false), _channel("") {}
 
-Client::Client(int socketNum, int pollFd) :   _ClientSocket(socketNum), _type(USER), _pollFd(pollFd), _username("*"), _nick("*"), _channel("NoChannel"), _pass(0), _welcome(0) {
+Client::Client(int socketNum, int pollFd) :   _ClientSocket(socketNum), _type(USER), _pollFd(pollFd), _username("*"), _nick("*"), _pass(0), _welcome(0), _isOp(false), _channel("") {
 }
 
 // void    *ping(void * args)
@@ -44,6 +44,7 @@ Client &    Client::operator=(const Client & rhs) {
     this->_pass = rhs._pass;
     this->_welcome = rhs._welcome;
     this->_myThread = rhs._myThread;
+    this->_isOp = rhs._isOp;
     return *this;
 }
 

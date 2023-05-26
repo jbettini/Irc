@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mgoudin <mgoudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/18 19:27:01 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/18 19:34:38 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/26 16:33:23 by mgoudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@ Channel &    Channel::operator=(const Channel & rhs) {
     this->_nameChannel = rhs._nameChannel;
     this->_silentUsers = rhs._silentUsers;
     this->_banedUsers = rhs._banedUsers;
+    this->_opUsers = rhs._opUsers;
+    this->_Users = rhs._Users;
     return *this;
 }
 

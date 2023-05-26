@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mgoudin <mgoudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/17 19:31:19 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/26 03:08:38 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/26 16:21:37 by mgoudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ class   Client {
         void        startPinging(void);
         bool        isSetup(void) const;
 
-        //seter
+        //setter
 
         void        setNick(std::string nick) {
             this->_nick = nick;
@@ -45,6 +45,14 @@ class   Client {
         }
         void        setWelcome() {
             this->_welcome++;
+        }
+        void             setOp(bool isOp)
+        {
+            this->_isOp = isOp;
+        }
+        void         setChannel(std::string channel)
+        {
+            this->_channel = channel;
         }
 
         //geter
@@ -74,17 +82,27 @@ class   Client {
         int             getWelcome(void) { 
             return (this->_welcome);
         }
+        bool             isOp(void) { 
+            return (this->_isOp);
+        }
+
+        //OPERATORS
+
+        bool operator==(const Client& other) const {
+            return (_username == other._username && _pollFd == other._pollFd);
+        }
 
     private :
-            int         _ClientSocket;
-            int         _type;
-            int         _pollFd;
-            std::string _username;
-            std::string _nick;
-            std::string _channel;
-            pthread_t   _myThread;
-            int         _pass;
-            int         _welcome;
+            int             _ClientSocket;
+            int             _type;
+            int             _pollFd;
+            std::string     _username;
+            std::string     _nick;
+            pthread_t       _myThread;
+            int             _pass;
+            int             _welcome;
+            bool            _isOp;
+            std::string    _channel;
 };
 
 #endif
