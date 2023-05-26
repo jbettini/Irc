@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:43:40 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/26 23:09:28 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/27 00:57:10 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,29 @@ void    server::run(void) {
     }
 }
 
+void    server::sendToAllClientChannel(Client & client, std::vector<std::string> clientInput, int check)
+{
+    std::cout << " dans quit INPUT DE 0 ->" <<  clientInput[0] << "<-" << std::endl;
+    if (check == 0) {
+        for(std::vector<std::string>::iterator it = client.getAllChannel().begin(); it != client.getAllChannel().end(); it++){
+            this->sendToAllUserInChannel(*it, ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1.ip QUIT :Quit: " + client.getNick() + "\r\n", client);
+        }
+    }
+    else {
+        for(std::vector<std::string>::iterator it = client.getAllChannel().begin(); it != client.getAllChannel().end(); it++){
+            this->sendToAllUserInChannel(*it, ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1.ip QUIT :Quit: " + clientInput[1], client);
+        }
+    }
+    disconnectClient(client);
+}
+
+void    server::quitFun(Client & client, std::vector<std::string> clientInput) {
+    if (clientInput.size() - 1 == 0)
+        sendToAllClientChannel(client, clientInput, 0);
+    else {
+        sendToAllClientChannel(client, clientInput, 1);
+    }
+}
 
 void    server::modeFun(Client & client, std::vector<std::string> clientInput) {
     std::string mode = clientInput[clientInput.size() - 1];
@@ -225,9 +248,9 @@ std::string    server::getAllUsersChannel(Channel channel) {
 void    server::welcomeToChannel(Client & client, std::string channelName) {
 
     this->displayClient(":" + client.getNick() + "!~" + client.getNick() + "@127.0.0.1.ip JOIN : " + channelName + "\r\n", client); // envoyer la validation du join
-    this->displayClient(":127.0.0.1 353 " + client.getNick() + " = " + channelName + " :" + this->getAllUsersChannel(this->getChannel(channelName)) + "\r\n", client);                    // envoyer la liste des utilisateur 
+    this->displayClient(":127.0.0.1 353 " + client.getNick() + " = " + channelName + " :" + this->getAllUsersChannel(this->getChannel(channelName)) + "\r\n", client);// envoyer la liste des utilisateur 
     this->displayClient(":127.0.0.1 353 " + client.getNick() + " = " + channelName + " :" + ":End of /NAMES list.\r\n", client);
-    this->sendToAllUserInChannel(channelName, ":" + client.getNick() + "!~" + client.getNick() + "@127.0.0.1.ip JOIN :" + channelName + "\r\n", client);    // envoyer que l'utilisateur a join a tout les client
+    this->sendToAllUserInChannel(channelName, ":" + client.getNick() + "!~" + client.getNick() + "@127.0.0.1.ip JOIN :" + channelName + "\r\n", client);// envoyer que l'utilisateur a join a tout les client
 }
 
 
@@ -269,6 +292,7 @@ void    server::initFunLst(void)
     this->_FunLst["PASS"] = &server::passFun;
     this->_FunLst["CAP"] =  &server::capFun;
     this->_FunLst["JOIN"] =  &server::joinFun;
+    this->_FunLst["QUIT"] =  &server::quitFun;
     // this->_FunLst["PRIVMSG"] = &server::;
     // this->_FunLst["/unban"] = &server::;
     // this->_FunLst["/exit"] = &server::;
@@ -404,12 +428,6 @@ std::vector<std::string> removeWhitespace(std::vector<std::string>& strings) {
         }
     }
     return strings;
-}
-
-void add_back(std::vector<Client> & vector, const Client & objet) {
-    Client  copie(objet);
-    vector.resize(vector.size() + 1); 
-    vector[vector.size()] = copie;
 }
 
 std::vector<std::string> splitBuffer(char* buffer, const std::string& delimiters) {

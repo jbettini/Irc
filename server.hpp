@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/11 16:44:55 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/26 23:08:45 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/27 00:59:18 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,8 +111,8 @@ class   server {
                 void        disconnectClient(Client & client);
                 void        welcomeMsg(Client & client);
                 void        welcomeToChannel(Client & client, std::string channelName);
-                std::string getAllUsersChannel(Channel channel);
                 void        sendToAllUserInChannel(std::string channelName, std::string msg, Client & client);
+                void        sendToAllClientChannel(Client & client, std::vector<std::string> clientInput, int check);
                 void        modeFun(Client & client, std::vector<std::string> clientInput);
                 void        pingFun(Client & client, std::vector<std::string> clientInput);
                 void        nickFun(Client & client, std::vector<std::string> clientInput);
@@ -120,9 +120,9 @@ class   server {
                 void        passFun(Client & client, std::vector<std::string> clientInput);
                 void        capFun(Client & client, std::vector<std::string> clientInput);
                 void        joinFun(Client & client, std::vector<std::string> clientInput);
-
-                
+                void        quitFun(Client & client, std::vector<std::string> clientInput);
                 void        sendChannelMessage(Client & client, std::vector<std::string> clientInput);
+                std::string getAllUsersChannel(Channel channel);
                 
                 server  &   operator=(server & rhs);
 

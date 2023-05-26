@@ -52,3 +52,5 @@ QUIT
 
 
 JOIN : Envoyer la liste de tout les utilisateur connecte dans le channel
+
+WHOIS 

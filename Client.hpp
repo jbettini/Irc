@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/17 19:31:19 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/26 22:11:21 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/27 00:52:44 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,9 @@ class   Client {
         bool                            isAdmin(void) { 
             return (this->_admin);
         }
-
+        std::vector<std::string> getAllChannel(void){
+            return this->_allChannel;
+        }
         //OPERATORS
 
         bool operator==(const Client& other) const {

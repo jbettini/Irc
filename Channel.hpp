@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/18 18:26:29 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/26 23:08:23 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/27 00:47:52 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,8 @@ class   Channel {
         bool                isBanned(Client client)
         {
             for (std::vector<Client>::iterator it = this->_banedUsers.begin(); it != this->_banedUsers.end(); it++)
-                if ((*it) == client) return (true);
+                if ((*it) == client)
+                    return (true);
             return (false);
         }
         bool                isSilent(Client client)
