@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/17 18:51:52 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/26 02:35:19 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/26 03:52:37 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ Client::Client(void) :    _ClientSocket(0), _type(USER), _pollFd(-1), _username(
 
 Client::Client(int socketNum, int pollFd) :   _ClientSocket(socketNum), _type(USER), _pollFd(pollFd), _username("*"), _nick("*"), _channel("NoChannel"), _pass(0), _welcome(0) {
 }
+
 // void    *ping(void * args)
 // {
 //     ThreadData* data = static_cast<ThreadData*>(args);
@@ -39,6 +40,10 @@ Client &    Client::operator=(const Client & rhs) {
     this->_pollFd = rhs._pollFd;
     this->_username = rhs._username;
     this->_channel = rhs._channel;
+    this->_nick = rhs._nick;
+    this->_pass = rhs._pass;
+    this->_welcome = rhs._welcome;
+    this->_myThread = rhs._myThread;
     return *this;
 }
 
@@ -64,5 +69,5 @@ Client::~Client(void) {};
 
 std::string     Client::getNick(void){
             //std::cout << " THIS NICK = " << this->_nick << std::endl;
-            return (this->_nick);
+    return (this->_nick);
 }
