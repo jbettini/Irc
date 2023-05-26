@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/17 19:31:19 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/27 00:52:44 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/27 01:05:36 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,16 +96,17 @@ class   Client {
         }
 
     private :
-            int                         _ClientSocket;
-            int                         _type;
-            int                         _pollFd;
-            std::string                 _username;
-            std::string                 _nick;
-            pthread_t                   _myThread;
-            int                         _pass;
-            int                         _welcome;
-            bool                        _admin;
-            std::vector<std::string>    _allChannel;
+            int             _ClientSocket;
+            int             _type;
+            int             _pollFd;
+            std::string     _username;
+            std::string     _nick;
+            pthread_t       _myThread;
+            int             _pass;
+            int             _welcome;
+            bool            _admin;
+            std::string    _channel;
+            std::vector<std::string> _allChannel; 
 };
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/18 18:26:29 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/27 00:47:52 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/27 01:24:24 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ class   Channel {
         ~Channel(void);
 
         Channel &       operator=(const Channel & rhs);
-
         bool            addUser(Client& client);
 
         std::string         getChannelName(void) {
