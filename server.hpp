@@ -120,12 +120,7 @@ class   server {
                 void        passFun(Client & client, std::vector<std::string> clientInput);
                 void        capFun(Client & client, std::vector<std::string> clientInput);
                 void        joinFun(Client & client, std::vector<std::string> clientInput);
-<<<<<<< HEAD
                 void        quitFun(Client & client, std::vector<std::string> clientInput);
-=======
-
-                
->>>>>>> 7053133fd71dc10ef458b817e6fb2c3b0264854f
                 void        sendChannelMessage(Client & client, std::vector<std::string> clientInput);
                 void        sendToAllUserInChannel(std::string channelName, std::string msg, Client & client);
                 void        sendToAllClientChannel(Client & client, std::vector<std::string> clientInput, int check);
