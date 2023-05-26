@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:43:40 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/27 01:24:55 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/27 01:25:43 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -330,6 +330,7 @@ void    server::displayClient(std::string   msg, Client client) {
 //     this->displayClient(":127.0.0.1 421 " + client.getNick() + " " + clientInput[0] + " :Unknow command\r\n", client);
 // }
 
+// WARNING EXEC MEME SANS PASS NI NICK ET USER
 void        server::execInput(std::vector<std::string> clientInput, Client & client) {
         Fun fun = _FunLst[clientInput[0]];
         if (fun) 
