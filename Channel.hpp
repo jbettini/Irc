@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/18 18:26:29 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/26 18:28:27 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/26 22:57:42 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,29 +22,33 @@ class   Channel {
         Channel(const Channel & rhs);
         ~Channel(void);
 
-        Channel &    operator=(const Channel & rhs);
+        Channel &       operator=(const Channel & rhs);
 
-        std::string         getName(void) {
+        bool            checkNameChannel(const std::string& str);
+        bool            addUser(Client& client);
+
+        std::string         getChannelName(void) {
                     return (this->_nameChannel);
         }
 
+        std::vector<Client>         getChannelUser(void) {
+                    return (this->_Users);
+        }
+
         // return false if user cant join (banned user or already in)
-        bool                addUser(Client& client)
+        bool                addUser(Client& client);
         {
             for (std::vector<Client>::iterator it = this->_Users.begin(); it != this->_Users.end(); it++)
             {
                 if ((*it) == client)    
-                {
-                    //TODO send error (IRC format)
                     return (false);
-                }
             }
             if (isBanned(client))
             {
                 //TODO send error (IRC format)
                 return (false);
             }
-            client.setChannel(_nameChannel);
+            client.addChannelToCLient(_nameChannel);
             _Users.push_back(client);
             return (true);
         }
@@ -79,9 +83,11 @@ class   Channel {
         }
         bool                isOp(Client client)
         {
-            if (client.isOp()) return (true);
+            if (client.isAdmin()) 
+                return (true);
             for (std::vector<Client>::iterator it = this->_opUsers.begin(); it != this->_opUsers.end(); it++)
-                if ((*it) == client) return (true);
+                if ((*it) == client) 
+                    return (true);
             return (false);
         }
 

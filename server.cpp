@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:43:40 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/26 19:09:04 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/26 23:07:24 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,10 +115,13 @@ void    server::nickFun(Client & client, std::vector<std::string> clientInput) {
 
     if (nick.size() > 9)
     {
-        this->displayClient(":127.0.0.1 433 " + client.getNick() + " " + nick + " :Nickname is too long (>9).\r\n", client);
+        this->displayClient(":127.0.0.1 432 " + client.getNick() + " " + nick + " :Nickname is too long (>9).\r\n", client);
         return;
     }
-
+    else if (checkNonAlphanumeric(nick)) {
+        this->displayClient(":127.0.0.1 432 " + client.getNick() + " " + nick + " :Nickname contain undefine caracter.\r\n", client);
+        return ;
+    }
     for (it = this->_ClientList.begin(); it != this->_ClientList.end(); it++) {
         if ((*it).getNick() == nick) {
             this->displayClient(":127.0.0.1 433 " + client.getNick() + " " + nick + " :Nickname is already in use.\r\n", client);
@@ -127,7 +130,6 @@ void    server::nickFun(Client & client, std::vector<std::string> clientInput) {
     }
 
     client.setNick(nick);
-
     //Complete connexion.
     if (client.isSetup() && client.getWelcome() == 0)
         this->welcomeMsg(client);
@@ -180,32 +182,82 @@ void        server::capFun(Client & client, std::vector<std::string> clientInput
         (this->*_FunLst[tmp[0]])(client, tmp);
 }
 
+// void    server::sendChannelMessage(Client & client, std::vector<std::string> clientInput)
+// {
+//     for (std::vector<Channel>::iterator it = this->_ChannelList.begin(); it != this->_ChannelList.end(); it++)
+//     {
+//         if ((it)->getChannelName() == client.getChannel())
+//         {
+//             std::string res;
+//             for (std::vector<std::string>::const_iterator it = clientInput.begin(); it != clientInput.end(); ++it)
+//                 res += *it + ' ';
+//             (it)->sendMessage(client, res);
+//             return;
+//         }
+//     }
+
+
+void    server::sendToAllUserInChannel(std::string channelName, std::string msg, Client & client) {
+    for(std::vector<Channel>::iterator it = this->_ChannelList.begin(); it != this->_ChannelList.end(); it++) {
+        if ((*it).getChannelName() == channelName) {
+            for (std::vector<Client>::iterator it2 = (*it).getChannelUser().begin(); it2 != (*it).getChannelUser().end(); it2++) {
+                if ((*it2).getNick() != client.getNick())
+                    this->displayClient(msg, *it2);
+            }
+        }
+    }
+}
+
+std::string    server::getAllUsersChannel(Channel channel) {
+    std::string userList;
+    std::string tmp;
+    for(std::vector<Client>::iterator it = channel.getChannelUser().begin(); it != channel.getChannelUser().end(); it++) {
+        if (channel.isOp(*it))
+            tmp = "@" + (*it).getNick();
+        else
+            tmp = (*it).getNick();
+        userList += tmp;
+        userList += " ";
+    }
+    return userList;
+}
+
+void    server::welcomeToChannel(Client & client, std::string channelName) {
+
+    this->displayClient(":" + client.getNick() + "!~" + client.getNick() + "@127.0.0.1.ip JOIN : " + channelName + "\r\n", client); // envoyer la validation du join
+    this->displayClient(":127.0.0.1 353 " + client.getNick() + " = " + channelName + " :" + this->getAllUsersChannel(this->getChannel(channelName)) + "\r\n", client);                    // envoyer la liste des utilisateur 
+    this->displayClient(":127.0.0.1 353 " + client.getNick() + " = " + channelName + " :" + ":End of /NAMES list.\r\n", client);
+    this->sendToAllUserInChannel(channelName, ":" + client.getNick() + "!~" + client.getNick() + "@127.0.0.1.ip JOIN :" + channelName + "\r\n", client);    // envoyer que l'utilisateur a join a tout les client
+}
+
+
+// Nom des channel incorrect = :lair.nl.eu.dal.net 403 jbe ASV :No such channel
+
 void    server::joinFun(Client & client, std::vector<std::string> clientInput) {
     const std::string channelName = std::string(clientInput[1]);
-
+    if (!checkNameChannel(channelName)) {
+        this->displayClient(":127.0.0.1 403 " + client.getNick() + " " + channelName + " :No such channel\r\n",client);
+        return;
+    }
     //Check if channel exist
     for (std::vector<Channel>::iterator it = this->_ChannelList.begin(); it != this->_ChannelList.end(); it++)
     {
-        if ((it)->getName() == channelName)
+        if ((it)->getChannelName() == channelName)
         {
             if (!(it)->addUser(client))
                 return;
-
-            //Sending a Topic message to client to confirm joining.
-            this->displayClient(":127.0.0.1 332 " + client.getNick() + (*it).getName() + " :Joined topic.\r\n", client);
-            // send client lst on channel
+            else
+                this->welcomeToChannel(client, channelName);
             return;
         }
     }
-    
     //If not, then create it
     Channel channel(channelName);
     channel.addUser(client);
     channel.setOp(client);
-
-    //Sending a Topic message to client to confirm joining.
-    this->displayClient(":127.0.0.1 332 " + client.getNick() + channel.getName() + " :Created topic.\r\n", client);
     _ChannelList.push_back(channel);
+    this->welcomeToChannel(client, channelName);
+
 }
 
 void    server::initFunLst(void)
@@ -217,7 +269,7 @@ void    server::initFunLst(void)
     this->_FunLst["PASS"] = &server::passFun;
     this->_FunLst["CAP"] =  &server::capFun;
     this->_FunLst["JOIN"] =  &server::joinFun;
-    // this->_FunLst["/ban"] = &server::;
+    // this->_FunLst["PRIVMSG"] = &server::;
     // this->_FunLst["/unban"] = &server::;
     // this->_FunLst["/exit"] = &server::;
     // this->_FunLst["/silence"] = &server::;
@@ -230,29 +282,13 @@ void    server::displayClient(std::string   msg, Client client) {
     send(client.getCS(), msg.c_str(), msg.size(), 0);
 }
 
-void    server::sendChannelMessage(Client & client, std::vector<std::string> clientInput)
-{
-    for (std::vector<Channel>::iterator it = this->_ChannelList.begin(); it != this->_ChannelList.end(); it++)
-    {
-        if ((it)->getName() == client.getChannel())
-        {
-            std::string res;
-            for (std::vector<std::string>::const_iterator it = clientInput.begin(); it != clientInput.end(); ++it)
-                res += *it + ' ';
-            (it)->sendMessage(client, res);
-            return;
-        }
-    }
-    
-    this->displayClient(":127.0.0.1 421 " + client.getNick() + " " + clientInput[0] + " :Unknow command\r\n", client);
-}
-
+//  WARNING AVEC NC EXECUTE LES FONCTION MEME SI LES NICK USER ET PASS N'ONT PAS ETE SET
 void        server::execInput(std::vector<std::string> clientInput, Client & client) {
         Fun fun = _FunLst[clientInput[0]];
         if (fun) 
             (this->*fun)(client, clientInput);
         else
-            sendChannelMessage(client, clientInput);
+            this->displayClient(":127.0.0.1 421 " + client.getNick() + " " + clientInput[0] + " :Unknow command\r\n", client);
 }
 
 void    server::init_socket(void) {
@@ -307,7 +343,7 @@ void    server::addChannel(std::string  name) {
 void    server::printChannel(void) {
         std::cout << "Channel List : " << std::endl;
     for (std::vector<Channel>::iterator it = _ChannelList.begin(); it != _ChannelList.end(); it++)
-        std::cout << "#" << it->getName() << std::endl;
+        std::cout << "#" << it->getChannelName() << std::endl;
 }
 
 // Utils
@@ -390,4 +426,20 @@ std::vector<std::string> splitBuffer(char* buffer, const std::string& delimiters
     splited.push_back(tmp);
     splited = removeWhitespace(splited);
     return splited;
+}
+
+bool checkNonAlphanumeric(const std::string& str) {
+    for (std::string::const_iterator it = str.begin(); it != str.end(); ++it)
+        if (!std::isalnum(*it) && (*it) != '_')
+            return true;
+    return false;
+}
+
+bool    checkNameChannel(const std::string& str) {
+    if (str.empty() || str[0] != '#')
+        return false;
+    for (std::string::const_iterator it = str.begin(); it != str.end(); ++it)
+        if (!std::isprint(*it))
+            return false;
+    return true;
 }

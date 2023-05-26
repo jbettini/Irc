@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mgoudin <mgoudin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/11 16:44:55 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/26 16:26:49 by mgoudin          ###   ########.fr       */
+/*   Updated: 2023/05/26 22:30:27 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,12 @@
     class   ClientNotFoundException : public std::exception {
         virtual const char* what() const throw() {
             return ("Error : from  Get Client, client not find!");
+        }
+    };
+
+    class   ChannelNotFoundException : public std::exception {
+        virtual const char* what() const throw() {
+            return ("Error : from  Get Channel, channel not find!");
         }
     };
 
@@ -104,6 +110,9 @@ class   server {
                 void        defineClientUsername(Client & client, std::vector<std::string> clientInput);
                 void        disconnectClient(Client & client);
                 void        welcomeMsg(Client & client);
+                void        welcomeToChannel(Client & client, std::string channelName);
+                std::string getAllUsersChannel(Channel channel);
+                void        sendToAllUserInChannel(std::string channelName, std::string msg, Client & client);
                 void        modeFun(Client & client, std::vector<std::string> clientInput);
                 void        pingFun(Client & client, std::vector<std::string> clientInput);
                 void        nickFun(Client & client, std::vector<std::string> clientInput);
@@ -111,6 +120,7 @@ class   server {
                 void        passFun(Client & client, std::vector<std::string> clientInput);
                 void        capFun(Client & client, std::vector<std::string> clientInput);
                 void        joinFun(Client & client, std::vector<std::string> clientInput);
+
                 
                 void        sendChannelMessage(Client & client, std::vector<std::string> clientInput);
                 
@@ -129,6 +139,15 @@ class   server {
                     }
                     throw ClientNotFoundException();
                     return (this->_ClientList[0]);
+                }
+
+                Channel    &  getChannel(std::string channelName){
+                    for (size_t i = 0; i != this->_ChannelList.size(); i++) {
+                        if (this->_ChannelList[i].getChannelName() == channelName)
+                            return (this->_ChannelList[i]);
+                    }
+                    throw ChannelNotFoundException();
+                    return (this->_ChannelList[0]);
                 }
 
 
@@ -157,5 +176,6 @@ std::string                 getMsg(std::string first, std::string last, Client &
 void                        printVecStr(std::vector<std::string> strings);
 int                         findString(std::vector<std::string> strings, std::string toFind);
 void                        printClient(std::vector<Client> strings);
+bool                        checkNonAlphanumeric(const std::string& str);
 
 #endif

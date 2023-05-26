@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mgoudin <mgoudin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/18 19:27:01 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/26 16:33:23 by mgoudin          ###   ########.fr       */
+/*   Updated: 2023/05/26 23:02:01 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,3 +31,32 @@ Channel::Channel(const Channel & rhs) {
 }
 
 Channel::~Channel(void) {};
+
+bool    Channel::checkNameChannel(const std::string& str) {
+    if (str.empty() || str[0] != '#') {
+        return false;
+    }
+    for (std::string::const_iterator it = str.begin(); it != str.end(); ++it) {
+        if (!std::isprint(*it)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool    Channel::addUser(Client& client)
+{
+    for (std::vector<Client>::iterator it = this->_Users.begin(); it != this->_Users.end(); it++)
+    {
+        if ((*it) == client)    
+            return (false);
+    }
+    if (isBanned(client))
+    {
+        //TODO send error (IRC format)
+        return (false);
+    }
+    client.addChannelToCLient(_nameChannel);
+    _Users.push_back(client);
+    return (true);
+}

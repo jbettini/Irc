@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mgoudin <mgoudin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/17 19:31:19 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/26 16:21:37 by mgoudin          ###   ########.fr       */
+/*   Updated: 2023/05/26 22:11:21 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,56 +34,57 @@ class   Client {
 
         //setter
 
-        void        setNick(std::string nick) {
+        void                            setNick(std::string nick) {
             this->_nick = nick;
         }
-        void        setUsername(std::string username) {
+        void                            setUsername(std::string username) {
             this->_username = username;
         }
-        void        setPass(int i) {
+        void                            setPass(int i) {
             this->_pass = i;
         }
-        void        setWelcome() {
+        void                            setWelcome() {
             this->_welcome++;
         }
-        void             setOp(bool isOp)
+        void                            setOp(bool isOp)
         {
-            this->_isOp = isOp;
+            this->_admin = isOp;
         }
-        void         setChannel(std::string channel)
+        void                            addChannelToCLient(std::string channel)
         {
-            this->_channel = channel;
+            this->_allChannel.push_back(channel);
         }
 
         //geter
 
-        int         getCS(void) const{ 
+        int                             getCS(void) const{ 
             return (this->_ClientSocket);
         }
-        int         getType(void) { 
+        int                             getType(void) { 
             return (this->_type);
         }
-        int         getPollFd(void) { 
+        int                             getPollFd(void) { 
             return (this->_pollFd);
         }
-        std::string         getUsername(void) { 
+        std::string                     getUsername(void) { 
             return (this->_username);
         }
-        std::string     getNick(void);
-        std::string     getChannel(void) { 
-            return (this->_channel);
+        std::string                     getNick(void);
+
+        std::vector<std::string>        getChannel(void) { 
+            return (this->_allChannel);
         }
-        pthread_t   &   getThread() {
+        pthread_t   &                   getThread() {
             return this->_myThread;
         }
-        int             getPass(void) { 
+        int                             getPass(void) { 
             return (this->_pass);
         }
-        int             getWelcome(void) { 
+        int                             getWelcome(void) { 
             return (this->_welcome);
         }
-        bool             isOp(void) { 
-            return (this->_isOp);
+        bool                            isAdmin(void) { 
+            return (this->_admin);
         }
 
         //OPERATORS
@@ -93,16 +94,16 @@ class   Client {
         }
 
     private :
-            int             _ClientSocket;
-            int             _type;
-            int             _pollFd;
-            std::string     _username;
-            std::string     _nick;
-            pthread_t       _myThread;
-            int             _pass;
-            int             _welcome;
-            bool            _isOp;
-            std::string    _channel;
+            int                         _ClientSocket;
+            int                         _type;
+            int                         _pollFd;
+            std::string                 _username;
+            std::string                 _nick;
+            pthread_t                   _myThread;
+            int                         _pass;
+            int                         _welcome;
+            bool                        _admin;
+            std::vector<std::string>    _allChannel;
 };
 
 #endif

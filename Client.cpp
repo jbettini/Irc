@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mgoudin <mgoudin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/17 18:51:52 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/26 16:22:42 by mgoudin          ###   ########.fr       */
+/*   Updated: 2023/05/26 22:13:44 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,9 @@ struct ThreadData {
     int value;
 };
 
-Client::Client(void) :    _ClientSocket(0), _type(USER), _pollFd(-1), _username("*"), _nick("*"), _pass(0), _welcome(0), _isOp(false), _channel("") {}
+Client::Client(void) :    _ClientSocket(0), _type(USER), _pollFd(-1), _username("*"), _nick("*"), _pass(0), _welcome(0), _admin(false) {}
 
-Client::Client(int socketNum, int pollFd) :   _ClientSocket(socketNum), _type(USER), _pollFd(pollFd), _username("*"), _nick("*"), _pass(0), _welcome(0), _isOp(false), _channel("") {
+Client::Client(int socketNum, int pollFd) :   _ClientSocket(socketNum), _type(USER), _pollFd(pollFd), _username("*"), _nick("*"), _pass(0), _welcome(0), _admin(false) {
 }
 
 // void    *ping(void * args)
@@ -39,12 +39,12 @@ Client &    Client::operator=(const Client & rhs) {
     this->_type = rhs._type;
     this->_pollFd = rhs._pollFd;
     this->_username = rhs._username;
-    this->_channel = rhs._channel;
+    this->_allChannel = rhs._allChannel;
     this->_nick = rhs._nick;
     this->_pass = rhs._pass;
     this->_welcome = rhs._welcome;
     this->_myThread = rhs._myThread;
-    this->_isOp = rhs._isOp;
+    this->_admin = rhs._admin;
     return *this;
 }
 
