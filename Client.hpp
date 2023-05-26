@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/17 19:31:19 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/25 21:02:51 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/26 03:08:38 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ class   Client {
 
         //geter
 
-        int         getCS(void) { 
+        int         getCS(void) const{ 
             return (this->_ClientSocket);
         }
         int         getType(void) { 
@@ -61,10 +61,7 @@ class   Client {
         std::string         getUsername(void) { 
             return (this->_username);
         }
-        std::string   const  getNick(void) const{
-            //std::cout << " THIS NICK = " << this->_nick << std::endl;
-            return (this->_nick);
-        }
+        std::string     getNick(void);
         std::string     getChannel(void) { 
             return (this->_channel);
         }

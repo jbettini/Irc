@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:43:40 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/25 21:50:20 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/26 03:21:47 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,19 +60,21 @@ void    server::run(void) {
               // Ajout du nouveau Client à la liste
             for (int i = 1; i < this->MAX_CLIENTS + 1; i++)
             {
-                std::cout << " MAX CLIENT = " << this->MAX_CLIENTS << std::endl;
                 if (ClientFd[i].fd == 0) {
                     ClientFd[i].fd = newClient;
                     ClientFd[i].events = POLLIN;
                     Client newUser(newClient, i);
                     this->_ClientList.push_back(newUser);
+                    std::cout << newUser.getNick() << " new USER" << std::endl;
+                    std::cout << this->getClient(newClient).getNick() << " new USER IN CLIENT LIST" << std::endl;
+                    // add_back(this->_ClientList, newUser);
                     this->getClient(newClient).setNick("*"); // Mystere incomprehensible
                     break;
                 }
             }
         }
         // Lecture et traitement des données des Clients connectés
-        for (int i = 1; i < MAX_CLIENTS + 1; ++i) {
+        for (int i = 1; i < MAX_CLIENTS + 1; i++) {
             if (ClientFd[i].fd > 0 && ClientFd[i].revents & POLLIN) {
                 size_t bytesRead = recv(ClientFd[i].fd, buffer, this->MAX_BUFFER_SIZE, 0);
                 buffer[bytesRead] = '\0';
@@ -85,11 +87,11 @@ void    server::run(void) {
                     this->disconnectClient(this->getClient(ClientFd[i].fd));
                 else {
                     std::cout << buffer << std::endl;
+                    std::cout << ClientFd[i].fd << "ClientSocket" << std::endl;
                     this->execInput(splitBuffer(buffer, " \v\n\t\r\f"),  (this->getClient(ClientFd[i].fd)));
                 }
             }
         }
-
     }
 }
 
@@ -110,16 +112,17 @@ void    server::pingFun(Client & client, std::vector<std::string> clientInput) {
 // Faire la taille max = 9
 void    server::nickFun(Client & client, std::vector<std::string> clientInput) {
     std::vector<Client>::iterator it;
+    std::cout << client.getCS() << ": THE CLIENT " << std::endl;
     for (it = this->_ClientList.begin(); it != this->_ClientList.end(); it++) {
+        std::cout << (*it).getNick() << " = nick : client "  << (*it).getCS() << std::endl;
         if ((*it).getNick() ==  clientInput[1]) {
             this->displayClient(":127.0.0.1 433 " + client.getNick() + " " + clientInput[1] + " :Nickname is already in use.\r\n", client);
             return;
         }
     }
     client.setNick(clientInput[1]);
-    if (client.isSetup() && client.getWelcome() == 0) {
+    if (client.isSetup() && client.getWelcome() == 0)
         this->welcomeMsg(client);
-    }
 
 }
                                                                                                                                                                                                                                                                                                           
@@ -180,7 +183,6 @@ void    server::initFunLst(void)
 
 void    server::displayClient(std::string   msg, Client client) {
     send(client.getCS(), msg.c_str(), msg.size(), 0);
-
 }
 
 
@@ -225,13 +227,13 @@ void        server::disconnectClient(Client & client) {
     this->_ClientFd[client.getPollFd()].fd = 0;
     this->_ClientFd[client.getPollFd()].events = 0;
     this->_ClientFd[client.getPollFd()].revents = 0;
-    pthread_detach(client.getThread());
+    // pthread_detach(client.getThread());
+    close(client.getCS());
     for (std::vector<Client>::iterator it = this->_ClientList.begin(); it != this->_ClientList.end(); it++)
         if (it->getCS() == client.getCS()) {
             this->_ClientList.erase(it);
             break;
         }
-    close(client.getCS());
     std::cout << "Client disconnect !" << std::endl;
 }
 
@@ -307,6 +309,12 @@ std::vector<std::string> removeWhitespace(std::vector<std::string>& strings) {
         }
     }
     return strings;
+}
+
+void add_back(std::vector<Client> & vector, const Client & objet) {
+    Client  copie(objet);
+    vector.resize(vector.size() + 1); 
+    vector[vector.size()] = copie;
 }
 
 std::vector<std::string> splitBuffer(char* buffer, const std::string& delimiters) {

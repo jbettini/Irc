@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/11 16:44:55 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/25 21:02:47 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/26 03:10:45 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@ class   server {
                 std::string getPassword(void) {
                     return (this->_password);
                 }
-                Client    &  getClient(int newClient) {
+                Client    &  getClient(int newClient){
                     for (size_t i = 0; i != this->_ClientList.size(); i++) {
                         if (this->_ClientList[i].getCS() == newClient)
                             return (this->_ClientList[i]);
@@ -128,6 +128,7 @@ class   server {
                     throw ClientNotFoundException();
                     return (this->_ClientList[0]);
                 }
+
 
                 int     MAX_CLIENTS;
                 int     MAX_BUFFER_SIZE;
@@ -146,6 +147,7 @@ class   server {
 
 };
 
+void                        add_back(std::vector<Client> & vector, const Client & objet);
 std::vector<std::string>    splitBuffer(char* buffer, const std::string& delimiters);
 std::vector<std::string>    removeWhitespace(std::vector<std::string>& strings);
 std::vector<std::string>    makeVecKey(std::vector<std::string> strings, std::string toFind);
