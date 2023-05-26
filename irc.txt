@@ -11,7 +11,7 @@ Cote Serv {
 
     Client 
 
-    /nick: Change votre pseudonyme. Par exemple, /nick MonPseudo modifiera votre pseudonyme en "MonPseudo".
+    FAIT √ /nick: Change votre pseudonyme. Par exemple, /nick MonPseudo modifiera votre pseudonyme en "MonPseudo". ////////////////////// Fait
 
     /list: Affiche la liste des canaux disponibles sur le serveur.
 
@@ -49,3 +49,5 @@ Cote Client
 
 
 renvoie les erreur de commande uniquement aux denier client connecte 
+
+Nom du channel ne peut pas exeder 200 caractere , limite de 10 canal rejoint pour un utilisateur, canal detruit lorsque le dernie utilisateur le quitte, canal cree si rejoint et inexistant 

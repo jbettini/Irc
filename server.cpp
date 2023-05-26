@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:43:40 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/26 03:21:47 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/26 18:01:35 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,6 @@ void    server::nickFun(Client & client, std::vector<std::string> clientInput) {
     client.setNick(clientInput[1]);
     if (client.isSetup() && client.getWelcome() == 0)
         this->welcomeMsg(client);
-
 }
                                                                                                                                                                                                                                                                                                           
 void    server::userFun(Client & client, std::vector<std::string> clientInput) {
