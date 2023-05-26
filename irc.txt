@@ -47,6 +47,8 @@ Cote Serv {
 
 Cote Client 
 
+MSG 
+QUIT
 
-renvoie les erreur de commande uniquement aux denier client connecte 
 
+JOIN : Envoyer la liste de tout les utilisateur connecte dans le channel
