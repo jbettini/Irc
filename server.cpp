@@ -119,17 +119,6 @@ void    server::quitFun(Client & client, std::vector<std::string> clientInput) {
     }
 }
 
-void    server::sendToAllUserInChannel(std::string channelName, std::string msg, Client & client) {
-    for(std::vector<Channel>::iterator it = this->_ChannelList.begin(); it != this->_ChannelList.end(); it++) {
-        if ((*it).getChannelName() == channelName) {
-            for (std::vector<Client>::iterator it2 = (*it).getChannelUser().begin(); it2 != (*it).getChannelUser().end(); it2++) {
-                if ((*it2).getNick() != client.getNick())
-                    this->displayClient(msg, *it2);
-            }
-        }
-    }
-}
-
 
 void    server::modeFun(Client & client, std::vector<std::string> clientInput) {
     std::string mode = clientInput[clientInput.size() - 1];

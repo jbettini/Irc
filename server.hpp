@@ -122,7 +122,6 @@ class   server {
                 void        joinFun(Client & client, std::vector<std::string> clientInput);
                 void        quitFun(Client & client, std::vector<std::string> clientInput);
                 void        sendChannelMessage(Client & client, std::vector<std::string> clientInput);
-                void        sendToAllUserInChannel(std::string channelName, std::string msg, Client & client);
                 void        sendToAllClientChannel(Client & client, std::vector<std::string> clientInput, int check);
 
                 server  &   operator=(server & rhs);

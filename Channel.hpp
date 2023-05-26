@@ -82,10 +82,6 @@ class   Channel {
             }
         }
 
-        std::vector<Client> getChannelUser(void) {
-            return (this->_Users);
-        }
-
         //OPERATORS
 
         bool operator==(const Channel& other) const {
