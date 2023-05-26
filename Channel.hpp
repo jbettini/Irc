@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/18 18:26:29 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/26 22:57:42 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/26 23:08:23 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@ class   Channel {
 
         Channel &       operator=(const Channel & rhs);
 
-        bool            checkNameChannel(const std::string& str);
         bool            addUser(Client& client);
 
         std::string         getChannelName(void) {
@@ -36,22 +35,6 @@ class   Channel {
         }
 
         // return false if user cant join (banned user or already in)
-        bool                addUser(Client& client);
-        {
-            for (std::vector<Client>::iterator it = this->_Users.begin(); it != this->_Users.end(); it++)
-            {
-                if ((*it) == client)    
-                    return (false);
-            }
-            if (isBanned(client))
-            {
-                //TODO send error (IRC format)
-                return (false);
-            }
-            client.addChannelToCLient(_nameChannel);
-            _Users.push_back(client);
-            return (true);
-        }
 
         void                removeUser(Client& client)
         {

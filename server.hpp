@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/11 16:44:55 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/26 22:30:27 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/26 23:08:45 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,5 +177,6 @@ void                        printVecStr(std::vector<std::string> strings);
 int                         findString(std::vector<std::string> strings, std::string toFind);
 void                        printClient(std::vector<Client> strings);
 bool                        checkNonAlphanumeric(const std::string& str);
+bool                        checkNameChannel(const std::string& str);
 
 #endif
