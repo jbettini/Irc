@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/17 18:51:52 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/27 03:30:31 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/27 08:21:11 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,3 +71,4 @@ Client::~Client(void) {};
 std::string     Client::getNick(void){
     return (this->_nick);
 }
+

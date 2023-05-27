@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/18 18:26:29 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/27 03:28:20 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/27 08:21:04 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,10 @@ class   Channel {
 
         Channel &       operator=(const Channel & rhs);
         bool            addUser(Client& client);
+        void            removeUser(Client   & client);
+        void            unsilence(Client   & client);
+        void            deop(Client   & client);
+        void            unban(Client   & client);
 
         std::string     &    getChannelName(void) {
                     return (this->_nameChannel);
@@ -31,17 +35,6 @@ class   Channel {
 
         std::vector<Client>    &     getChannelUser(void) {
                     return (this->_Users);
-        }
-
-        // return false if user cant join (banned user or already in)
-
-        void                removeUser(Client& client)
-        {
-            for (std::vector<Client>::iterator it = this->_Users.begin(); it != this->_Users.end(); it++)
-                if (it->getCS() == client.getCS()) {
-                    this->_Users.erase(it);
-                    break;
-            }
         }
 
         void                setOp(Client & client)

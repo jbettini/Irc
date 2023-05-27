@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:43:40 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/27 06:44:01 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/27 08:24:19 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -375,9 +375,9 @@ void    server::init_socket(void) {
         throw listenException();
 }
 
-//REMOVE CHANNEL USER WHEN DC /WARNING
 
 void        server::disconnectClient(Client & client) {
+    this->removeUserInChannel(client); // NEED TO PATCH MAYBE
     this->_ClientFd[client.getPollFd()].fd = 0;
     this->_ClientFd[client.getPollFd()].events = 0;
     this->_ClientFd[client.getPollFd()].revents = 0;
@@ -403,6 +403,19 @@ void    server::printChannel(void) {
         std::cout << "Channel List : " << std::endl;
     for (std::vector<Channel>::iterator it = _ChannelList.begin(); it != _ChannelList.end(); it++)
         std::cout << "#" << it->getChannelName() << std::endl;
+}
+
+void        server::removeUserInChannel(Client & client) {
+    for (std::vector<std::string>::iterator it = client.getAllChannel().begin(); it != client.getAllChannel().end(); it++) {
+        for (std::vector<Channel>::iterator it2 = this->_ChannelList.begin(); it2 != this->_ChannelList.end(); it2++) {
+            if (it2->getChannelName() == *it) {
+                it2->removeUser(client);
+                if (it2->getChannelUser().size() == 0) {
+                    this->_ChannelList.erase(it2);
+                }
+            }
+        }
+    }
 }
 
 // Utils

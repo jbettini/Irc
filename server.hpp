@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/11 16:44:55 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/27 05:19:43 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/27 08:21:06 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,6 +110,7 @@ class   server {
                 void        defineClientUsername(Client & client, std::vector<std::string> clientInput);
                 void        disconnectClient(Client & client);
                 void        welcomeMsg(Client & client);
+                void        removeUserInChannel(Client & client);
                 void        welcomeToChannel(Client & client, std::string channelName);
                 void        sendToAllUserInChannel(std::string channelName, std::string msg, Client & client);
                 void        sendToAllClientChannel(Client & client, std::vector<std::string> clientInput, int check);
@@ -123,6 +124,7 @@ class   server {
                 void        quitFun(Client & client, std::vector<std::string> clientInput);
                 void        sendChannelMessage(Client & client, std::vector<std::string> clientInput);
                 void        privmsgFun(Client & client, std::vector<std::string> clientInput);
+                
                 
                 std::string getAllUsersChannel(Channel & channel);
                 
@@ -164,6 +166,10 @@ class   server {
                         if ((*it).getNick() == toFind)
                             return true;
                     return false;
+                }
+
+                std::vector<Channel> & getChannelList(void){
+                   return this->_ChannelList;
                 }
 
 
