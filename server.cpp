@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:43:40 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/27 06:41:51 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/27 06:44:01 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,7 +133,7 @@ void    server::pingFun(Client & client, std::vector<std::string> clientInput) {
     this->displayClient("PONG :127.0.0.1\r\n", client);
 }
 
-// NICK SANS ARG
+// NICK SANS ARG = :nonstop.ix.me.dal.net 431 jbe :No nickname given
 
 void    server::nickFun(Client & client, std::vector<std::string> clientInput) {
     std::vector<Client>::iterator it;
@@ -161,7 +161,7 @@ void    server::nickFun(Client & client, std::vector<std::string> clientInput) {
         this->welcomeMsg(client);
 }
 
-// USER SANS ARG
+// USER SANS ARG = :nonstop.ix.me.dal.net 461 jbe USER :Not enough parameters
 
 void    server::userFun(Client & client, std::vector<std::string> clientInput) {
     client.setUsername(clientInput[1]);
@@ -172,7 +172,7 @@ void    server::userFun(Client & client, std::vector<std::string> clientInput) {
     }
 }
 
-// PASS SANS ARG
+// PASS SANS ARG =  :nonstop.ix.me.dal.net 461 jbe PASS :Not enough parameters
 
 void    server::passFun(Client & client, std::vector<std::string> clientInput)  {
     const std::string pass = std::string(clientInput[1]);
@@ -249,7 +249,7 @@ void    server::welcomeToChannel(Client & client, std::string channelName) {
     this->sendToAllUserInChannel(channelName, ":" + client.getNick() + "!~" + client.getNick() + "@127.0.0.1.ip JOIN :" + channelName + "\r\n", client);// envoyer que l'utilisateur a join a tout les client
 }
 
-// JOIN SANS ARG 
+// JOIN SANS ARG = :127.0.0.1 461 <nick> JOIN :Not enough parameters
 
 void    server::joinFun(Client & client, std::vector<std::string> clientInput) {
     const std::string channelName = std::string(clientInput[1]);
