@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:43:40 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/27 04:16:56 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/27 06:41:51 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,6 +133,8 @@ void    server::pingFun(Client & client, std::vector<std::string> clientInput) {
     this->displayClient("PONG :127.0.0.1\r\n", client);
 }
 
+// NICK SANS ARG
+
 void    server::nickFun(Client & client, std::vector<std::string> clientInput) {
     std::vector<Client>::iterator it;
     const std::string nick = std::string(clientInput[1]);
@@ -158,7 +160,9 @@ void    server::nickFun(Client & client, std::vector<std::string> clientInput) {
     if (client.isSetup() && client.getWelcome() == 0)
         this->welcomeMsg(client);
 }
-                                                                                                                                                                                                                                                                                                          
+
+// USER SANS ARG
+
 void    server::userFun(Client & client, std::vector<std::string> clientInput) {
     client.setUsername(clientInput[1]);
 
@@ -167,6 +171,8 @@ void    server::userFun(Client & client, std::vector<std::string> clientInput) {
         this->welcomeMsg(client);
     }
 }
+
+// PASS SANS ARG
 
 void    server::passFun(Client & client, std::vector<std::string> clientInput)  {
     const std::string pass = std::string(clientInput[1]);
@@ -206,22 +212,8 @@ void        server::capFun(Client & client, std::vector<std::string> clientInput
         (this->*_FunLst[tmp[0]])(client, tmp);
 }
 
-// void    server::sendChannelMessage(Client & client, std::vector<std::string> clientInput)
-// {
-//     for (std::vector<Channel>::iterator it = this->_ChannelList.begin(); it != this->_ChannelList.end(); it++)
-//     {
-//         if ((it)->getChannelName() == client.getChannel())
-//         {
-//             std::string res;
-//             for (std::vector<std::string>::const_iterator it = clientInput.begin(); it != clientInput.end(); ++it)
-//                 res += *it + ' ';
-//             (it)->sendMessage(client, res);
-//             return;
-//         }
-//     }
-
 void    server::sendToAllUserInChannel(std::string channelName, std::string msg, Client & client) {
-    (void)client;(void)msg;
+    std::cout << "MSG :" << msg << "--" << std::endl;
     for(std::vector<Channel>::iterator it = this->_ChannelList.begin(); it != this->_ChannelList.end(); it++) {
         if ((*it).getChannelName() == channelName) {
             std::vector<Client> it2 = (*it).getChannelUser();
@@ -257,6 +249,8 @@ void    server::welcomeToChannel(Client & client, std::string channelName) {
     this->sendToAllUserInChannel(channelName, ":" + client.getNick() + "!~" + client.getNick() + "@127.0.0.1.ip JOIN :" + channelName + "\r\n", client);// envoyer que l'utilisateur a join a tout les client
 }
 
+// JOIN SANS ARG 
+
 void    server::joinFun(Client & client, std::vector<std::string> clientInput) {
     const std::string channelName = std::string(clientInput[1]);
     if (!checkNameChannel(channelName)) {
@@ -266,14 +260,12 @@ void    server::joinFun(Client & client, std::vector<std::string> clientInput) {
     //Check if channel exist
     for (std::vector<Channel>::iterator it = this->_ChannelList.begin(); it != this->_ChannelList.end(); it++)
     {
-        if ((*it).getChannelName() == channelName)
+        if (this->channelExist(channelName))
         {
             if (!(*it).addUser(client)) 
                 return;
-            else {
-                std::cout << "HEREEEEE" << std::endl;
+            else
                 this->welcomeToChannel(client, channelName);
-            }
             return;
         }
     }
@@ -286,8 +278,21 @@ void    server::joinFun(Client & client, std::vector<std::string> clientInput) {
 
 }
 
-// :Jbe!~Jbe@6be1-f476-da9-512d-d573.rev.sfr.net PRIVMSG #4242 :fefe
-// :Jbe!~Jbe@6be1-f476-da9-512d-d573.rev.sfr.net PRIVMSG Guest84924 :ff
+// PRIVMSG ERREUR 
+
+// :nonstop.ix.me.dal.net 412 jbe :No text to send                      =       si client input size = 2
+// :nonstop.ix.me.dal.net 411 jbe :No recipient given (PRIVMSG)         =       si client input size = 1
+
+void    server::privmsgFun(Client & client, std::vector<std::string> clientInput) {
+    if (checkNameChannel(clientInput[1]) && this->channelExist(clientInput[1])) {
+        // if not silence and else is silence
+        sendToAllUserInChannel(clientInput[1], ":" + client.getNick() + "!~" + client.getNick() + "@127.0.0.1 PRIVMSG " + clientInput[1] + " " + catVecStr(clientInput, 3) + "\r\n", client);
+    }
+    else if (this->checkUserExist(clientInput[1]))
+        this->displayClient(":" + client.getNick() + "!~" + client.getNick() + "@127.0.0.1 PRIVMSG " + clientInput[1] + " " + catVecStr(clientInput, 3) + "\r\n", client);
+    else
+        this->displayClient(":127.0.0.1 401 " + client.getNick() + " " + clientInput[1] + " :No such nick/channel\r\n", client);
+}
 
 void    server::initFunLst(void)
 {
@@ -298,8 +303,8 @@ void    server::initFunLst(void)
     this->_FunLst["PASS"] = &server::passFun;
     this->_FunLst["CAP"] =  &server::capFun;
     this->_FunLst["JOIN"] =  &server::joinFun;
+    this->_FunLst["PRIVMSG"] = &server::privmsgFun;
     // this->_FunLst["QUIT"] =  &server::quitFun;
-    // this->_FunLst["PRIVMSG"] = &server::privmsgFun;
     // this->_FunLst["/unban"] = &server::;
     // this->_FunLst["/exit"] = &server::;
     // this->_FunLst["/silence"] = &server::;
@@ -309,6 +314,7 @@ void    server::initFunLst(void)
 //  Server Funct
 
 void    server::displayClient(std::string   msg, Client client) {
+    std::cout << "msg = " << msg << std::endl;
     send(client.getCS(), msg.c_str(), msg.size(), 0);
 }
 
@@ -332,6 +338,7 @@ void    server::displayClient(std::string   msg, Client client) {
 // }
 
 void        server::execInput(std::vector<std::string> clientInput, Client & client) {
+    printVecStr(clientInput);
     Fun fun = _FunLst[clientInput[0]];
     if (fun && client.getWelcome()) 
         (this->*fun)(client, clientInput);
@@ -443,7 +450,7 @@ std::vector<std::string> makeVecKey(std::vector<std::string> strings, std::strin
     return strings;
 }
 
-std::vector<std::string> removeWhitespace(std::vector<std::string>& strings) {
+std::vector<std::string> & removeWhitespace(std::vector<std::string>& strings) {
     for (size_t i = 0; i < strings.size(); ++i) {
         std::string& str = strings[i];
         std::string::iterator iter = str.begin();
@@ -458,7 +465,22 @@ std::vector<std::string> removeWhitespace(std::vector<std::string>& strings) {
     return strings;
 }
 
-std::vector<std::string> splitBuffer(char* buffer, const std::string& delimiters) {
+std::vector<std::string> removeDelimiterStrings(std::vector<std::string>& strings, std::string& delimiters) {
+    std::vector<std::string> result;
+    for (std::vector<std::string>::iterator it = strings.begin(); it != strings.end(); ++it) {
+        bool containsNonDelimiterChar = false;
+        for (std::string::iterator iter = it->begin(); iter != it->end(); ++iter)
+            if (delimiters.find(*iter) == std::string::npos) {
+                containsNonDelimiterChar = true;
+                break;
+            }
+        if (containsNonDelimiterChar)
+            result.push_back(*it);
+    }
+    return result;
+}
+
+std::vector<std::string> splitBuffer(char* buffer,std::string delimiters) {
     std::vector<std::string> splited;
     std::string tmp(buffer);
     size_t pos = 0;
@@ -470,7 +492,7 @@ std::vector<std::string> splitBuffer(char* buffer, const std::string& delimiters
     }
     
     splited.push_back(tmp);
-    splited = removeWhitespace(splited);
+    splited = removeDelimiterStrings(removeWhitespace(splited), delimiters);
     return splited;
 }
 
@@ -494,4 +516,16 @@ bool    checkFunWelcome(std::string fun) {
     if (fun == "NICK" || fun == "USER" || fun == "PASS" || fun == "CAP")
         return true;
     return false;
+}
+
+std::string catVecStr(std::vector<std::string> toCat, int idx) {
+    std::string result;
+    std::vector<std::string>::iterator it;
+    for (it = toCat.begin() + --idx; it != toCat.end(); ++it) {
+        result += *it;
+        if (it + 1 != toCat.end())
+            result += " ";
+    }
+    std::cout << "MSG : " << result << std::endl;
+    return result;
 }

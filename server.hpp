@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/11 16:44:55 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/27 03:29:41 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/27 05:19:43 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,6 +122,8 @@ class   server {
                 void        joinFun(Client & client, std::vector<std::string> clientInput);
                 void        quitFun(Client & client, std::vector<std::string> clientInput);
                 void        sendChannelMessage(Client & client, std::vector<std::string> clientInput);
+                void        privmsgFun(Client & client, std::vector<std::string> clientInput);
+                
                 std::string getAllUsersChannel(Channel & channel);
                 
                 server  &   operator=(server & rhs);
@@ -150,6 +152,20 @@ class   server {
                     return (this->_ChannelList[0]);
                 }
 
+                bool            channelExist(std::string toFind) {
+                    for (std::vector<Channel>::iterator it = this->_ChannelList.begin(); it != this->_ChannelList.end(); it++)
+                        if ((*it).getChannelName() == toFind)
+                            return true;
+                    return false;
+                }
+
+                bool            checkUserExist(std::string toFind) {
+                    for (std::vector<Client>::iterator it = this->_ClientList.begin(); it != this->_ClientList.end(); it++)
+                        if ((*it).getNick() == toFind)
+                            return true;
+                    return false;
+                }
+
 
                 int     MAX_CLIENTS;
                 int     MAX_BUFFER_SIZE;
@@ -169,8 +185,8 @@ class   server {
 };
 
 void                        add_back(std::vector<Client> & vector, const Client & objet);
-std::vector<std::string>    splitBuffer(char* buffer, const std::string& delimiters);
-std::vector<std::string>    removeWhitespace(std::vector<std::string>& strings);
+std::vector<std::string>    splitBuffer(char* buffer, std::string delimiters);
+std::vector<std::string>  & removeWhitespace(std::vector<std::string>& strings);
 std::vector<std::string>    makeVecKey(std::vector<std::string> strings, std::string toFind);
 std::string                 getMsg(std::string first, std::string last, Client & client);
 void                        printVecStr(std::vector<std::string> strings);
@@ -179,5 +195,7 @@ void                        printClient(std::vector<Client> strings);
 bool                        checkNonAlphanumeric(const std::string& str);
 bool                        checkNameChannel(const std::string& str);
 bool                        checkFunWelcome(std::string fun);
+std::vector<std::string>    removeDelimiterStrings(std::vector<std::string>& strings, std::string& delimiters);
+std::string                 catVecStr(std::vector<std::string> toCat, int idx);
 
 #endif

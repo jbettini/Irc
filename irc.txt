@@ -19,7 +19,7 @@ Cote Serv {
 
     /part: Quitte un canal. Par exemple, /part #channel vous fera quitter le canal "#channel".
 
-    /msg: Envoie un message privé à un utilisateur spécifique. Par exemple, /msg Utilisateur Salut ! enverra le message "Salut !" à "Utilisateur".
+    FAIT √ /msg: Envoie un message privé à un utilisateur spécifique. Par exemple, /msg Utilisateur Salut ! enverra le message "Salut !" à "Utilisateur".
 
 
 
@@ -47,10 +47,7 @@ Cote Serv {
 
 Cote Client 
 
-MSG 
+
 QUIT
-
-
-JOIN : Envoyer la liste de tout les utilisateur connecte dans le channel
 
 WHOIS 
