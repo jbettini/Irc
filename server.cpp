@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:43:40 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/27 02:54:52 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/27 04:08:26 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,29 +95,29 @@ void    server::run(void) {
     }
 }
 
-void    server::sendToAllClientChannel(Client & client, std::vector<std::string> clientInput, int check)
-{
-    std::cout << " dans quit INPUT DE 0 ->" <<  clientInput[0] << "<-" << std::endl;
-    if (check == 0) {
-        for(std::vector<std::string>::iterator it = client.getAllChannel().begin(); it != client.getAllChannel().end(); it++){
-            this->sendToAllUserInChannel(*it, ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1.ip QUIT :Quit: " + client.getNick() + "\r\n", client);
-        }
-    }
-    else {
-        for(std::vector<std::string>::iterator it = client.getAllChannel().begin(); it != client.getAllChannel().end(); it++){
-            this->sendToAllUserInChannel(*it, ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1.ip QUIT :Quit: " + clientInput[1], client);
-        }
-    }
-    disconnectClient(client);
-}
+// void    server::sendToAllClientChannel(Client & client, std::vector<std::string> clientInput, int check)
+// {
+//     std::cout << " dans quit INPUT DE 0 ->" <<  clientInput[0] << "<-" << std::endl;
+//     if (check == 0) {
+//         for(std::vector<std::string>::iterator it = client.getAllChannel().begin(); it != client.getAllChannel().end(); it++){
+//             this->sendToAllUserInChannel(*it, ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1.ip QUIT :Quit: " + client.getNick() + "\r\n", client);
+//         }
+//     }
+//     else {
+//         for(std::vector<std::string>::iterator it = client.getAllChannel().begin(); it != client.getAllChannel().end(); it++){
+//             this->sendToAllUserInChannel(*it, ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1.ip QUIT :Quit: " + clientInput[1], client);
+//         }
+//     }
+//     disconnectClient(client);
+// }
 
-void    server::quitFun(Client & client, std::vector<std::string> clientInput) {
-    if (clientInput.size() - 1 == 0)
-        sendToAllClientChannel(client, clientInput, 0);
-    else {
-        sendToAllClientChannel(client, clientInput, 1);
-    }
-}
+// void    server::quitFun(Client & client, std::vector<std::string> clientInput) {
+//     if (clientInput.size() - 1 == 0)
+//         sendToAllClientChannel(client, clientInput, 0);
+//     else {
+//         sendToAllClientChannel(client, clientInput, 1);
+//     }
+// }
 
 
 void    server::modeFun(Client & client, std::vector<std::string> clientInput) {
@@ -233,16 +233,18 @@ void    server::sendToAllUserInChannel(std::string channelName, std::string msg,
     }
 }
 
-std::string    server::getAllUsersChannel(Channel channel) {
+std::string    server::getAllUsersChannel(Channel & channel) {
     std::string userList;
     std::string tmp;
-    for(std::vector<Client>::iterator it = channel.getChannelUser().begin(); it != channel.getChannelUser().end(); it++) {
-        if (channel.isOp(*it))
-            tmp = '@' + (*it).getNick();
+    for(std::vector<Client>::const_iterator it = channel.getChannelUser().begin(); it != channel.getChannelUser().end(); it++) {
+        Client tmp2 = *it;
+        if (channel.isOp(tmp2))
+            tmp = "@" + tmp2.getNick();
         else
-            tmp = (*it).getNick();
+            tmp = tmp2.getNick();
         userList += tmp;
-        userList += " ";
+        if (it + 1 != channel.getChannelUser().end())
+            userList += " ";
     }
     return userList;
 }
@@ -251,14 +253,9 @@ void    server::welcomeToChannel(Client & client, std::string channelName) {
 
     this->displayClient(":" + client.getNick() + "!~" + client.getNick() + "@127.0.0.1.ip JOIN : " + channelName + "\r\n", client); // envoyer la validation du join
     this->displayClient(":127.0.0.1 353 " + client.getNick() + " = " + channelName + " :" + this->getAllUsersChannel(this->getChannel(channelName)) + "\r\n", client);// envoyer la liste des utilisateur 
-    this->displayClient(":127.0.0.1 366 " + client.getNick() + " = " + channelName + " :" + ":End of /NAMES list.\r\n", client);
-    std::cout << "HEREE" << std::endl;
+    this->displayClient(":127.0.0.1 366 " + client.getNick() + " " + channelName  + " :End of /NAMES list.\r\n", client);
     this->sendToAllUserInChannel(channelName, ":" + client.getNick() + "!~" + client.getNick() + "@127.0.0.1.ip JOIN :" + channelName + "\r\n", client);// envoyer que l'utilisateur a join a tout les client
-    std::cout << "OUTTTT" << std::endl;
 }
-
-
-// Nom des channel incorrect = :lair.nl.eu.dal.net 403 jbe ASV :No such channel
 
 void    server::joinFun(Client & client, std::vector<std::string> clientInput) {
     const std::string channelName = std::string(clientInput[1]);
@@ -269,12 +266,14 @@ void    server::joinFun(Client & client, std::vector<std::string> clientInput) {
     //Check if channel exist
     for (std::vector<Channel>::iterator it = this->_ChannelList.begin(); it != this->_ChannelList.end(); it++)
     {
-        if ((it)->getChannelName() == channelName)
+        if ((*it).getChannelName() == channelName)
         {
-            if (!(it)->addUser(client))
+            if (!(*it).addUser(client)) 
                 return;
-            else
+            else {
+                std::cout << "HEREEEEE" << std::endl;
                 this->welcomeToChannel(client, channelName);
+            }
             return;
         }
     }
@@ -297,7 +296,7 @@ void    server::initFunLst(void)
     this->_FunLst["PASS"] = &server::passFun;
     this->_FunLst["CAP"] =  &server::capFun;
     this->_FunLst["JOIN"] =  &server::joinFun;
-    this->_FunLst["QUIT"] =  &server::quitFun;
+    // this->_FunLst["QUIT"] =  &server::quitFun;
     // this->_FunLst["/ban"] = &server::;
     // this->_FunLst["/unban"] = &server::;
     // this->_FunLst["/exit"] = &server::;

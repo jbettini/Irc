@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/17 18:51:52 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/27 01:57:58 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/27 03:30:31 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,5 @@ Client::Client(const Client & rhs) {
 Client::~Client(void) {};
 
 std::string     Client::getNick(void){
-            //std::cout << " THIS NICK = " << this->_nick << std::endl;
     return (this->_nick);
 }

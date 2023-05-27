@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/11 16:44:55 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/27 01:38:42 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/27 03:29:41 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,7 @@ class   server {
                 void        joinFun(Client & client, std::vector<std::string> clientInput);
                 void        quitFun(Client & client, std::vector<std::string> clientInput);
                 void        sendChannelMessage(Client & client, std::vector<std::string> clientInput);
-                std::string getAllUsersChannel(Channel channel);
+                std::string getAllUsersChannel(Channel & channel);
                 
                 server  &   operator=(server & rhs);
 

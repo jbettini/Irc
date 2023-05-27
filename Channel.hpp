@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/18 18:26:29 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/27 01:24:24 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/27 03:28:20 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,11 +25,11 @@ class   Channel {
         Channel &       operator=(const Channel & rhs);
         bool            addUser(Client& client);
 
-        std::string         getChannelName(void) {
+        std::string     &    getChannelName(void) {
                     return (this->_nameChannel);
         }
 
-        std::vector<Client>         getChannelUser(void) {
+        std::vector<Client>    &     getChannelUser(void) {
                     return (this->_Users);
         }
 
@@ -44,7 +44,7 @@ class   Channel {
             }
         }
 
-        void                setOp(Client client)
+        void                setOp(Client & client)
         {
             if (isOp(client))
                 return;

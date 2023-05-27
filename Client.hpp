@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/17 19:31:19 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/27 01:57:40 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/27 03:32:04 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ class   Client {
         }
         std::string                     getNick(void);
 
-        std::vector<std::string>        getChannel(void) { 
+        std::vector<std::string>      &  getChannel(void) { 
             return (this->_allChannel);
         }
         pthread_t   &                   getThread() {
@@ -86,7 +86,7 @@ class   Client {
         bool                            isAdmin(void) { 
             return (this->_admin);
         }
-        std::vector<std::string> getAllChannel(void){
+        std::vector<std::string> & getAllChannel(void){
             return this->_allChannel;
         }
         //OPERATORS
