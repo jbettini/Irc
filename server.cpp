@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:43:40 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/27 04:08:26 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/27 04:16:56 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -282,10 +282,12 @@ void    server::joinFun(Client & client, std::vector<std::string> clientInput) {
     channel.addUser(client);
     channel.setOp(client);
     this->_ChannelList.push_back(channel);
-    client.addChannelToCLient(channelName);
     this->welcomeToChannel(client, channelName);
 
 }
+
+// :Jbe!~Jbe@6be1-f476-da9-512d-d573.rev.sfr.net PRIVMSG #4242 :fefe
+// :Jbe!~Jbe@6be1-f476-da9-512d-d573.rev.sfr.net PRIVMSG Guest84924 :ff
 
 void    server::initFunLst(void)
 {
@@ -297,7 +299,7 @@ void    server::initFunLst(void)
     this->_FunLst["CAP"] =  &server::capFun;
     this->_FunLst["JOIN"] =  &server::joinFun;
     // this->_FunLst["QUIT"] =  &server::quitFun;
-    // this->_FunLst["/ban"] = &server::;
+    // this->_FunLst["PRIVMSG"] = &server::privmsgFun;
     // this->_FunLst["/unban"] = &server::;
     // this->_FunLst["/exit"] = &server::;
     // this->_FunLst["/silence"] = &server::;
@@ -309,6 +311,8 @@ void    server::initFunLst(void)
 void    server::displayClient(std::string   msg, Client client) {
     send(client.getCS(), msg.c_str(), msg.size(), 0);
 }
+
+
 
 // void    server::sendChannelMessage(Client & client, std::vector<std::string> clientInput)
 // {
@@ -327,17 +331,16 @@ void    server::displayClient(std::string   msg, Client client) {
 //     this->displayClient(":127.0.0.1 421 " + client.getNick() + " " + clientInput[0] + " :Unknow command\r\n", client);
 // }
 
-// WARNING EXEC MEME SANS PASS NI NICK ET USER
 void        server::execInput(std::vector<std::string> clientInput, Client & client) {
-        Fun fun = _FunLst[clientInput[0]];
-        if (fun && client.getWelcome()) 
-            (this->*fun)(client, clientInput);
-        else if (fun && checkFunWelcome(clientInput[0]) && !client.getWelcome())
-            (this->*fun)(client, clientInput);
-        else if (fun && !checkFunWelcome(clientInput[0]) && !client.getWelcome())
-            this->displayClient(":127.0.0.1 421 " + client.getNick() + " " + clientInput[0] + " :You need to be connected to Server, Please set Nick, User and Pass.\r\n", client);
-        else
-            this->displayClient(":127.0.0.1 421 " + client.getNick() + " " + clientInput[0] + " :Unknow command\r\n", client);
+    Fun fun = _FunLst[clientInput[0]];
+    if (fun && client.getWelcome()) 
+        (this->*fun)(client, clientInput);
+    else if (fun && checkFunWelcome(clientInput[0]) && !client.getWelcome())
+        (this->*fun)(client, clientInput);
+    else if (fun && !checkFunWelcome(clientInput[0]) && !client.getWelcome())
+        this->displayClient(":127.0.0.1 421 " + client.getNick() + " " + clientInput[0] + " :You need to be connected to Server, Please set Nick, User and Pass.\r\n", client);
+    else
+        this->displayClient(":127.0.0.1 421 " + client.getNick() + " " + clientInput[0] + " :Unknow command\r\n", client);
 }
 
 void    server::init_socket(void) {

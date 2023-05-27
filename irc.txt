@@ -15,7 +15,7 @@ Cote Serv {
 
     /list: Affiche la liste des canaux disponibles sur le serveur.
 
-    /join: Rejoint un canal spécifique. Par exemple, /join #channel vous fera rejoindre le canal "#channel".
+    FAIT √ /join: Rejoint un canal spécifique. Par exemple, /join #channel vous fera rejoindre le canal "#channel".
 
     /part: Quitte un canal. Par exemple, /part #channel vous fera quitter le canal "#channel".
 
