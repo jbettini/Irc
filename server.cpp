@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:43:40 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/27 01:25:43 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/27 02:54:52 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,14 +220,15 @@ void        server::capFun(Client & client, std::vector<std::string> clientInput
 //         }
 //     }
 
-
 void    server::sendToAllUserInChannel(std::string channelName, std::string msg, Client & client) {
+    (void)client;(void)msg;
     for(std::vector<Channel>::iterator it = this->_ChannelList.begin(); it != this->_ChannelList.end(); it++) {
         if ((*it).getChannelName() == channelName) {
-            for (std::vector<Client>::iterator it2 = (*it).getChannelUser().begin(); it2 != (*it).getChannelUser().end(); it2++) {
-                if ((*it2).getNick() != client.getNick())
-                    this->displayClient(msg, *it2);
-            }
+            std::vector<Client> it2 = (*it).getChannelUser();
+            for (std::vector<Client>::iterator it3 = it2.begin();it3 != it2.end();it3++)
+                if ((*it3).getNick() != client.getNick())
+                    this->displayClient(msg, *it3);
+            break ;
         }
     }
 }
@@ -237,7 +238,7 @@ std::string    server::getAllUsersChannel(Channel channel) {
     std::string tmp;
     for(std::vector<Client>::iterator it = channel.getChannelUser().begin(); it != channel.getChannelUser().end(); it++) {
         if (channel.isOp(*it))
-            tmp = "@" + (*it).getNick();
+            tmp = '@' + (*it).getNick();
         else
             tmp = (*it).getNick();
         userList += tmp;
@@ -250,8 +251,10 @@ void    server::welcomeToChannel(Client & client, std::string channelName) {
 
     this->displayClient(":" + client.getNick() + "!~" + client.getNick() + "@127.0.0.1.ip JOIN : " + channelName + "\r\n", client); // envoyer la validation du join
     this->displayClient(":127.0.0.1 353 " + client.getNick() + " = " + channelName + " :" + this->getAllUsersChannel(this->getChannel(channelName)) + "\r\n", client);// envoyer la liste des utilisateur 
-    this->displayClient(":127.0.0.1 353 " + client.getNick() + " = " + channelName + " :" + ":End of /NAMES list.\r\n", client);
+    this->displayClient(":127.0.0.1 366 " + client.getNick() + " = " + channelName + " :" + ":End of /NAMES list.\r\n", client);
+    std::cout << "HEREE" << std::endl;
     this->sendToAllUserInChannel(channelName, ":" + client.getNick() + "!~" + client.getNick() + "@127.0.0.1.ip JOIN :" + channelName + "\r\n", client);// envoyer que l'utilisateur a join a tout les client
+    std::cout << "OUTTTT" << std::endl;
 }
 
 
@@ -270,11 +273,8 @@ void    server::joinFun(Client & client, std::vector<std::string> clientInput) {
         {
             if (!(it)->addUser(client))
                 return;
-            
-
-            //Sending a Topic message to client to confirm joining.
-            this->displayClient(":127.0.0.1 332 " + client.getNick() + (*it).getChannelName() + " :Joined topic.\r\n", client);
-            // send client lst on channel
+            else
+                this->welcomeToChannel(client, channelName);
             return;
         }
     }
@@ -282,10 +282,8 @@ void    server::joinFun(Client & client, std::vector<std::string> clientInput) {
     Channel channel(channelName);
     channel.addUser(client);
     channel.setOp(client);
-
-    //Sending a Topic message to client to confirm joining.
-    this->displayClient(":127.0.0.1 332 " + client.getNick() + channel.getChannelName() + " :Created topic.\r\n", client);
-    _ChannelList.push_back(channel);
+    this->_ChannelList.push_back(channel);
+    client.addChannelToCLient(channelName);
     this->welcomeToChannel(client, channelName);
 
 }
@@ -333,8 +331,12 @@ void    server::displayClient(std::string   msg, Client client) {
 // WARNING EXEC MEME SANS PASS NI NICK ET USER
 void        server::execInput(std::vector<std::string> clientInput, Client & client) {
         Fun fun = _FunLst[clientInput[0]];
-        if (fun) 
+        if (fun && client.getWelcome()) 
             (this->*fun)(client, clientInput);
+        else if (fun && checkFunWelcome(clientInput[0]) && !client.getWelcome())
+            (this->*fun)(client, clientInput);
+        else if (fun && !checkFunWelcome(clientInput[0]) && !client.getWelcome())
+            this->displayClient(":127.0.0.1 421 " + client.getNick() + " " + clientInput[0] + " :You need to be connected to Server, Please set Nick, User and Pass.\r\n", client);
         else
             this->displayClient(":127.0.0.1 421 " + client.getNick() + " " + clientInput[0] + " :Unknow command\r\n", client);
 }
@@ -484,4 +486,10 @@ bool    checkNameChannel(const std::string& str) {
         if (!std::isprint(*it))
             return false;
     return true;
+}
+
+bool    checkFunWelcome(std::string fun) {
+    if (fun == "NICK" || fun == "USER" || fun == "PASS" || fun == "CAP")
+        return true;
+    return false;
 }

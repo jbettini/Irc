@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/17 18:51:52 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/26 22:13:44 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/27 01:57:58 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,12 +39,12 @@ Client &    Client::operator=(const Client & rhs) {
     this->_type = rhs._type;
     this->_pollFd = rhs._pollFd;
     this->_username = rhs._username;
-    this->_allChannel = rhs._allChannel;
     this->_nick = rhs._nick;
+    this->_myThread = rhs._myThread;
     this->_pass = rhs._pass;
     this->_welcome = rhs._welcome;
-    this->_myThread = rhs._myThread;
     this->_admin = rhs._admin;
+    this->_allChannel = rhs._allChannel;
     return *this;
 }
 

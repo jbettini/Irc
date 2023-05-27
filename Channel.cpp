@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/18 19:27:01 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/27 01:09:04 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/27 02:21:46 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,16 +35,14 @@ Channel::~Channel(void) {};
 bool    Channel::addUser(Client& client)
 {
     for (std::vector<Client>::iterator it = this->_Users.begin(); it != this->_Users.end(); it++)
-    {
         if ((*it) == client)    
             return (false);
-    }
     if (isBanned(client))
     {
         //TODO send error (IRC format)
         return (false);
     }
     client.addChannelToCLient(_nameChannel);
-    _Users.push_back(client);
+    this->_Users.push_back(client);
     return (true);
 }
