@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:43:40 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/28 21:13:03 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/28 22:17:34 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,7 +141,7 @@ std::string    server::getAllUsersChannel(Channel & channel) {
 }
 
 void        server::execInput(std::vector<std::string> clientInput, Client & client) {
-    //printVecStr(clientInput);
+    printVecStr(clientInput);
     Fun fun = _FunLst[clientInput[0]];
     if (fun && client.getWelcome()) 
         (this->*fun)(client, clientInput);

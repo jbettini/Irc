@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 19:29:12 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/28 20:35:59 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/28 23:00:52 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,7 +161,7 @@ std::string getMode(std::vector<std::string> clientInput) {
 }
 
 bool checkFormat(const std::string& str) {
-    if (str.length() < 9)
+    if (str.length() < 14)
         return false;
     if (str.substr(0, 3) != "*!*")
         return false;
@@ -171,14 +171,13 @@ bool checkFormat(const std::string& str) {
 }
 
 std::string extractUsernameModeFormat(const std::string& str) {
-    std::string result;
-    for (size_t i = 0; i < str.length(); ++i) {
-        if (!isalnum(str[i])) {
-            break;
-        }
-        result += str[i];
-    }
-    return result;
+    std::string username;
+    std::size_t start = str.find("*!*") + 3; // position du premier caractère de l'username
+    std::size_t end = str.find("@", start); // position du caractère '@' après l'username
+
+    if (start != std::string::npos && end != std::string::npos)
+        username = str.substr(start, end - start);
+    return username;
 }
 
 void    updateVectorStr(std::vector<std::string> & toUpdate, std::string oldStr, std::string newStr) {

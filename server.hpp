@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/11 16:44:55 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/28 21:13:07 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/29 00:39:08 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,6 +155,14 @@ class   server {
                     return (this->_ClientList[0]);
                 }
 
+                Client    &  getClientWithUser(std::string user) {
+                    for (size_t i = 0; i != this->_ClientList.size(); i++) {
+                        if (this->_ClientList[i].getUsername() == user)
+                            return (this->_ClientList[i]);
+                    }
+                    return (this->_ClientList[0]);
+                }
+
                 Channel    &  getChannel(std::string channelName){
                     for (size_t i = 0; i != this->_ChannelList.size(); i++) {
                         if (this->_ChannelList[i].getChannelName() == channelName)
@@ -173,17 +181,30 @@ class   server {
                     return false;
                 }
 
-                bool            checkUserExist(std::string toFind) {
+                bool            checkNickExist(std::string toFind) {
                     for (std::vector<Client>::iterator it = this->_ClientList.begin(); it != this->_ClientList.end(); it++)
                         if ((*it).getNick() == toFind)
                             return true;
                     return false;
                 }
 
+                bool            checkUsernameExist(std::string toFind) {
+                    for (std::vector<Client>::iterator it = this->_ClientList.begin(); it != this->_ClientList.end(); it++)
+                        if ((*it).getUsername() == toFind)
+                            return true;
+                    return false;
+                }
+                
                 std::vector<Channel> & getChannelList(void){
                    return this->_ChannelList;
                 }
-
+                
+                std::string            getUsernameByNick(std::string nick) {
+                    for (std::vector<Client>::iterator it = this->_ClientList.begin(); it != this->_ClientList.end(); it++)
+                        if ((*it).getNick() == nick)
+                            return it->getUsername();
+                    return nick;
+                }
 
                 int     MAX_CLIENTS;
                 int     MAX_BUFFER_SIZE;

@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/18 18:26:29 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/28 21:13:05 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/28 23:17:17 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,10 +68,10 @@ class   Channel {
             return (false);
         }
 
-        bool                isBannedNick(std::string nick)
+        bool                isBannedUser(std::string username)
         {
             for (std::vector<std::string>::iterator it = this->_banedUsers.begin(); it != this->_banedUsers.end(); it++)
-                if ((*it) == nick)
+                if ((*it) == username)
                     return (true);
             return (false);
         }
