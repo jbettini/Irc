@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/18 19:27:01 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/27 08:21:09 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/28 05:37:06 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ bool    Channel::addUser(Client& client)
     for (std::vector<Client>::iterator it = this->_Users.begin(); it != this->_Users.end(); it++)
         if ((*it) == client)    
             return (false);
-    if (isBanned(client))
+    if (isBanned(client.getNick()))
     {
         //TODO send error (IRC format)
         return (false);
@@ -56,27 +56,27 @@ void    Channel::removeUser(Client   & client) {
     }
 }
 
-void    Channel::unsilence(Client   & client) {
-    for (std::vector<Client>::iterator it = this->_silentUsers.begin(); it != this->_silentUsers.end();it++) {
-        if (it->getCS() == client.getCS()) {
+void    Channel::unsilence(std::string   & client) {
+    for (std::vector<std::string>::iterator it = this->_silentUsers.begin(); it != this->_silentUsers.end();it++) {
+        if (*it == client) {
             this->_silentUsers.erase(it);
             break ;
         }
     }
 }
 
-void    Channel::deop(Client   & client) {
-    for (std::vector<Client>::iterator it = this->_opUsers.begin(); it != this->_opUsers.end();it++) {
-        if (it->getCS() == client.getCS()) {
+void    Channel::deop(std::string   & client) {
+    for (std::vector<std::string>::iterator it = this->_opUsers.begin(); it != this->_opUsers.end();it++) {
+        if (*it == client) {
             this->_opUsers.erase(it);
             break ;
         }
     }
 }
 
-void    Channel::unban(Client   & client) {
-    for (std::vector<Client>::iterator it = this->_banedUsers.begin(); it != this->_banedUsers.end();it++) {
-        if (it->getCS() == client.getCS()) {
+void    Channel::unban(std::string   & client) {
+    for (std::vector<std::string>::iterator it = this->_banedUsers.begin(); it != this->_banedUsers.end();it++) {
+        if (*it == client) {
             this->_banedUsers.erase(it);
             break ;
         }

@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/11 16:44:55 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/27 08:21:06 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/28 05:31:33 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,6 +121,7 @@ class   server {
                 void        passFun(Client & client, std::vector<std::string> clientInput);
                 void        capFun(Client & client, std::vector<std::string> clientInput);
                 void        joinFun(Client & client, std::vector<std::string> clientInput);
+                void        banFun(Client & client, std::vector<std::string> clientInput);
                 void        quitFun(Client & client, std::vector<std::string> clientInput);
                 void        sendChannelMessage(Client & client, std::vector<std::string> clientInput);
                 void        privmsgFun(Client & client, std::vector<std::string> clientInput);
@@ -142,6 +143,14 @@ class   server {
                             return (this->_ClientList[i]);
                     }
                     throw ClientNotFoundException();
+                    return (this->_ClientList[0]);
+                }
+
+                Client    &  getClientWithNick(std::string nick) {
+                    for (size_t i = 0; i != this->_ClientList.size(); i++) {
+                        if (this->_ClientList[i].getNick() == nick)
+                            return (this->_ClientList[i]);
+                    }
                     return (this->_ClientList[0]);
                 }
 
@@ -194,7 +203,6 @@ void                        add_back(std::vector<Client> & vector, const Client 
 std::vector<std::string>    splitBuffer(char* buffer, std::string delimiters);
 std::vector<std::string>  & removeWhitespace(std::vector<std::string>& strings);
 std::vector<std::string>    makeVecKey(std::vector<std::string> strings, std::string toFind);
-std::string                 getMsg(std::string first, std::string last, Client & client);
 void                        printVecStr(std::vector<std::string> strings);
 int                         findString(std::vector<std::string> strings, std::string toFind);
 void                        printClient(std::vector<Client> strings);
@@ -203,5 +211,9 @@ bool                        checkNameChannel(const std::string& str);
 bool                        checkFunWelcome(std::string fun);
 std::vector<std::string>    removeDelimiterStrings(std::vector<std::string>& strings, std::string& delimiters);
 std::string                 catVecStr(std::vector<std::string> toCat, int idx);
+std::string                 extractUsernameModeFormat(const std::string& str);
+std::string                 getMsg(std::string first, std::string last, Client & client);
+bool                        checkFormat(const std::string& str);
+std::string                 getMode(std::vector<std::string> clientInput);
 
 #endif

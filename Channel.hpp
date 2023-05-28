@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/18 18:26:29 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/27 08:21:04 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/28 05:36:03 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,9 @@ class   Channel {
         Channel &       operator=(const Channel & rhs);
         bool            addUser(Client& client);
         void            removeUser(Client   & client);
-        void            unsilence(Client   & client);
-        void            deop(Client   & client);
-        void            unban(Client   & client);
+        void            unsilence(std::string   & client);
+        void            deop(std::string  & client);
+        void            unban(std::string   & client);
 
         std::string     &    getChannelName(void) {
                     return (this->_nameChannel);
@@ -37,31 +37,42 @@ class   Channel {
                     return (this->_Users);
         }
 
-        void                setOp(Client & client)
+        void                setOp(std::string client)
         {
             if (isOp(client))
                 return;
             _opUsers.push_back(client);
         }
 
-        bool                isBanned(Client client)
+        void                addToBanList(std::string client) {
+            this->_banedUsers.push_back(client);
+        }
+
+        bool                isBanned(std::string client)
         {
-            for (std::vector<Client>::iterator it = this->_banedUsers.begin(); it != this->_banedUsers.end(); it++)
+            for (std::vector<std::string>::iterator it = this->_banedUsers.begin(); it != this->_banedUsers.end(); it++)
                 if ((*it) == client)
                     return (true);
             return (false);
         }
-        bool                isSilent(Client client)
+
+        bool                isBannedNick(std::string nick)
         {
-            for (std::vector<Client>::iterator it = this->_silentUsers.begin(); it != this->_silentUsers.end(); it++)
+            for (std::vector<std::string>::iterator it = this->_banedUsers.begin(); it != this->_banedUsers.end(); it++)
+                if ((*it) == nick)
+                    return (true);
+            return (false);
+        }
+
+        bool                isSilent(std::string client)
+        {
+            for (std::vector<std::string>::iterator it = this->_silentUsers.begin(); it != this->_silentUsers.end(); it++)
                 if ((*it) == client) return (true);
             return (false);
         }
-        bool                isOp(Client client)
+        bool                isOp(std::string client)
         {
-            if (client.isAdmin()) 
-                return (true);
-            for (std::vector<Client>::iterator it = this->_opUsers.begin(); it != this->_opUsers.end(); it++)
+            for (std::vector<std::string>::iterator it = this->_opUsers.begin(); it != this->_opUsers.end(); it++)
                 if ((*it) == client) 
                     return (true);
             return (false);
@@ -84,11 +95,11 @@ class   Channel {
         }
 
     private :
-                std::string                 _nameChannel;
-                std::vector<Client>         _Users;
-                std::vector<Client>         _silentUsers;
-                std::vector<Client>         _banedUsers;
-                std::vector<Client>         _opUsers;
+                std::string                         _nameChannel;
+                std::vector<Client>                 _Users;
+                std::vector<std::string>            _silentUsers;
+                std::vector<std::string>            _banedUsers;
+                std::vector<std::string>            _opUsers;
 
 };
 

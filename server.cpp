@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:43:40 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/27 08:24:19 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/28 07:05:52 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,13 +119,47 @@ void    server::run(void) {
 //     }
 // }
 
+// :xtem!~xtem@6be1-f476-da9-512d-d573.rev.sfr.net MODE #4242 +b *!*jbe@*.rev.sfr.net
+
+void    server::banFun(Client & client, std::vector<std::string> clientInput) {
+    std::string channelName = clientInput[1];
+    std::string userToBan;
+    Channel  &   channel = this->getChannel(channelName);
+    if (clientInput.size() == 3 && clientInput[2] == "+b") {
+        std::cout << "In ban fun exception" << std::endl;
+        // afficher la liste des ban
+        return ;
+    }
+    // :127.0.0.1 482 xtem #22 :You're not channel operator // not work verify the syntax
+    if (!(this->channelExist(channelName)))
+        this->displayClient(":127.0.0.1 403 " + client.getNick() + " " + channelName + " :No such channel\r\n",client);
+    else if (!(channel.isOp(client.getNick())))
+        this->displayClient(":127.0.0.1 482 " + client.getNick() + " " + channelName + " :You're not channel operator\r\n", client);
+    else {
+            userToBan = extractUsernameModeFormat(clientInput[3]);
+        if (checkNonAlphanumeric(userToBan) || userToBan.size() > 9 || channel.isBannedNick(userToBan))
+            return ;
+        else {
+            std::string clientNick = client.getNick();
+            channel.addToBanList(userToBan);
+            sendToAllUserInChannel(channel.getChannelName(), clientNick + "!~" + clientNick + "@127.0.0.1 MODE " + channelName + " +b " + clientInput[3] + "\r\n", client);
+            this->displayClient(clientNick + "!~" + clientNick + "@127.0.0.1 MODE " + channelName + " +b " + clientInput[3] + "\r\n", client);
+        }
+    }
+    std::cout << "out ban fun " << std::endl;
+}
 
 void    server::modeFun(Client & client, std::vector<std::string> clientInput) {
-    std::string mode = clientInput[clientInput.size() - 1];
-    if (mode == "+i"){
-        std::string tmp = ":127.0.0.1 221 " + client.getNick() + " :+i\r\n";
-        this->displayClient(tmp, client);
-    }
+    std::string mode = getMode(clientInput);
+    std::cout << " mode = -" << mode << "-"<< std::endl;
+    if (mode == "+i")
+        this->displayClient(":127.0.0.1 221 " + client.getNick() + " :+i\r\n", client);
+    else if (mode == "-i")
+        this->displayClient(":127.0.0.1 221 " + client.getNick() + " :-i\r\n", client);
+    else if (mode == "+b")
+        this->banFun(client, clientInput);
+    // else if (mode == "-b")
+
 }
 
 void    server::pingFun(Client & client, std::vector<std::string> clientInput) {
@@ -133,12 +167,14 @@ void    server::pingFun(Client & client, std::vector<std::string> clientInput) {
     this->displayClient("PONG :127.0.0.1\r\n", client);
 }
 
-// NICK SANS ARG = :nonstop.ix.me.dal.net 431 jbe :No nickname given
-
 void    server::nickFun(Client & client, std::vector<std::string> clientInput) {
+
+    if (clientInput.size() == 1) {
+        this->displayClient(":127.0.0.1 431 " + client.getNick() + " :No nickname given\n\r", client);
+        return ;
+    }
     std::vector<Client>::iterator it;
     const std::string nick = std::string(clientInput[1]);
-
     if (nick.size() > 9)
     {
         this->displayClient(":127.0.0.1 432 " + client.getNick() + " " + nick + " :Nickname is too long (>9).\r\n", client);
@@ -161,22 +197,26 @@ void    server::nickFun(Client & client, std::vector<std::string> clientInput) {
         this->welcomeMsg(client);
 }
 
-// USER SANS ARG = :nonstop.ix.me.dal.net 461 jbe USER :Not enough parameters
-
 void    server::userFun(Client & client, std::vector<std::string> clientInput) {
-    client.setUsername(clientInput[1]);
 
+    if (clientInput.size() == 1) {
+        this->displayClient(":127.0.0.1 461 " + client.getNick() + " USER :Not enough parameters\r\n", client);
+        return ;
+    }
+    client.setUsername(clientInput[1]);
     //Complete connexion.
     if (client.isSetup() && client.getWelcome() == 0) {
         this->welcomeMsg(client);
     }
 }
 
-// PASS SANS ARG =  :nonstop.ix.me.dal.net 461 jbe PASS :Not enough parameters
-
 void    server::passFun(Client & client, std::vector<std::string> clientInput)  {
+
+    if (clientInput.size() == 1)  {
+        this->displayClient(":127.0.0.1 461 " + client.getNick() + " PASS :Not enough parameters\r\n", client);
+        return ;
+    }
     const std::string pass = std::string(clientInput[1]);
-    
     if (client.getPass() == 1)
         this->displayClient(":127.0.0.1 462 " + client.getNick() + " :You may not reregister.\r\n", client);
     else if (pass == this->_password)
@@ -213,7 +253,6 @@ void        server::capFun(Client & client, std::vector<std::string> clientInput
 }
 
 void    server::sendToAllUserInChannel(std::string channelName, std::string msg, Client & client) {
-    std::cout << "MSG :" << msg << "--" << std::endl;
     for(std::vector<Channel>::iterator it = this->_ChannelList.begin(); it != this->_ChannelList.end(); it++) {
         if ((*it).getChannelName() == channelName) {
             std::vector<Client> it2 = (*it).getChannelUser();
@@ -230,7 +269,7 @@ std::string    server::getAllUsersChannel(Channel & channel) {
     std::string tmp;
     for(std::vector<Client>::const_iterator it = channel.getChannelUser().begin(); it != channel.getChannelUser().end(); it++) {
         Client tmp2 = *it;
-        if (channel.isOp(tmp2))
+        if (channel.isOp(tmp2.getNick()))
             tmp = "@" + tmp2.getNick();
         else
             tmp = tmp2.getNick();
@@ -249,13 +288,20 @@ void    server::welcomeToChannel(Client & client, std::string channelName) {
     this->sendToAllUserInChannel(channelName, ":" + client.getNick() + "!~" + client.getNick() + "@127.0.0.1.ip JOIN :" + channelName + "\r\n", client);// envoyer que l'utilisateur a join a tout les client
 }
 
-// JOIN SANS ARG = :127.0.0.1 461 <nick> JOIN :Not enough parameters
-
 void    server::joinFun(Client & client, std::vector<std::string> clientInput) {
+
+    if (clientInput.size() == 1)  {
+        this->displayClient(":127.0.0.1 461 " + client.getNick() + " PASS :Not enough parameters\r\n", client);
+        return ;
+    }
     const std::string channelName = std::string(clientInput[1]);
     if (!checkNameChannel(channelName)) {
         this->displayClient(":127.0.0.1 403 " + client.getNick() + " " + channelName + " :No such channel\r\n",client);
         return;
+    }
+    else if (this->channelExist(channelName) && this->getChannel(channelName).isBanned(client.getNick())) {
+        this->displayClient(":127.0.0.1 474 " + client.getNick() + " " + channelName + " :Cannot join channel (+b)\r\n", client);
+        return ;
     }
     //Check if channel exist
     for (std::vector<Channel>::iterator it = this->_ChannelList.begin(); it != this->_ChannelList.end(); it++)
@@ -272,21 +318,23 @@ void    server::joinFun(Client & client, std::vector<std::string> clientInput) {
     //If not, then create it
     Channel channel(channelName);
     channel.addUser(client);
-    channel.setOp(client);
+    channel.setOp(client.getNick());
     this->_ChannelList.push_back(channel);
     this->welcomeToChannel(client, channelName);
 
 }
 
-// PRIVMSG ERREUR 
-
-// :nonstop.ix.me.dal.net 412 jbe :No text to send                      =       si client input size = 2
-// :nonstop.ix.me.dal.net 411 jbe :No recipient given (PRIVMSG)         =       si client input size = 1
-
 void    server::privmsgFun(Client & client, std::vector<std::string> clientInput) {
-    if (checkNameChannel(clientInput[1]) && this->channelExist(clientInput[1])) {
-        // if not silence and else is silence
-        sendToAllUserInChannel(clientInput[1], ":" + client.getNick() + "!~" + client.getNick() + "@127.0.0.1 PRIVMSG " + clientInput[1] + " " + catVecStr(clientInput, 3) + "\r\n", client);
+    if (clientInput.size() == 2)
+        this->displayClient(":127.0.0.1 412 " + client.getNick() + " :Cannot text to send\r\n", client);
+    else if (clientInput.size() == 1)
+        this->displayClient(":127.0.0.1 412 " + client.getNick() + " :No recipient given (PRIVMSG)\r\n", client);
+    else if (checkNameChannel(clientInput[1]) && this->channelExist(clientInput[1])) {
+        // if is ban or not
+        if (this->getChannel(clientInput[1]).isBanned(client.getNick()))
+            this->displayClient(":127.0.0.1 474 " + client.getNick() + " " + clientInput[1] + " :Cannot send to channel\r\n", client);
+        else 
+            sendToAllUserInChannel(clientInput[1], ":" + client.getNick() + "!~" + client.getNick() + "@127.0.0.1 PRIVMSG " + clientInput[1] + " " + catVecStr(clientInput, 3) + "\r\n", client);
     }
     else if (this->checkUserExist(clientInput[1]))
         this->displayClient(":" + client.getNick() + "!~" + client.getNick() + "@127.0.0.1 PRIVMSG " + clientInput[1] + " " + catVecStr(clientInput, 3) + "\r\n", client);
@@ -296,14 +344,14 @@ void    server::privmsgFun(Client & client, std::vector<std::string> clientInput
 
 void    server::initFunLst(void)
 {
-    this->_FunLst["MODE"] = &server::modeFun;
     this->_FunLst["PING"] = &server::pingFun;
     this->_FunLst["NICK"] = &server::nickFun;
     this->_FunLst["USER"] = &server::userFun;
     this->_FunLst["PASS"] = &server::passFun;
     this->_FunLst["CAP"] =  &server::capFun;
-    this->_FunLst["JOIN"] =  &server::joinFun;
     this->_FunLst["PRIVMSG"] = &server::privmsgFun;
+    this->_FunLst["JOIN"] =  &server::joinFun;
+    this->_FunLst["MODE"] = &server::modeFun;
     // this->_FunLst["QUIT"] =  &server::quitFun;
     // this->_FunLst["/unban"] = &server::;
     // this->_FunLst["/exit"] = &server::;
@@ -317,25 +365,6 @@ void    server::displayClient(std::string   msg, Client client) {
     std::cout << "msg = " << msg << std::endl;
     send(client.getCS(), msg.c_str(), msg.size(), 0);
 }
-
-
-
-// void    server::sendChannelMessage(Client & client, std::vector<std::string> clientInput)
-// {
-//     for (std::vector<Channel>::iterator it = this->_ChannelList.begin(); it != this->_ChannelList.end(); it++)
-//     {
-//         if ((it)->getChannelName() == client.getChannel())
-//         {
-//             std::string res;
-//             for (std::vector<std::string>::const_iterator it = clientInput.begin(); it != clientInput.end(); ++it)
-//                 res += *it + ' ';
-//             (it)->sendMessage(client, res);
-//             return;
-//         }
-//     }
-    
-//     this->displayClient(":127.0.0.1 421 " + client.getNick() + " " + clientInput[0] + " :Unknow command\r\n", client);
-// }
 
 void        server::execInput(std::vector<std::string> clientInput, Client & client) {
     printVecStr(clientInput);
@@ -377,7 +406,7 @@ void    server::init_socket(void) {
 
 
 void        server::disconnectClient(Client & client) {
-    this->removeUserInChannel(client); // NEED TO PATCH MAYBE
+    this->removeUserInChannel(client);
     this->_ClientFd[client.getPollFd()].fd = 0;
     this->_ClientFd[client.getPollFd()].events = 0;
     this->_ClientFd[client.getPollFd()].revents = 0;
@@ -540,5 +569,44 @@ std::string catVecStr(std::vector<std::string> toCat, int idx) {
             result += " ";
     }
     std::cout << "MSG : " << result << std::endl;
+    return result;
+}
+
+std::string getMode(std::vector<std::string> clientInput) {
+    for (std::vector<std::string>::iterator it = clientInput.begin(); it != clientInput.end(); it++) {
+        if (*it == "+i")
+            return ("+i");
+        else if (*it == "-i")
+            return ("-i");
+        else if (*it == "-b")
+            return ("-b");
+        else if (*it == "+b")
+            return ("+b");
+        else if (*it == "+o")
+            return ("+o");
+        else if (*it == "-o")
+            return ("-o");
+    }
+    return ("");
+}
+
+bool checkFormat(const std::string& str) {
+    if (str.length() < 9)
+        return false;
+    if (str.substr(0, 3) != "*!*")
+        return false;
+    if (str.substr(str.length() - 11) != "@*.0.0.1.ip")
+        return false;
+    return true;
+}
+
+std::string extractUsernameModeFormat(const std::string& str) {
+    std::string result;
+    for (size_t i = 0; i < str.length(); ++i) {
+        if (!isalnum(str[i])) {
+            break;
+        }
+        result += str[i];
+    }
     return result;
 }

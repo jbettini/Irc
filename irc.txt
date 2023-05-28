@@ -21,14 +21,13 @@ Cote Serv {
 
     Operator
 
+    /kill: Tue la connexion d'un utilisateur sur le serveur IRC. Par exemple, /kill Utilisateur Raison déconnectera "Utilisateur" du serveur IRC avec la raison spécifiée.
 
     /kick: Permet d'expulser un utilisateur d'un canal. Par exemple, /kick #channel Utilisateur Raison expulsera "Utilisateur" du canal "#channel" avec la raison spécifiée.
 
     /ban: Ajoute un bannissement pour un utilisateur ou un masque d'hôte. Par exemple, /ban #channel Utilisateur interdira à "Utilisateur" d'accéder au canal "#channel".
 
     /unban: Supprime un bannissement pour un utilisateur ou un masque d'hôte. Par exemple, /unban #channel Utilisateur lèvera l'interdiction pour "Utilisateur" sur le canal "#channel".
-
-    /kill: Tue la connexion d'un utilisateur sur le serveur IRC. Par exemple, /kill Utilisateur Raison déconnectera "Utilisateur" du serveur IRC avec la raison spécifiée.
 
     /op: Donne le statut d'opérateur à un utilisateur sur un canal. Par exemple, /op #channel Utilisateur donnera le statut d'opérateur à "Utilisateur" sur le canal "#channel".
 
@@ -47,7 +46,23 @@ Task :
 
 QUIT
 WHOIS 
+ban 
+            :xtem!~xtem@6be1-f476-da9-512d-d573.rev.sfr.net MODE #4242 +b *!*jbe@*.rev.sfr.net  = msg to send at all user in channel
+
+            :nonstop.ix.me.dal.net 474 xtem_ #4242 :Cannot join channel (+b)                    = msg lorsque on essaye de rejoindre un channel duquel on est ban 
+            :nonstop.ix.me.dal.net 404 xtem_ #4242 :Cannot send to channel                      = msg lorsque l'on se fait ban d'un channel dans lequel on est et que l'on essaye d'envoyer un message
+            MODE #42 +b *!*jb@*.0.0.1.ip                                                        = ban commande send to serv
+
+
+
+MODE #4242 +b   = affiche la ban list
+
+syntax a avoir :
+
+lorsque l'on se fait ban d'un channel dans lequel on est et que l'on essaye d'envoyer un message
 
 Patch :
 
-- Lorsque un utilisateur se deconnecte cela ferme le programme 
+- Lorsque un utilisateur se deconnecte / quit / exit cela ferme le programme
+- Lorsque un utilisateur join plusieur channel bug parfois avec nc 
+- parfois le client irssi ne recois pas de welcome msg donc reste deconnecter
