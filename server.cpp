@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:43:40 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/28 19:36:49 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/28 21:13:03 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,7 +141,7 @@ std::string    server::getAllUsersChannel(Channel & channel) {
 }
 
 void        server::execInput(std::vector<std::string> clientInput, Client & client) {
-    printVecStr(clientInput);
+    //printVecStr(clientInput);
     Fun fun = _FunLst[clientInput[0]];
     if (fun && client.getWelcome()) 
         (this->*fun)(client, clientInput);
@@ -213,4 +213,17 @@ void        server::removeUserInChannel(Client & client) {
     }
 }
 
-// Utils
+// Quand un user change de nick et qu'il fait parti d'un channel mettre a . jour tout les vecteur des channel ou il se trouve
+
+void        server::updateChannelListNick(std::vector<Channel>  & channelList, std::string currentNick, std::string newNick) {
+    for (std::vector<Channel>::iterator it = channelList.begin(); it != channelList.end(); it++) {
+        for (std::vector<Client>::iterator it2 = it->getChannelUser().begin(); it2 != it->getChannelUser().end(); it2++) {
+            if (it2->getNick() == currentNick) {
+                it2->setNick(newNick);
+                updateVectorStr(it->getSilentList(), currentNick, newNick);
+                updateVectorStr(it->getBannedList(), currentNick, newNick);
+                updateVectorStr(it->getOpUserList(), currentNick, newNick);
+            }
+        }
+    }
+}

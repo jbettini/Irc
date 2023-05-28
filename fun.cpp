@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 19:30:33 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/28 19:33:59 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/28 21:23:58 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,12 +23,15 @@ void    server::banFun(Client & client, std::vector<std::string> clientInput) {
         return ;
     }
     // :127.0.0.1 482 jbettini_ #42 :You're not channel operator
-
     // :127.0.0.1 482 jbettini_ #42 :You must have channel halfop access or above to set channel mode b
     if (!(this->channelExist(channelName)))
         this->displayClient(":127.0.0.1 403 " + client.getNick() + " " + channelName + " :No such channel\r\n",client);
-    else if (!(channel.isOp(client.getNick())))
-        this->displayClient(":127.0.0.1 482 " + client.getNick() + " " + channelName + " :You're not channel operator\r\n", client);
+    else if (!(channel.isOp(client.getNick()))) {
+        printVecStr(clientInput);
+        std::cout << std::endl << channelName << " = channel Name " << std::endl;
+        //:nonstop.ix.me.dal.net 482 jojo77 #cafe :You're not channel operator
+        this->displayClient(":127.0.0.1 482 " + channelName + " :You're not channel operator\r\n", client);
+    }
     else {
             userToBan = extractUsernameModeFormat(clientInput[3]);
     //     if (checkNonAlphanumeric(userToBan) || userToBan.size() > 9 || channel.isBannedNick(userToBan))
@@ -40,6 +43,7 @@ void    server::banFun(Client & client, std::vector<std::string> clientInput) {
     //         this->displayClient(clientNick + "!~" + clientNick + "@127.0.0.1 MODE " + channelName + " +b " + clientInput[3] + "\r\n", client);
     //     }
     }
+
     std::cout << "out ban fun " << std::endl;
 }
 
@@ -86,6 +90,9 @@ void    server::nickFun(Client & client, std::vector<std::string> clientInput) {
     }
     if (client.getWelcome() == 1)
         this->displayClient(":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1 NICK :" + nick + "\r\n", client);
+    // cree fonction qui va iterer sur channel list et modifier le nick 
+
+    this->updateChannelListNick(this->_ChannelList, client.getNick(), nick);
     client.setNick(nick);
     //Complete connexion.
     if (client.isSetup() && client.getWelcome() == 0)
@@ -159,16 +166,14 @@ void    server::joinFun(Client & client, std::vector<std::string> clientInput) {
         return ;
     }
     //Check if channel exist
-    for (std::vector<Channel>::iterator it = this->_ChannelList.begin(); it != this->_ChannelList.end(); it++)
+
+    if (this->channelExist(channelName))
     {
-        if (this->channelExist(channelName))
-        {
-            if (!(*it).addUser(client)) 
-                return;
-            else
-                this->welcomeToChannel(client, channelName);
+        if (!(this->getChannel(channelName).addUser(client)))
             return;
-        }
+        else
+            this->welcomeToChannel(client, channelName);
+        return;
     }
     //If not, then create it
     Channel channel(channelName);

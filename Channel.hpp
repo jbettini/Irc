@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/18 18:26:29 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/28 05:36:03 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/28 21:13:05 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,18 @@ class   Channel {
 
         std::vector<Client>    &     getChannelUser(void) {
                     return (this->_Users);
+        }
+
+        std::vector<std::string> &  getSilentList(void) {
+                    return (this->_silentUsers);
+        }
+
+        std::vector<std::string> &  getBannedList(void) {
+                    return (this->_banedUsers);
+        }
+
+        std::vector<std::string> &  getOpUserList(void) {
+                    return (this->_opUsers);
         }
 
         void                setOp(std::string client)
@@ -72,6 +84,8 @@ class   Channel {
         }
         bool                isOp(std::string client)
         {
+            // printVecStr(this->_opUsers);
+            //std::cout << std::endl << client << " = client " << std::endl;
             for (std::vector<std::string>::iterator it = this->_opUsers.begin(); it != this->_opUsers.end(); it++)
                 if ((*it) == client) 
                     return (true);

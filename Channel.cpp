@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/18 19:27:01 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/28 05:37:06 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/28 20:10:47 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,16 +34,20 @@ Channel::~Channel(void) {};
 
 bool    Channel::addUser(Client& client)
 {
+    std::cout << "In addUser "<< std::endl;
     for (std::vector<Client>::iterator it = this->_Users.begin(); it != this->_Users.end(); it++)
         if ((*it) == client)    
             return (false);
+    std::cout << "IN BAN addUser " << std::endl;
     if (isBanned(client.getNick()))
     {
         //TODO send error (IRC format)
+
         return (false);
     }
     client.addChannelToCLient(_nameChannel);
     this->_Users.push_back(client);
+    std::cout << "Out addUser "<< std::endl;
     return (true);
 }
 

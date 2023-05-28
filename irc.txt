@@ -54,6 +54,8 @@ ban
             MODE <CHANNEL> +b jb!@*.0.0.1.ip                                                        = ban commande send to serv
 
 
+    /connect 127.0.0.1 6667 6
+
 
 MODE #4242 +b   = affiche la ban list
 

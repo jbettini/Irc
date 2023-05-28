@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/11 16:44:55 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/28 05:31:33 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/28 21:13:07 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +114,7 @@ class   server {
                 void        welcomeToChannel(Client & client, std::string channelName);
                 void        sendToAllUserInChannel(std::string channelName, std::string msg, Client & client);
                 void        sendToAllClientChannel(Client & client, std::vector<std::string> clientInput, int check);
+                void        updateChannelListNick(std::vector<Channel> & channelList, std::string currentNick, std::string newNick);
                 void        modeFun(Client & client, std::vector<std::string> clientInput);
                 void        pingFun(Client & client, std::vector<std::string> clientInput);
                 void        nickFun(Client & client, std::vector<std::string> clientInput);
@@ -165,8 +166,10 @@ class   server {
 
                 bool            channelExist(std::string toFind) {
                     for (std::vector<Channel>::iterator it = this->_ChannelList.begin(); it != this->_ChannelList.end(); it++)
-                        if ((*it).getChannelName() == toFind)
+                        if ((*it).getChannelName() == toFind) {
+                            std::cout<< "true " << std::endl; 
                             return true;
+                        }
                     return false;
                 }
 
@@ -215,5 +218,6 @@ std::string                 extractUsernameModeFormat(const std::string& str);
 std::string                 getMsg(std::string first, std::string last, Client & client);
 bool                        checkFormat(const std::string& str);
 std::string                 getMode(std::vector<std::string> clientInput);
+void                        updateVectorStr(std::vector<std::string> & toUpdate, std::string oldStr, std::string newStr);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 19:29:12 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/28 19:35:51 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/28 20:35:59 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,4 +179,10 @@ std::string extractUsernameModeFormat(const std::string& str) {
         result += str[i];
     }
     return result;
+}
+
+void    updateVectorStr(std::vector<std::string> & toUpdate, std::string oldStr, std::string newStr) {
+    for (std::vector<std::string>::iterator it = toUpdate.begin(); it != toUpdate.end(); it++)
+        if (*it == oldStr)
+            *it = newStr;
 }
