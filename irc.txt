@@ -51,7 +51,7 @@ ban
 
             :nonstop.ix.me.dal.net 474 xtem_ #4242 :Cannot join channel (+b)                    = msg lorsque on essaye de rejoindre un channel duquel on est ban 
             :nonstop.ix.me.dal.net 404 xtem_ #4242 :Cannot send to channel                      = msg lorsque l'on se fait ban d'un channel dans lequel on est et que l'on essaye d'envoyer un message
-            MODE #42 +b *!*jb@*.0.0.1.ip                                                        = ban commande send to serv
+            MODE <CHANNEL> +b jb!@*.0.0.1.ip                                                        = ban commande send to serv
 
 
 
