@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   fun.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mgoudin <mgoudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 19:30:33 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/29 06:59:47 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/29 17:09:22 by mgoudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,6 @@ void    server::modeFun(Client & client, std::vector<std::string> clientInput) {
         this->banFun(client, clientInput);
     // else if (mode == "-b")
     //     this->unbanFun(client, clientInput);
-
 }
 
 void    server::pingFun(Client & client, std::vector<std::string> clientInput) {

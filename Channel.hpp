@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mgoudin <mgoudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/18 18:26:29 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/29 05:39:51 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/29 17:14:47 by mgoudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,15 @@ class   Channel {
         }
 
         void                addToBanList(std::string client) {
+            if (isBanned(client))
+                return;
             this->_banedUsers.push_back(client);
+        }
+
+        void                addToSilenceList(std::string client) {
+            if (isSilent(client))
+                return;
+            this->_silentUsers.push_back(client);
         }
 
         bool                isBanned(std::string client)
