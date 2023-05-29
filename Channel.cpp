@@ -35,7 +35,7 @@ Channel::~Channel(void) {};
 bool    Channel::addUser(Client& client)
 {
     for (std::vector<Client>::iterator it = this->_Users.begin(); it != this->_Users.end(); it++)
-        if ((*it) == client)    
+        if ((*it) == client)
             return (false);
     if (isBanned(client.getUsername()))
     {
@@ -67,13 +67,15 @@ void    Channel::unsilence(std::string   & client) {
     }
 }
 
-void    Channel::deop(std::string   & client) {
+
+bool    Channel::deop(std::string   & client) {
     for (std::vector<std::string>::iterator it = this->_opUsers.begin(); it != this->_opUsers.end();it++) {
         if (*it == client) {
             this->_opUsers.erase(it);
-            break ;
+            return true;
         }
     }
+    return false;
 }
 
 bool    Channel::unban(std::string   & client) {

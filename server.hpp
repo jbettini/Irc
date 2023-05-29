@@ -126,7 +126,8 @@ class   server {
                 void        quitFun(Client & client, std::vector<std::string> clientInput);
                 void        sendChannelMessage(Client & client, std::vector<std::string> clientInput);
                 void        privmsgFun(Client & client, std::vector<std::string> clientInput);
-                
+                void        opFun(Client & client, std::vector<std::string> clientInput);
+
                 
                 std::string getAllUsersChannel(Channel & channel);
                 
@@ -174,7 +175,6 @@ class   server {
                 bool            channelExist(std::string toFind) {
                     for (std::vector<Channel>::iterator it = this->_ChannelList.begin(); it != this->_ChannelList.end(); it++)
                         if ((*it).getChannelName() == toFind) {
-                            std::cout<< "true " << std::endl; 
                             return true;
                         }
                     return false;
@@ -203,6 +203,15 @@ class   server {
                         if ((*it).getNick() == nick)
                             return it->getUsername();
                     return nick;
+                }
+
+                void                   removeChannelToChannelList(std::string channelName) {
+                    for (std::vector<Channel>::iterator it = this->_ChannelList.begin(); it != this->_ChannelList.end(); it++)
+                        if ((*it).getChannelName() == channelName) {
+                            this->_ChannelList.erase(it);
+                            break ;
+                        }
+                            
                 }
 
                 int     MAX_CLIENTS;
@@ -239,5 +248,6 @@ std::string                 getMsg(std::string first, std::string last, Client &
 bool                        checkFormat(const std::string& str);
 std::string                 getMode(std::vector<std::string> clientInput);
 void                        updateVectorStr(std::vector<std::string> & toUpdate, std::string oldStr, std::string newStr);
+void                        printfChannel(Channel channel);
 
 #endif

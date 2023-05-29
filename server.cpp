@@ -95,29 +95,28 @@ void    server::run(void) {
     }
 }
 
-// void    server::sendToAllClientChannel(Client & client, std::vector<std::string> clientInput, int check)
-// {
-//     std::cout << " dans quit INPUT DE 0 ->" <<  clientInput[0] << "<-" << std::endl;
-//     if (check == 0) {
-//         for(std::vector<std::string>::iterator it = client.getAllChannel().begin(); it != client.getAllChannel().end(); it++){
-//             this->sendToAllUserInChannel(*it, ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1.ip QUIT :Quit: " + client.getNick() + "\r\n", client);
-//         }
-//     }
-//     else {
-//         for(std::vector<std::string>::iterator it = client.getAllChannel().begin(); it != client.getAllChannel().end(); it++){
-//             this->sendToAllUserInChannel(*it, ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1.ip QUIT :Quit: " + clientInput[1], client);
-//         }
-//     }
-//     disconnectClient(client);
-// }
+void    server::sendToAllClientChannel(Client & client, std::vector<std::string> clientInput, int check)
+{
+    if (check == 0) {
+        for(std::vector<std::string>::iterator it = client.getAllChannel().begin(); it != client.getAllChannel().end(); it++){
+            this->sendToAllUserInChannel(*it, ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1.ip QUIT :Quit: " + client.getNick() + "\r\n", client);
+        }
+    }
+    else {
+        for(std::vector<std::string>::iterator it = client.getAllChannel().begin(); it != client.getAllChannel().end(); it++){
+            this->sendToAllUserInChannel(*it, ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1.ip QUIT :Quit: " + clientInput[1], client);
+        }
+    }
+    disconnectClient(client);
+}
 
-// void    server::quitFun(Client & client, std::vector<std::string> clientInput) {
-//     if (clientInput.size() - 1 == 0)
-//         sendToAllClientChannel(client, clientInput, 0);
-//     else {
-//         sendToAllClientChannel(client, clientInput, 1);
-//     }
-// }
+void    server::quitFun(Client & client, std::vector<std::string> clientInput) {
+    if (clientInput.size() - 1 == 0)
+        sendToAllClientChannel(client, clientInput, 0);
+    else {
+        sendToAllClientChannel(client, clientInput, 1);
+    }
+}
 
 // :xtem!~xtem@6be1-f476-da9-512d-d573.rev.sfr.net MODE #4242 +b *!*jbe@*.rev.sfr.net
 
@@ -200,16 +199,25 @@ void    server::addChannel(std::string  name) {
     this->_ChannelList.push_back(newChannel);
 }
 
+
+
+
 void        server::removeUserInChannel(Client & client) {
+    std::vector<Channel> tmp;
     for (std::vector<std::string>::iterator it = client.getAllChannel().begin(); it != client.getAllChannel().end(); it++) {
         for (std::vector<Channel>::iterator it2 = this->_ChannelList.begin(); it2 != this->_ChannelList.end(); it2++) {
             if (it2->getChannelName() == *it) {
-                it2->removeUser(client);
-                if (it2->getChannelUser().size() == 0) {
-                    this->_ChannelList.erase(it2);
+                Channel currentChannel = *it2;
+                currentChannel.removeUser(client);
+                if (currentChannel.getChannelUser().size() == 0) {
+                    tmp.push_back(*it2);
                 }
             }
         }
+    }
+    for(std::vector<Channel>::iterator it = tmp.begin(); it != tmp.end(); it++) {
+        if ((this->channelExist((*it).getChannelName())))
+            this->removeChannelToChannelList((*it).getChannelName());
     }
 }
 

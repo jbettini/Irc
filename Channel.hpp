@@ -26,7 +26,7 @@ class   Channel {
         bool            addUser(Client& client);
         void            removeUser(Client   & client);
         void            unsilence(std::string   & client);
-        void            deop(std::string  & client);
+        bool            deop(std::string   & client);
         bool            unban(std::string   & client);
 
         std::string     &    getChannelName(void) {

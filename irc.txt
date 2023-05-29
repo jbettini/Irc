@@ -43,15 +43,11 @@ Cote Serv {
 Task :
 
 
-
-QUIT
 WHOIS
-MODE <Channel> +o
-MODE <Channel> -o
-
-
-MODE #4242 +b   = affiche la ban list
-MODE #4242 -b
+WHO
+NOTICE
+PART
+KICK
 
 syntax a avoir :
 

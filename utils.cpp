@@ -108,6 +108,19 @@ std::vector<std::string> splitBuffer(char* buffer,std::string delimiters) {
     return splited;
 }
 
+void    printfChannel(Channel channel){
+    std::cout << "channel = " << channel.getChannelName() << " - channel user size : " << channel.getChannelUser().size() << std::endl << std::endl;
+    std::cout << "Banned User" << std::endl;
+    printVecStr(channel.getBannedList());
+    std::cout << std::endl;
+    std::cout << "op User" << std::endl;
+    printVecStr(channel.getOpUserList());
+    std::cout << std::endl;
+    std::cout << "silentUser" << std::endl;
+    printVecStr(channel.getSilentList());
+    std::cout << std::endl;
+}
+
 bool checkNonAlphanumeric(const std::string& str) {
     for (std::string::const_iterator it = str.begin(); it != str.end(); ++it)
         if (!std::isalnum(*it) && (*it) != '_')

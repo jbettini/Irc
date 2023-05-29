@@ -16,6 +16,7 @@ void        server::welcomeMsg(Client & client){
     this->displayClient(":127.0.0.1 001 " +  client.getNick() + " :Vous êtes connecté avec succès à mon serveur\r\n", client);   
     client.setWelcome();
 }
+
 void    server::sendToAllUserInChannel(std::string channelName, std::string msg, Client & client) {
     for(std::vector<Channel>::iterator it = this->_ChannelList.begin(); it != this->_ChannelList.end(); it++) {
         if ((*it).getChannelName() == channelName) {

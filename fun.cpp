@@ -59,6 +59,51 @@ void    server::banFun(Client & client, std::vector<std::string> clientInput) {
     }
 }
 
+void    server::opFun(Client & client, std::vector<std::string> clientInput) {
+    std::string channelName = clientInput[1];
+    std::string userToOp;
+    Channel  &   channel = this->getChannel(channelName);
+    std::string mode = getMode(clientInput);
+    if (clientInput.size() == 3 && clientInput[2] == mode) {
+        std::cout << "In ban fun exception" << std::endl;
+        // afficher la liste des ban
+        return ;
+    }
+    if (!(this->channelExist(channelName)))
+        this->displayClient(":127.0.0.1 403 " + client.getNick() + " " + channelName + " :No such channel\r\n",client);
+    else if (!(channel.isOp(client.getNick()))) {
+        this->displayClient(":127.0.0.1 482 " + channelName + " :You're not channel operator\r\n", client);
+    }
+    else {
+        if (checkFormat(clientInput[3]))
+            userToOp = extractUsernameModeFormat(clientInput[3]);
+        else
+            userToOp = clientInput[3];
+    // test to ban an operator when op and deop is fine
+        if (!(this->checkNickExist(userToOp))){
+            return ;
+        }
+        else if (checkNonAlphanumeric(userToOp) || userToOp.size() > 9 ){
+            std::cout << "HERE !!!!!!!!!!!" << std::endl;
+            return ;
+        }
+        else {
+            std::string clientNick = client.getNick();
+            std::string clientUsername = client.getUsername();
+            if (mode == "+o") {
+                if (channel.isOp(userToOp))
+                    return ;
+                else
+                    channel.setOp(userToOp);
+            }
+            else if (mode == "-o" && (!(channel.deop(userToOp))))
+                    return ;
+            sendToAllUserInChannel(channelName, ":" + clientNick + "!~" + clientUsername + "@127.0.0.1 MODE " + channelName + " " + mode + " " + userToOp + "\r\n", client);
+            this->displayClient(                ":" + clientNick + "!~" + clientUsername + "@127.0.0.1 MODE " + channelName + " " + mode + " " + userToOp + "\r\n", client);
+        }
+    }
+}
+
 void    server::modeFun(Client & client, std::vector<std::string> clientInput) {
     std::string mode = getMode(clientInput);
     std::cout << " mode = -" << mode << "-"<< std::endl;
@@ -68,8 +113,8 @@ void    server::modeFun(Client & client, std::vector<std::string> clientInput) {
         this->displayClient(":127.0.0.1 221 " + client.getNick() + " :-i\r\n", client);
     else if (mode == "+b" || mode == "-b")
         this->banFun(client, clientInput);
-    // else if (mode == "-b")
-    //     this->unbanFun(client, clientInput);
+    else if (mode == "-o" || mode == "+o")
+        this->opFun(client, clientInput);
 }
 
 void    server::pingFun(Client & client, std::vector<std::string> clientInput) {
@@ -174,7 +219,7 @@ void        server::capFun(Client & client, std::vector<std::string> clientInput
 void    server::joinFun(Client & client, std::vector<std::string> clientInput) {
 
     if (clientInput.size() == 1)  {
-        this->displayClient(":127.0.0.1 461 " + client.getNick() + " PASS :Not enough parameters\r\n", client);
+        this->displayClient(":127.0.0.1 461 " + client.getNick() + " JOIN :Not enough parameters\r\n", client);
         return ;
     }
     const std::string channelName = std::string(clientInput[1]);
@@ -236,9 +281,6 @@ void    server::initFunLst(void)
     this->_FunLst["PRIVMSG"] = &server::privmsgFun;
     this->_FunLst["JOIN"] =  &server::joinFun;
     this->_FunLst["MODE"] = &server::modeFun;
-    // this->_FunLst["QUIT"] =  &server::quitFun;
-    // this->_FunLst["/unban"] = &server::;
-    // this->_FunLst["/exit"] = &server::;
-    // this->_FunLst["/silence"] = &server::;
-    // this->_FunLst["/unsilence"] = &server::;
+    this->_FunLst["QUIT"] =  &server::quitFun;
+    //this->_FunLst["/unban"] = &server::;
 }
