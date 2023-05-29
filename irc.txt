@@ -45,22 +45,21 @@ Task :
 
 
 QUIT
-WHOIS 
-unban:
-        :xtem!~xtem@6be1-f476-da9-512d-d573.rev.sfr.net MODE #eee -b feuf!*@*
-        MODE #4242 +b 
-
-    /connect 127.0.0.1 6667 6
+WHOIS
+MODE <Channel> +o
+MODE <Channel> -o
 
 
 MODE #4242 +b   = affiche la ban list
+MODE #4242 -b
 
 syntax a avoir :
 
-lorsque l'on se fait ban d'un channel dans lequel on est et que l'on essaye d'envoyer un message
 
 Patch :
 
 - Lorsque un utilisateur se deconnecte / quit / exit cela ferme le programme
 - Lorsque un utilisateur join plusieur channel bug parfois avec nc 
 - parfois le client irssi ne recois pas de welcome msg donc reste deconnecter
+
+/connect 127.0.0.1 6667 6
