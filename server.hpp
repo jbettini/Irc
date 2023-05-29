@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/11 16:44:55 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/29 00:39:08 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/29 06:59:55 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,7 +168,6 @@ class   server {
                         if (this->_ChannelList[i].getChannelName() == channelName)
                             return (this->_ChannelList[i]);
                     }
-                    throw ChannelNotFoundException();
                     return (this->_ChannelList[0]);
                 }
 

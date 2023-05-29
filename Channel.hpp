@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/18 18:26:29 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/28 23:17:17 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/29 05:39:51 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ class   Channel {
         void            removeUser(Client   & client);
         void            unsilence(std::string   & client);
         void            deop(std::string  & client);
-        void            unban(std::string   & client);
+        bool            unban(std::string   & client);
 
         std::string     &    getChannelName(void) {
                     return (this->_nameChannel);

@@ -25,9 +25,9 @@ Cote Serv {
 
     /kick: Permet d'expulser un utilisateur d'un canal. Par exemple, /kick #channel Utilisateur Raison expulsera "Utilisateur" du canal "#channel" avec la raison spécifiée.
 
-    /ban: Ajoute un bannissement pour un utilisateur ou un masque d'hôte. Par exemple, /ban #channel Utilisateur interdira à "Utilisateur" d'accéder au canal "#channel".
+    FAIT √ /ban: Ajoute un bannissement pour un utilisateur ou un masque d'hôte. Par exemple, /ban #channel Utilisateur interdira à "Utilisateur" d'accéder au canal "#channel".
 
-    /unban: Supprime un bannissement pour un utilisateur ou un masque d'hôte. Par exemple, /unban #channel Utilisateur lèvera l'interdiction pour "Utilisateur" sur le canal "#channel".
+    FAIT √ /unban: Supprime un bannissement pour un utilisateur ou un masque d'hôte. Par exemple, /unban #channel Utilisateur lèvera l'interdiction pour "Utilisateur" sur le canal "#channel".
 
     /op: Donne le statut d'opérateur à un utilisateur sur un canal. Par exemple, /op #channel Utilisateur donnera le statut d'opérateur à "Utilisateur" sur le canal "#channel".
 
@@ -46,13 +46,9 @@ Task :
 
 QUIT
 WHOIS 
-ban 
-            :xtem!~xtem@6be1-f476-da9-512d-d573.rev.sfr.net MODE #4242 +b *!*jbe@*.rev.sfr.net  = msg to send at all user in channel
-
-            :nonstop.ix.me.dal.net 474 xtem_ #4242 :Cannot join channel (+b)                    = msg lorsque on essaye de rejoindre un channel duquel on est ban 
-            :nonstop.ix.me.dal.net 404 xtem_ #4242 :Cannot send to channel                      = msg lorsque l'on se fait ban d'un channel dans lequel on est et que l'on essaye d'envoyer un message
-            MODE <CHANNEL> +b jb!@*.0.0.1.ip                                                        = ban commande send to serv
-
+unban:
+        :xtem!~xtem@6be1-f476-da9-512d-d573.rev.sfr.net MODE #eee -b feuf!*@*
+        MODE #4242 +b 
 
     /connect 127.0.0.1 6667 6
 

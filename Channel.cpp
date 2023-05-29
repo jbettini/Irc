@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/18 19:27:01 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/28 23:56:06 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/29 05:39:56 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,11 +76,12 @@ void    Channel::deop(std::string   & client) {
     }
 }
 
-void    Channel::unban(std::string   & client) {
+bool    Channel::unban(std::string   & client) {
     for (std::vector<std::string>::iterator it = this->_banedUsers.begin(); it != this->_banedUsers.end();it++) {
         if (*it == client) {
             this->_banedUsers.erase(it);
-            break ;
+            return true;
         }
     }
+    return false;
 }
