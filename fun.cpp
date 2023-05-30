@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   fun.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mgoudin <mgoudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 19:30:33 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/30 16:40:03 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/30 18:04:02 by mgoudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void    server::banFun(Client & client, std::vector<std::string> clientInput) {
     Channel  &   channel = this->getChannel(channelName);
     std::string mode = getMode(clientInput);
     if (clientInput.size() == 3 && clientInput[2] == mode) {
-        for ()
+        //for ()
         return ;
     }
     if (!(this->channelExist(channelName)))
@@ -331,22 +331,47 @@ void    server::topicFun(Client & client, std::vector<std::string> clientInput) 
     //If client isnt admin; isnt op in channel; and user cant change topic, return.
     if (!client.isAdmin() && !channel.isOp(client.getNick()) && !channel.canUserChangeTopic())
     {
-        return; //TODO
+        this->displayClient(":127.0.0.1 482 " + client.getNick() + " " + channel.getChannelName() + " :" + "You're not channel operator\r\n", client);
+        return;
     }
     channel.setTopic(topicName);
     this->displayClient(":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1" + " TOPIC " + channel.getChannelName() + " :" + topicName + "\r\n", client);
 }
 
-// /topic
-//:sakura.jp.as.dal.net 461 Guest51512 TOPIC :Not enough parameters
+void    server::inviteFun(Client & client, std::vector<std::string> clientInput) {
+    // Check if enought params (needs 2)
+    if (clientInput.size() < 3)
+    {
+        this->displayClient(":127.0.0.1 461 " + client.getNick() + " INVITE :" + "Not enough parameters\r\n", client);
+        return;
+    }
+    
+    const std::string invitedUser = std::string(clientInput[1]);
+    const std::string channel_str = std::string(clientInput[2]);
 
-// /topic name
-//:sakura.jp.as.dal.net 332 Guest51512 #prout :salut
-//:sakura.jp.as.dal.net 333 Guest51512 #prout Guest51512!~matt@157a-3894-3542-9a96-157a.129.62.ip 1685456081
+    //Send error if nick doesnt exist
+    if (!this->checkNickExist(invitedUser))
+    {
+        this->displayClient(":127.0.0.1 401 " + client.getNick() + " " + invitedUser + " :" + "No such nick/channel\r\n", client);
+        return;
+    }
+    //Send error if channel doesnt exist
+    if (!this->channelExist(channel_str))
+    {
+        this->displayClient(":127.0.0.1 401 " + client.getNick() + " " + channel_str + " :" + "No such nick/channel\r\n", client);
+        return;
+    }
+    
+    Client invitedClient = this->getClientWithNick(invitedUser); 
+    Channel channel = this->getChannel(channel_str);
+    
+    // What Client that send invite get:
+    this->displayClient(":127.0.0.1 341 " + client.getNick() + " " + invitedClient.getNick() + " " + channel.getChannelName() + "\r\n", client);
+    this->displayClient(":127.0.0.1 401 NOTICE @" + channel.getChannelName() + " :" + client.getNick() + " invited " + invitedClient.getNick() + " into channel " + channel.getChannelName() + "\r\n", client);
 
-// /topic name topics
-//:Guest51512!~matt@157a-3894-3542-9a96-157a.129.62.ip TOPIC #prout :salut
-
+    // What Client that receive invite get:
+    this->displayClient(":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1" + "INVITE " + invitedClient.getNick() + " :" + channel.getChannelName() + "\r\n", invitedClient);
+}
 
 void    server::initFunLst(void)
 {
@@ -364,6 +389,7 @@ void    server::initFunLst(void)
     this->_FunLst["WHO"] = &server::whoFun;
     this->_FunLst["WHOIS"] = &server::whoFun;
     this->_FunLst["TOPIC"] = &server::topicFun;
+    this->_FunLst["INVITE"] = &server::inviteFun;
     // this->_FunLst["LIST"] = &server::;
     // this->_FunLst["KICK"] = &server::;
 }

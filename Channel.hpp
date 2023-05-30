@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mgoudin <mgoudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/18 18:26:29 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/30 16:27:38 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/30 17:28:51 by mgoudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,12 +57,20 @@ class   Channel {
             return (this->_usersCanChangeTopic);
         }
 
+        bool        isInviteOnly(void) const {
+            return (this->_isInviteOnly);
+        }
+
         void    setTopic(const std::string topic) {
             this->_topic = topic;
         }
 
         void    setCanUserChangeTopic(bool canUserChangeTopic) {
             this->_usersCanChangeTopic = canUserChangeTopic;
+        }
+
+        void    setInviteOnly(bool inviteOnly) {
+            this->_isInviteOnly = inviteOnly;
         }
 
         void                setOp(std::string client)
@@ -78,6 +86,12 @@ class   Channel {
             this->_banedUsers.push_back(client);
         }
 
+        void                addToInviteList(std::string client) {
+            if (isInvited(client))
+                return;
+            this->_inviteUsers.push_back(client);
+        }
+
         void                addToSilenceList(std::string client) {
             if (isSilent(client))
                 return;
@@ -87,6 +101,14 @@ class   Channel {
         bool                isBanned(std::string client)
         {
             for (std::vector<std::string>::iterator it = this->_banedUsers.begin(); it != this->_banedUsers.end(); it++)
+                if ((*it) == client)
+                    return (true);
+            return (false);
+        }
+
+        bool                isInvited(std::string client)
+        {
+            for (std::vector<std::string>::iterator it = this->_inviteUsers.begin(); it != this->_inviteUsers.end(); it++)
                 if ((*it) == client)
                     return (true);
             return (false);
@@ -143,6 +165,7 @@ class   Channel {
                 std::vector<std::string>            _inviteUsers;
                 std::string                         _topic;
                 bool                                _usersCanChangeTopic;
+                bool                                _isInviteOnly;
 
 };
 

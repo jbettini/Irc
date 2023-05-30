@@ -42,6 +42,16 @@ KICK
 
 INVITE : 
 
+//:bitcoin.uk.eu.dal.net 461 mattzeb INVITE :Not enough parameters
+//:nonstop.ix.me.dal.net 401 mattbro matt :No such nick/channel
+
+//WHAT sender get
+//:nonstop.ix.me.dal.net 341 mattbro mgoudin #caca
+//:bitcoin.uk.eu.dal.net NOTICE @#caca :mattbro invited mgoudin into channel #caca
+
+//WHAT user get
+//:mgoudin!~mgoudin@157a-3894-3542-9a96-157a.129.62.ip INVITE mattbro :#cacaprout
+
 TOPIC : 
 
 // /topic
@@ -53,6 +63,10 @@ TOPIC :
 
 // /topic name topics
 :Guest51512!~matt@157a-3894-3542-9a96-157a.129.62.ip TOPIC #prout :salut
+
+
+// ERROR
+:bitcoin.uk.eu.dal.net 482 mattzeb #prout :You're not channel operator
 
 
 MODE Channel =          i: Set/remove Invite-only channel

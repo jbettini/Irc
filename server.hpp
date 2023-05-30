@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mgoudin <mgoudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/11 16:44:55 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/30 16:08:29 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/30 17:36:51 by mgoudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,6 +130,7 @@ class   server {
                 void        whoFun(Client & client, std::vector<std::string> clientInput);
                 void        listFun(Client & client, std::vector<std::string> clientInput);
                 void        topicFun(Client & client, std::vector<std::string> clientInput);
+                void        inviteFun(Client & client, std::vector<std::string> clientInput);
                 
                 std::string getAllUsersChannel(Channel & channel);
                 

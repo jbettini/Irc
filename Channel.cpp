@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mgoudin <mgoudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/18 19:27:01 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/30 15:48:11 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/30 17:25:52 by mgoudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 Channel::Channel(void) {}
 
-Channel::Channel(std::string name) : _nameChannel(name) {}
+Channel::Channel(std::string name) : _nameChannel(name), _usersCanChangeTopic(true), _isInviteOnly(false) {}
 
 Channel &    Channel::operator=(const Channel & rhs) {
     
@@ -23,6 +23,9 @@ Channel &    Channel::operator=(const Channel & rhs) {
     this->_banedUsers = rhs._banedUsers;
     this->_opUsers = rhs._opUsers;
     this->_Users = rhs._Users;
+    this->_topic = rhs._topic;
+    this->_usersCanChangeTopic = rhs._usersCanChangeTopic;
+    this->_isInviteOnly = rhs._isInviteOnly;
     return *this;
 }
 
