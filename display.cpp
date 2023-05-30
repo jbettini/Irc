@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 19:34:23 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/28 19:38:19 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/30 10:52:55 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,4 +40,36 @@ void    server::welcomeToChannel(Client & client, std::string channelName) {
 void    server::displayClient(std::string   msg, Client client) {
     std::cout << "msg = " << msg << std::endl;
     send(client.getCS(), msg.c_str(), msg.size(), 0);
+}
+
+void    printfChannel(Channel channel){
+    std::cout << "channel = " << channel.getChannelName() << " - channel user size : " << channel.getChannelUser().size() << std::endl << std::endl;
+    std::cout << "Banned User" << std::endl;
+    printVecStr(channel.getBannedList());
+    std::cout << std::endl;
+    std::cout << "op User" << std::endl;
+    printVecStr(channel.getOpUserList());
+    std::cout << std::endl;
+    std::cout << "silentUser" << std::endl;
+    printVecStr(channel.getSilentList());
+    std::cout << std::endl;
+}
+
+void    server::printChannel(void) {
+        std::cout << "Channel List : " << std::endl;
+    for (std::vector<Channel>::iterator it = _ChannelList.begin(); it != _ChannelList.end(); it++)
+        std::cout << "#" << it->getChannelName() << std::endl;
+}
+
+void printVecStr(std::vector<std::string> strings) {
+    for (size_t i = 0; i < strings.size(); ++i)
+        std::cout << "\" str = " + strings[i] + "\""<< std::endl;
+}
+
+void printClient(std::vector<Client> strings) {
+    for (size_t i = 0; i < strings.size(); ++i) {
+        std::cout << "ClientSocket : " << strings[i].getCS()<< std::endl;
+        std::cout << "ClientUsername : " << strings[i].getUsername() << std::endl;
+        std::cout << "ClientNick : " << "\"" << strings[i].getNick() << "\"" <<std::endl;
+    }
 }

@@ -6,31 +6,11 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 19:29:12 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/30 10:44:43 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/30 10:52:49 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.hpp"
-
-
-void    server::printChannel(void) {
-        std::cout << "Channel List : " << std::endl;
-    for (std::vector<Channel>::iterator it = _ChannelList.begin(); it != _ChannelList.end(); it++)
-        std::cout << "#" << it->getChannelName() << std::endl;
-}
-
-void printVecStr(std::vector<std::string> strings) {
-    for (size_t i = 0; i < strings.size(); ++i)
-        std::cout << "\" str = " + strings[i] + "\""<< std::endl;
-}
-
-void printClient(std::vector<Client> strings) {
-    for (size_t i = 0; i < strings.size(); ++i) {
-        std::cout << "ClientSocket : " << strings[i].getCS()<< std::endl;
-        std::cout << "ClientUsername : " << strings[i].getUsername() << std::endl;
-        std::cout << "ClientNick : " << "\"" << strings[i].getNick() << "\"" <<std::endl;
-    }
-}
 
 int findString(std::vector<std::string> strings, std::string toFind) {
     for (std::vector<std::string>::iterator it = strings.begin(); it != strings.end();it++)
@@ -106,19 +86,6 @@ std::vector<std::string> splitBuffer(char* buffer,std::string delimiters) {
     splited.push_back(tmp);
     splited = removeDelimiterStrings(removeWhitespace(splited), delimiters);
     return splited;
-}
-
-void    printfChannel(Channel channel){
-    std::cout << "channel = " << channel.getChannelName() << " - channel user size : " << channel.getChannelUser().size() << std::endl << std::endl;
-    std::cout << "Banned User" << std::endl;
-    printVecStr(channel.getBannedList());
-    std::cout << std::endl;
-    std::cout << "op User" << std::endl;
-    printVecStr(channel.getOpUserList());
-    std::cout << std::endl;
-    std::cout << "silentUser" << std::endl;
-    printVecStr(channel.getSilentList());
-    std::cout << std::endl;
 }
 
 bool checkNonAlphanumeric(const std::string& str) {

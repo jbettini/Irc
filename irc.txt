@@ -6,22 +6,21 @@ Cote Serv {
 
     Client 
 
-    FAIT √ /nick: Change votre pseudonyme. Par exemple, /nick MonPseudo modifiera votre pseudonyme en "MonPseudo". ////////////////////// Fait
+    FAIT √ /nick: Change votre pseudonyme. Par exemple, /nick MonPseudo modifiera votre pseudonyme en "MonPseudo".
 
     /list: Affiche la liste des canaux disponibles sur le serveur.
 
     FAIT √ /join: Rejoint un canal spécifique. Par exemple, /join #channel vous fera rejoindre le canal "#channel".
 
-    /part: Quitte un canal. Par exemple, /part #channel vous fera quitter le canal "#channel".
+    FAIT √ /part: Quitte un canal. Par exemple, /part #channel vous fera quitter le canal "#channel".
 
     FAIT √ /msg: Envoie un message privé à un utilisateur spécifique. Par exemple, /msg Utilisateur Salut ! enverra le message "Salut !" à "Utilisateur".
 
-
+    
 
 
     Operator
 
-    /kill: Tue la connexion d'un utilisateur sur le serveur IRC. Par exemple, /kill Utilisateur Raison déconnectera "Utilisateur" du serveur IRC avec la raison spécifiée.
 
     /kick: Permet d'expulser un utilisateur d'un canal. Par exemple, /kick #channel Utilisateur Raison expulsera "Utilisateur" du canal "#channel" avec la raison spécifiée.
 
@@ -29,13 +28,9 @@ Cote Serv {
 
     FAIT √ /unban: Supprime un bannissement pour un utilisateur ou un masque d'hôte. Par exemple, /unban #channel Utilisateur lèvera l'interdiction pour "Utilisateur" sur le canal "#channel".
 
-    /op: Donne le statut d'opérateur à un utilisateur sur un canal. Par exemple, /op #channel Utilisateur donnera le statut d'opérateur à "Utilisateur" sur le canal "#channel".
+    FAIT √ /op: Donne le statut d'opérateur à un utilisateur sur un canal. Par exemple, /op #channel Utilisateur donnera le statut d'opérateur à "Utilisateur" sur le canal "#channel".
 
-    /deop: Retire le statut d'opérateur à un utilisateur sur un canal. Par exemple, /deop #channel Utilisateur retirera le statut d'opérateur à "Utilisateur" sur le canal "#channel".
-
-    /silence: Empêche un utilisateur de publier des messages sur un canal. Par exemple, /silence #channel Utilisateur silencera "Utilisateur" sur le canal "#channel".
-
-    /unsilence: Lève le silence pour un utilisateur sur un canal. Par exemple, /unsilence #channel Utilisateur permettra à "Utilisateur" de publier des messages à nouveau sur le canal "#channel".
+    FAIT √ /deop: Retire le statut d'opérateur à un utilisateur sur un canal. Par exemple, /deop #channel Utilisateur retirera le statut d'opérateur à "Utilisateur" sur le canal "#channel".
 
 }
 
@@ -45,14 +40,11 @@ Task :
 
 WHOIS
 WHO
-NOTICE
-PART
 KICK
         
 LIST = 
         ERR_NOSUCHSERVER                RPL_LISTSTART
            RPL_LIST                        RPL_LISTEND
-           :jbe!~jbe@157a-3894-3542-9a96-157a.129.62.ip PART #cafe
 
 AFFICHER LIST BAN OU LIST OP
 
@@ -61,9 +53,10 @@ syntax a avoir :
 
 Patch :
 
-- Lorsque un utilisateur se deconnecte / quit / exit cela ferme le programme
+
 - Lorsque un utilisateur join plusieur channel bug parfois avec nc 
-- parfois le client irssi ne recois pas de welcome msg donc reste deconnecter
+
+
 /connect 127.0.0.1 6667 6
 
 

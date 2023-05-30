@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 19:30:33 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/30 10:48:54 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/30 11:18:19 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -290,7 +290,29 @@ void    server::partFun(Client & client, std::vector<std::string> clientInput) {
             this->removeChannelToChannelList(channel.getChannelName());
     }
 }
-//
+
+void    server::whoFun(Client & client, std::vector<std::string> clientInput) {
+    if (client.getNick() != "" || clientInput[0] != "")
+        return ;
+    return ;
+}
+
+void    server::noticeFun(Client & client, std::vector<std::string> clientInput) {
+    if (clientInput.size() == 2)
+        this->displayClient(":127.0.0.1 412 " + client.getNick() + " :Cannot text to send\r\n", client);
+    else if (clientInput.size() == 1)
+        this->displayClient(":127.0.0.1 411 " + client.getNick() + " :No recipient given (NOTICE)\r\n", client);
+    else if (checkNameChannel(clientInput[1]) && this->channelExist(clientInput[1])) {
+        if (this->getChannel(clientInput[1]).isBanned(client.getUsername()) || !(this->getChannel(clientInput[1]).isUser(client.getNick())))
+            return ;
+        else 
+            sendToAllUserInChannel(clientInput[1], ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1 PRIVMSG " + clientInput[1] + " " + catVecStr(clientInput, 3) + "\r\n", client);
+    }
+    else if (this->checkNickExist(clientInput[1]))
+        this->displayClient(":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1 PRIVMSG " + clientInput[1] + " " + catVecStr(clientInput, 3) + "\r\n", client);
+    else
+        return ;
+}
 
 void    server::initFunLst(void)
 {
@@ -304,5 +326,10 @@ void    server::initFunLst(void)
     this->_FunLst["MODE"] = &server::modeFun;
     this->_FunLst["QUIT"] =  &server::quitFun;
     this->_FunLst["PART"] = &server::partFun;
-    //this->_FunLst["/unban"] = &server::;
+    this->_FunLst["NOTICE"] = &server::noticeFun;
+    this->_FunLst["WHO"] = &server::whoFun;
+    this->_FunLst["WHOIS"] = &server::whoFun;
+    // this->_FunLst[""] = &server::;
+    // this->_FunLst["LIST"] = &server::;
+    // this->_FunLst["KICK"] = &server::;
 }
