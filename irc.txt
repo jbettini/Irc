@@ -74,7 +74,7 @@ MODE Channel =          i: Set/remove Invite-only channel
                         k: Set/remove the channel key (password)
                         l: Set/remove the user limit to channel
 
-// i
+// t
 
 //:lair.nl.eu.dal.net 403 channelName -i :No such channel
 //:yomax!~yomax@157a-3894-3542-9a96-157a.129.62.ip MODE #cacaprout -i

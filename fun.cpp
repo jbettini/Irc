@@ -6,7 +6,7 @@
 /*   By: mgoudin <mgoudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 19:30:33 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/30 20:13:22 by mgoudin          ###   ########.fr       */
+/*   Updated: 2023/05/30 20:16:18 by mgoudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,9 +119,10 @@ void    server::setTopicRestrictionFun(Client & client, std::vector<std::string>
         channel.setCanUserChangeTopic(false);
     else
         channel.setCanUserChangeTopic(true);
+        
+    //Sending confirmation to client
+    this->displayClient(":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1" + "MODE " + channel.getChannelName() + " " + i_str + "\r\n", client);
 }
-
-//:lair.nl.eu.dal.net 403 channelName -i :No such channel
 
 void    server::modeFun(Client & client, std::vector<std::string> clientInput) {
     std::string mode = getMode(clientInput);
