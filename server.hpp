@@ -6,7 +6,7 @@
 /*   By: mgoudin <mgoudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/11 16:44:55 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/30 17:36:51 by mgoudin          ###   ########.fr       */
+/*   Updated: 2023/05/30 20:05:47 by mgoudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,6 +131,7 @@ class   server {
                 void        listFun(Client & client, std::vector<std::string> clientInput);
                 void        topicFun(Client & client, std::vector<std::string> clientInput);
                 void        inviteFun(Client & client, std::vector<std::string> clientInput);
+                void        setTopicRestrictionFun(Client & client, std::vector<std::string> clientInput);
                 
                 std::string getAllUsersChannel(Channel & channel);
                 

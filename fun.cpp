@@ -6,7 +6,7 @@
 /*   By: mgoudin <mgoudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 19:30:33 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/30 18:05:12 by mgoudin          ###   ########.fr       */
+/*   Updated: 2023/05/30 20:13:22 by mgoudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,35 @@ void    server::opFun(Client & client, std::vector<std::string> clientInput) {
     }
 }
 
+void    server::setTopicRestrictionFun(Client & client, std::vector<std::string> clientInput) {
+    const std::string channel_str = clientInput[1];
+    const std::string i_str = clientInput[1];
+
+    // Check if channel exist
+    if (!this->channelExist(channel_str))
+    {
+        this->displayClient(":127.0.0.1 403 " + channel_str + " " + i_str + " :No such channel\r\n", client);
+        return;
+    }
+    
+    Channel channel = this->getChannel(channel_str);
+
+    // If user is not op, he cant change channel restriction.
+    if (!channel.isOp(client.getNick()))
+    {
+        this->displayClient(":127.0.0.1 482 " + client.getNick() + " " + channel.getChannelName() + " :" + "You're not channel operator\r\n", client);
+        return;
+    }
+
+    // Set restriction
+    if (i_str == "-t")
+        channel.setCanUserChangeTopic(false);
+    else
+        channel.setCanUserChangeTopic(true);
+}
+
+//:lair.nl.eu.dal.net 403 channelName -i :No such channel
+
 void    server::modeFun(Client & client, std::vector<std::string> clientInput) {
     std::string mode = getMode(clientInput);
     std::cout << " mode = -" << mode << "-"<< std::endl;
@@ -105,6 +134,8 @@ void    server::modeFun(Client & client, std::vector<std::string> clientInput) {
         this->banFun(client, clientInput);
     else if (mode == "-o" || mode == "+o")
         this->opFun(client, clientInput);
+    else if (mode == "-t" || mode == "+t")
+        this->setTopicRestrictionFun(client, clientInput);
 }
 
 void    server::pingFun(Client & client, std::vector<std::string> clientInput) {
