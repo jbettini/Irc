@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/11 16:44:55 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/29 06:59:55 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/30 10:44:40 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,8 +91,6 @@
 
 class   server {
 
-
-
     public :
                 server(void);
                 server(server & rhs);
@@ -127,6 +125,7 @@ class   server {
                 void        sendChannelMessage(Client & client, std::vector<std::string> clientInput);
                 void        privmsgFun(Client & client, std::vector<std::string> clientInput);
                 void        opFun(Client & client, std::vector<std::string> clientInput);
+                void        partFun(Client & client, std::vector<std::string> clientInput);
 
                 
                 std::string getAllUsersChannel(Channel & channel);
@@ -249,5 +248,6 @@ bool                        checkFormat(const std::string& str);
 std::string                 getMode(std::vector<std::string> clientInput);
 void                        updateVectorStr(std::vector<std::string> & toUpdate, std::string oldStr, std::string newStr);
 void                        printfChannel(Channel channel);
+std::vector<std::string>    removeFirstCharacterIfColon(std::vector<std::string>& strings);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 19:29:12 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/28 23:00:52 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/30 10:44:43 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,7 +151,6 @@ std::string catVecStr(std::vector<std::string> toCat, int idx) {
         if (it + 1 != toCat.end())
             result += " ";
     }
-    std::cout << "MSG : " << result << std::endl;
     return result;
 }
 
@@ -197,4 +196,10 @@ void    updateVectorStr(std::vector<std::string> & toUpdate, std::string oldStr,
     for (std::vector<std::string>::iterator it = toUpdate.begin(); it != toUpdate.end(); it++)
         if (*it == oldStr)
             *it = newStr;
+}
+
+std::vector<std::string> removeFirstCharacterIfColon(std::vector<std::string>& strings) {
+    if (strings.size() >= 3 && !strings[2].empty() && strings[2][0] == ':')
+        strings[2] = strings[2].substr(1);
+    return strings;
 }

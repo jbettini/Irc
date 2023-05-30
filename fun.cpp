@@ -3,15 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   fun.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mgoudin <mgoudin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 19:30:33 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/29 17:09:22 by mgoudin          ###   ########.fr       */
+/*   Updated: 2023/05/30 10:48:54 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.hpp"
 
+void    server::quitFun(Client & client, std::vector<std::string> clientInput) {
+    if (clientInput.size() - 1 == 0)
+        sendToAllClientChannel(client, clientInput, 0);
+    else
+        sendToAllClientChannel(client, clientInput, 1);
+}
 
 void    server::banFun(Client & client, std::vector<std::string> clientInput) {
     std::string channelName = clientInput[1];
@@ -33,11 +39,8 @@ void    server::banFun(Client & client, std::vector<std::string> clientInput) {
             userToBan = extractUsernameModeFormat(clientInput[3]);
         else
             userToBan = this->getUsernameByNick(clientInput[3]);
-    // test to ban an operator when op and deop is fine
-        if (this->checkUsernameExist(userToBan) && channel.isOp(this->getClientWithUser(userToBan).getNick())){
-            std::cout << "user is op\n";
+        if (this->checkUsernameExist(userToBan) && channel.isOp(this->getClientWithUser(userToBan).getNick()))
             return ;
-        }
         else if (checkNonAlphanumeric(userToBan) || userToBan.size() > 9 )
             return ;
         else {
@@ -50,9 +53,7 @@ void    server::banFun(Client & client, std::vector<std::string> clientInput) {
                     channel.addToBanList(userToBan);
             }
             else if (mode == "-b" && (!(channel.unban(userToBan))))
-                    return ;
-            std::cout << "Wesh " << std::endl;
-                    //:xtem!~xtem@6be1-f476-da9-512d-d573.rev.sfr.net MODE #eee -b feuf!*@*
+                return ;
             sendToAllUserInChannel(channelName, ":" + clientNick + "!~" + clientUsername + "@127.0.0.1 MODE " + channelName + " " + mode + " " + userToBan + "!*@*\r\n", client);
             this->displayClient(                ":" + clientNick + "!~" + clientUsername + "@127.0.0.1 MODE " + channelName + " " + mode + " " + userToBan + "!*@*\r\n", client);
         }
@@ -71,22 +72,17 @@ void    server::opFun(Client & client, std::vector<std::string> clientInput) {
     }
     if (!(this->channelExist(channelName)))
         this->displayClient(":127.0.0.1 403 " + client.getNick() + " " + channelName + " :No such channel\r\n",client);
-    else if (!(channel.isOp(client.getNick()))) {
+    else if (!(channel.isOp(client.getNick())))
         this->displayClient(":127.0.0.1 482 " + channelName + " :You're not channel operator\r\n", client);
-    }
     else {
         if (checkFormat(clientInput[3]))
             userToOp = extractUsernameModeFormat(clientInput[3]);
         else
             userToOp = clientInput[3];
-    // test to ban an operator when op and deop is fine
-        if (!(this->checkNickExist(userToOp))){
+        if (!(this->checkNickExist(userToOp)))
             return ;
-        }
-        else if (checkNonAlphanumeric(userToOp) || userToOp.size() > 9 ){
-            std::cout << "HERE !!!!!!!!!!!" << std::endl;
+        else if (checkNonAlphanumeric(userToOp) || userToOp.size() > 9 )
             return ;
-        }
         else {
             std::string clientNick = client.getNick();
             std::string clientUsername = client.getUsername();
@@ -147,7 +143,6 @@ void    server::nickFun(Client & client, std::vector<std::string> clientInput) {
     if (client.getWelcome() == 1)
         this->displayClient(":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1 NICK :" + nick + "\r\n", client);
     // cree fonction qui va iterer sur channel list et modifier le nick 
-
     this->updateChannelListNick(this->_ChannelList, client.getNick(), nick);
     client.setNick(nick);
     //Complete connexion.
@@ -232,7 +227,6 @@ void    server::joinFun(Client & client, std::vector<std::string> clientInput) {
         return ;
     }
     //Check if channel exist
-
     if (this->channelExist(channelName))
     {
         if (!(this->getChannel(channelName).addUser(client)))
@@ -257,10 +251,10 @@ void    server::privmsgFun(Client & client, std::vector<std::string> clientInput
     if (clientInput.size() == 2)
         this->displayClient(":127.0.0.1 412 " + client.getNick() + " :Cannot text to send\r\n", client);
     else if (clientInput.size() == 1)
-        this->displayClient(":127.0.0.1 412 " + client.getNick() + " :No recipient given (PRIVMSG)\r\n", client);
+        this->displayClient(":127.0.0.1 411 " + client.getNick() + " :No recipient given (PRIVMSG)\r\n", client);
     else if (checkNameChannel(clientInput[1]) && this->channelExist(clientInput[1])) {
         // if is ban or not
-        if (this->getChannel(clientInput[1]).isBanned(client.getUsername()))
+        if (this->getChannel(clientInput[1]).isBanned(client.getUsername()) || !(this->getChannel(clientInput[1]).isUser(client.getNick())))
             this->displayClient(":127.0.0.1 404 " + clientInput[1] + " :Cannot send to channel\r\n", client);
         else 
             sendToAllUserInChannel(clientInput[1], ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1 PRIVMSG " + clientInput[1] + " " + catVecStr(clientInput, 3) + "\r\n", client);
@@ -270,6 +264,33 @@ void    server::privmsgFun(Client & client, std::vector<std::string> clientInput
     else
         this->displayClient(":127.0.0.1 401 " + client.getNick() + " " + clientInput[1] + " :No such nick/channel\r\n", client);
 }
+
+void    server::partFun(Client & client, std::vector<std::string> clientInput) {
+    if (clientInput.size() == 1)  {
+        this->displayClient(":127.0.0.1 461 " + client.getNick() + " PART :Not enough parameters\r\n", client);
+        return ;
+    }
+    else if (!(this->channelExist(clientInput[1])))
+        this->displayClient(":127.0.0.1 403 " + client.getNick() + " " + clientInput[1] + " :No such channel\r\n",client);
+    else if (!(this->getChannel(clientInput[1]).isUser(client.getNick())))
+        this->displayClient(":127.0.0.1 442 " + client.getNick() + " " + clientInput[1] + " :You're not on that channel\r\n",client);
+    else {
+        Channel channel = this->getChannel(clientInput[1]);
+        channel.removeUser(client);
+        std::string msg =  ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1 PART " + channel.getChannelName();
+        if (clientInput.size() > 2) {
+            sendToAllUserInChannel(channel.getChannelName(), msg + " " + catVecStr(removeFirstCharacterIfColon(clientInput), 2) + "\r\n", client);
+            this->displayClient(msg + " " + catVecStr(removeFirstCharacterIfColon(clientInput), 2) + "\r\n", client);
+        }
+        else {
+            sendToAllUserInChannel(channel.getChannelName(), msg + "\r\n", client);
+            this->displayClient(msg + "\r\n", client);
+        }
+        if (channel.getChannelUser().size() == 0)
+            this->removeChannelToChannelList(channel.getChannelName());
+    }
+}
+//
 
 void    server::initFunLst(void)
 {
@@ -282,5 +303,6 @@ void    server::initFunLst(void)
     this->_FunLst["JOIN"] =  &server::joinFun;
     this->_FunLst["MODE"] = &server::modeFun;
     this->_FunLst["QUIT"] =  &server::quitFun;
+    this->_FunLst["PART"] = &server::partFun;
     //this->_FunLst["/unban"] = &server::;
 }

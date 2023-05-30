@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mgoudin <mgoudin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/18 18:26:29 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/29 17:14:47 by mgoudin          ###   ########.fr       */
+/*   Updated: 2023/05/30 01:58:55 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,8 +92,6 @@ class   Channel {
         }
         bool                isOp(std::string client)
         {
-            // printVecStr(this->_opUsers);
-            //std::cout << std::endl << client << " = client " << std::endl;
             for (std::vector<std::string>::iterator it = this->_opUsers.begin(); it != this->_opUsers.end(); it++)
                 if ((*it) == client) 
                     return (true);
@@ -102,12 +100,16 @@ class   Channel {
 
         void    sendMessage(Client& client, std::string msg)
         {
-            msg = client.getNick() + ": " + msg + "\r\n";
             for (std::vector<Client>::iterator it = this->_Users.begin(); it != this->_Users.end(); it++)
-            {
                 if ((it)->getCS() != client.getCS())
                     send((*it).getCS(), msg.c_str(), msg.size(), 0);
-            }
+        }
+
+        bool    isUser(std::string nick) {
+            for (std::vector<Client>::iterator it = this->_Users.begin(); it != this->_Users.end(); it++)
+                if ((*it).getNick() == nick) 
+                    return (true);
+            return (false);
         }
 
         //OPERATORS

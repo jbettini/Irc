@@ -48,6 +48,13 @@ WHO
 NOTICE
 PART
 KICK
+        
+LIST = 
+        ERR_NOSUCHSERVER                RPL_LISTSTART
+           RPL_LIST                        RPL_LISTEND
+           :jbe!~jbe@157a-3894-3542-9a96-157a.129.62.ip PART #cafe
+
+AFFICHER LIST BAN OU LIST OP
 
 syntax a avoir :
 
@@ -57,5 +64,8 @@ Patch :
 - Lorsque un utilisateur se deconnecte / quit / exit cela ferme le programme
 - Lorsque un utilisateur join plusieur channel bug parfois avec nc 
 - parfois le client irssi ne recois pas de welcome msg donc reste deconnecter
-
 /connect 127.0.0.1 6667 6
+
+
+
+

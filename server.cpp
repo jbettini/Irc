@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mgoudin <mgoudin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:43:40 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/29 17:08:54 by mgoudin          ###   ########.fr       */
+/*   Updated: 2023/05/30 08:28:35 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,38 +47,34 @@ void    server::run(void) {
     ClientFd[0].events = POLLIN;
     this->_ClientFd = ClientFd;
     std::cout << "Server Irc Operationel !" << std::endl;
-    
     while(true) {
-        // Attente des événements
+    // Attente des événements
         int event = poll(ClientFd, this->MAX_CLIENTS + 1, -1);
         if (event < 0)
             throw pollException();
-        // / Vérification des nouvelles connexions
+    // Vérification des nouvelles connexions
         if (ClientFd[0].revents & POLLIN) {
             if ((newClient = accept(this->_socket, 0, 0)) < 0)
                 throw acceptException();
             else
                 std::cout << "new Client" << std::endl;
-                
-            // Ajout du nouveau Client à la liste
+    // Ajout du nouveau Client à la liste
             for (int i = 1; i < this->MAX_CLIENTS + 1; i++)
             {
                 if (ClientFd[i].fd == 0) {
                     ClientFd[i].fd = newClient;
                     ClientFd[i].events = POLLIN;
-                    
                     Client newUser(newClient, i);
                     this->_ClientList.push_back(newUser);
                     break;
                 }
             }
         }
-        // Lecture et traitement des données des Clients connectés
+    // Lecture et traitement des données des Clients connectés
         for (int i = 1; i < MAX_CLIENTS + 1; i++) {
             if (ClientFd[i].fd > 0 && ClientFd[i].revents & POLLIN) {
                 size_t bytesRead = recv(ClientFd[i].fd, buffer, this->MAX_BUFFER_SIZE, 0);
                 buffer[bytesRead] = '\0';
-
                 if (buffer[0] == 10 && buffer[1] == '\0')
                     break;
                 if (bytesRead < 0)
@@ -87,7 +83,6 @@ void    server::run(void) {
                     this->disconnectClient(this->getClient(ClientFd[i].fd));
                 else {
                     std::cout << buffer << std::endl;
-                    // std::cout << ClientFd[i].fd << " ClientSocket" << std::endl;
                     this->execInput(splitBuffer(buffer, " \v\n\t\r\f"),  (this->getClient(ClientFd[i].fd)));
                 }
             }
@@ -109,15 +104,6 @@ void    server::sendToAllClientChannel(Client & client, std::vector<std::string>
     }
     disconnectClient(client);
 }
-
-void    server::quitFun(Client & client, std::vector<std::string> clientInput) {
-    if (clientInput.size() - 1 == 0)
-        sendToAllClientChannel(client, clientInput, 0);
-    else {
-        sendToAllClientChannel(client, clientInput, 1);
-    }
-}
-
 // :xtem!~xtem@6be1-f476-da9-512d-d573.rev.sfr.net MODE #4242 +b *!*jbe@*.rev.sfr.net
 
 
@@ -157,21 +143,17 @@ void    server::init_socket(void) {
     this->_socket = socket(AF_INET, SOCK_STREAM, 0);
     if (this->_socket == -1)
         throw socketException();
-
     // Parametrage du socket
     int reuse = 1;
     if (setsockopt(this->_socket, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0)
         throw socketException();
-    
     // Configuration de l'adresse serveur
     this->_serverAddress.sin_family = AF_INET;
     this->_serverAddress.sin_addr.s_addr = INADDR_ANY;
     this->_serverAddress.sin_port = htons(this->_port);
-
     // Attachement du socket à l'adresse et au port
     if (bind(this->_socket, reinterpret_cast<struct sockaddr*>(&(this->_serverAddress)), sizeof(this->_serverAddress)) < 0)
         throw bindException();
-    
     // Écoute des connexions entrantes
     if (listen(this->_socket, this->MAX_CLIENTS) < 0)
         throw listenException();
@@ -222,6 +204,8 @@ void        server::removeUserInChannel(Client & client) {
 }
 
 // Quand un user change de nick et qu'il fait parti d'un channel mettre a . jour tout les vecteur des channel ou il se trouve
+
+
 
 void        server::updateChannelListNick(std::vector<Channel>  & channelList, std::string currentNick, std::string newNick) {
     for (std::vector<Channel>::iterator it = channelList.begin(); it != channelList.end(); it++) {
