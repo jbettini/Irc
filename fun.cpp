@@ -6,7 +6,7 @@
 /*   By: mgoudin <mgoudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 19:30:33 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/30 20:16:18 by mgoudin          ###   ########.fr       */
+/*   Updated: 2023/05/30 20:24:03 by mgoudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,13 +124,48 @@ void    server::setTopicRestrictionFun(Client & client, std::vector<std::string>
     this->displayClient(":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1" + "MODE " + channel.getChannelName() + " " + i_str + "\r\n", client);
 }
 
+void    server::handleModeiFun(Client & client, std::vector<std::string> clientInput) {
+    const std::string channel_or_client_str = clientInput[1];
+    const std::string i_str = clientInput[1];
+    
+    // If nick exist, client sent +i/-i for invisible mode
+    if (this->checkNickExist(channel_or_client_str))
+    {
+        this->displayClient(":127.0.0.1 221 " + client.getNick() + " :" + i_str + "\r\n", client);
+        return;
+    }
+    // else, client sent +i/-i for invite mode on channel;
+    
+    // Check if channel exist
+    if (!this->channelExist(channel_or_client_str))
+    {
+        this->displayClient(":127.0.0.1 403 " + channel_or_client_str + " " + i_str + " :No such channel\r\n", client);
+        return;
+    }
+
+    Channel channel = this->getChannel(channel_or_client_str);
+
+    // If user is not op, he cant change channel restriction.
+    if (!channel.isOp(client.getNick()))
+    {
+        this->displayClient(":127.0.0.1 482 " + client.getNick() + " " + channel.getChannelName() + " :" + "You're not channel operator\r\n", client);
+        return;
+    }
+
+    // Set restriction
+    if (i_str == "-i")
+        channel.setInviteOnly(false);
+    else
+        channel.setInviteOnly(true);
+    //Sending confirmation to client
+    this->displayClient(":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1" + "MODE " + channel.getChannelName() + " " + i_str + "\r\n", client);
+}
+
 void    server::modeFun(Client & client, std::vector<std::string> clientInput) {
     std::string mode = getMode(clientInput);
     std::cout << " mode = -" << mode << "-"<< std::endl;
-    if (mode == "+i")
-        this->displayClient(":127.0.0.1 221 " + client.getNick() + " :+i\r\n", client);
-    else if (mode == "-i")
-        this->displayClient(":127.0.0.1 221 " + client.getNick() + " :-i\r\n", client);
+    if (mode == "+i" || mode == "-i")
+        this->handleModeiFun(client, clientInput);
     else if (mode == "+b" || mode == "-b")
         this->banFun(client, clientInput);
     else if (mode == "-o" || mode == "+o")
