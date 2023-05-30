@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mgoudin <mgoudin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/17 18:51:52 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/29 16:56:14 by mgoudin          ###   ########.fr       */
+/*   Updated: 2023/05/30 15:49:58 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,18 +20,6 @@ Client::Client(void) :    _ClientSocket(0), _type(USER), _pollFd(-1), _username(
 
 Client::Client(int socketNum, int pollFd) :   _ClientSocket(socketNum), _type(USER), _pollFd(pollFd), _username("*"), _nick("*"), _pass(0), _welcome(0), _admin(false) {
 }
-
-// void    *ping(void * args)
-// {
-//     ThreadData* data = static_cast<ThreadData*>(args);
-//     int fd = data->value;
-//     while(1)
-//     {
-//         std::cout << "ping" << fd << std::endl;
-//         send(fd, "PING 127.0.0.1\r\n", 17, 0);
-//         sleep(10);
-//     }
-// }
 
 Client &    Client::operator=(const Client & rhs) {
     
@@ -53,14 +41,6 @@ bool Client::isSetup(void) const {
         return (0);
     return (1);
 }
-
-// void Client::startPinging()
-// {
-//     ThreadData data;
-//     data.value = _ClientSocket;
-
-//     pthread_create(&this->_myThread, NULL, ping, &data);
-// }
 
 Client::Client(const Client & rhs) {
     *this = rhs;

@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 19:30:33 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/30 11:18:19 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/30 16:40:03 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,7 @@ void    server::banFun(Client & client, std::vector<std::string> clientInput) {
     Channel  &   channel = this->getChannel(channelName);
     std::string mode = getMode(clientInput);
     if (clientInput.size() == 3 && clientInput[2] == mode) {
-        std::cout << "In ban fun exception" << std::endl;
-        // afficher la liste des ban
+        for ()
         return ;
     }
     if (!(this->channelExist(channelName)))
@@ -65,11 +64,6 @@ void    server::opFun(Client & client, std::vector<std::string> clientInput) {
     std::string userToOp;
     Channel  &   channel = this->getChannel(channelName);
     std::string mode = getMode(clientInput);
-    if (clientInput.size() == 3 && clientInput[2] == mode) {
-        std::cout << "In ban fun exception" << std::endl;
-        // afficher la liste des ban
-        return ;
-    }
     if (!(this->channelExist(channelName)))
         this->displayClient(":127.0.0.1 403 " + client.getNick() + " " + channelName + " :No such channel\r\n",client);
     else if (!(channel.isOp(client.getNick())))
@@ -244,9 +238,6 @@ void    server::joinFun(Client & client, std::vector<std::string> clientInput) {
 
 }
 
-//  :127.0.0.1 404 fNICK #42 :Cannot send to channel
-//  :127.0.0.1 404 jbett #42 :Cannot send to channel
-
 void    server::privmsgFun(Client & client, std::vector<std::string> clientInput) {
     if (clientInput.size() == 2)
         this->displayClient(":127.0.0.1 412 " + client.getNick() + " :Cannot text to send\r\n", client);
@@ -314,6 +305,49 @@ void    server::noticeFun(Client & client, std::vector<std::string> clientInput)
         return ;
 }
 
+
+void    server::topicFun(Client & client, std::vector<std::string> clientInput) {
+    //No params case
+    if (clientInput.size() == 1)
+    {
+        this->displayClient(":127.0.0.1 461 " + client.getNick() + " TOPIC :Not enough parameters\r\n", client);
+        return;
+    }
+    
+    const std::string channelName = std::string(clientInput[1]);
+    Channel channel = this->getChannel(channelName);
+    //1 params case (just print)
+    if (clientInput.size() == 2)
+    {
+        this->displayClient(":127.0.0.1 332 " + client.getNick() + " " + channel.getChannelName() + " :" + channel.getTopic() + "\r\n", client);
+        this->displayClient(":127.0.0.1 333 " + client.getNick() + " " + channel.getChannelName() + " " + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1\r\n", client);
+        return;
+    }
+
+    //2+ params case (set topic);
+    
+    std::string topicName = catVecStr(clientInput, 3);
+
+    //If client isnt admin; isnt op in channel; and user cant change topic, return.
+    if (!client.isAdmin() && !channel.isOp(client.getNick()) && !channel.canUserChangeTopic())
+    {
+        return; //TODO
+    }
+    channel.setTopic(topicName);
+    this->displayClient(":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1" + " TOPIC " + channel.getChannelName() + " :" + topicName + "\r\n", client);
+}
+
+// /topic
+//:sakura.jp.as.dal.net 461 Guest51512 TOPIC :Not enough parameters
+
+// /topic name
+//:sakura.jp.as.dal.net 332 Guest51512 #prout :salut
+//:sakura.jp.as.dal.net 333 Guest51512 #prout Guest51512!~matt@157a-3894-3542-9a96-157a.129.62.ip 1685456081
+
+// /topic name topics
+//:Guest51512!~matt@157a-3894-3542-9a96-157a.129.62.ip TOPIC #prout :salut
+
+
 void    server::initFunLst(void)
 {
     this->_FunLst["PING"] = &server::pingFun;
@@ -329,7 +363,7 @@ void    server::initFunLst(void)
     this->_FunLst["NOTICE"] = &server::noticeFun;
     this->_FunLst["WHO"] = &server::whoFun;
     this->_FunLst["WHOIS"] = &server::whoFun;
-    // this->_FunLst[""] = &server::;
+    this->_FunLst["TOPIC"] = &server::topicFun;
     // this->_FunLst["LIST"] = &server::;
     // this->_FunLst["KICK"] = &server::;
 }

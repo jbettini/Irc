@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 19:34:23 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/30 10:52:55 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/30 15:50:25 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,10 @@ void    server::sendToAllUserInChannel(std::string channelName, std::string msg,
 
 void    server::welcomeToChannel(Client & client, std::string channelName) {
 
-    this->displayClient(":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1.ip JOIN : " + channelName + "\r\n", client); // envoyer la validation du join
-    this->displayClient(":127.0.0.1 353 " + client.getNick() + " = " + channelName + " :" + this->getAllUsersChannel(this->getChannel(channelName)) + "\r\n", client);// envoyer la liste des utilisateur 
+    this->displayClient(":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1.ip JOIN : " + channelName + "\r\n", client);
+    this->displayClient(":127.0.0.1 353 " + client.getNick() + " = " + channelName + " :" + this->getAllUsersChannel(this->getChannel(channelName)) + "\r\n", client);
     this->displayClient(":127.0.0.1 366 " + client.getNick() + " " + channelName  + " :End of /NAMES list.\r\n", client);
-    this->sendToAllUserInChannel(channelName, ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1.ip JOIN :" + channelName + "\r\n", client);// envoyer que l'utilisateur a join a tout les client
+    this->sendToAllUserInChannel(channelName, ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1.ip JOIN :" + channelName + "\r\n", client);
 }
 
 void    server::displayClient(std::string   msg, Client client) {

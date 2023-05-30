@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/18 18:26:29 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/30 01:58:55 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/30 16:27:38 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,22 @@ class   Channel {
 
         std::vector<std::string> &  getOpUserList(void) {
                     return (this->_opUsers);
+        }
+
+        std::string  getTopic(void) const {
+            return (this->_topic);
+        }
+
+        bool        canUserChangeTopic(void) const {
+            return (this->_usersCanChangeTopic);
+        }
+
+        void    setTopic(const std::string topic) {
+            this->_topic = topic;
+        }
+
+        void    setCanUserChangeTopic(bool canUserChangeTopic) {
+            this->_usersCanChangeTopic = canUserChangeTopic;
         }
 
         void                setOp(std::string client)
@@ -124,6 +140,9 @@ class   Channel {
                 std::vector<std::string>            _silentUsers;
                 std::vector<std::string>            _banedUsers;
                 std::vector<std::string>            _opUsers;
+                std::vector<std::string>            _inviteUsers;
+                std::string                         _topic;
+                bool                                _usersCanChangeTopic;
 
 };
 

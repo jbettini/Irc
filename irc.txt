@@ -35,30 +35,39 @@ Cote Serv {
 }
 
 
-Task :
+------------------------------------TASK---------------------------------------------------
 
 
-WHOIS
-WHO
 KICK
+
+INVITE : 
+
+TOPIC : 
+
+// /topic
+:sakura.jp.as.dal.net 461 Guest51512 TOPIC :Not enough parameters
+
+// /topic name
+:sakura.jp.as.dal.net 332 Guest51512 #prout :salut
+:sakura.jp.as.dal.net 333 Guest51512 #prout Guest51512!~matt@157a-3894-3542-9a96-157a.129.62.ip 1685456081
+
+// /topic name topics
+:Guest51512!~matt@157a-3894-3542-9a96-157a.129.62.ip TOPIC #prout :salut
+
+
+MODE Channel =          i: Set/remove Invite-only channel
+                        t: Set/remove the restrictions of the TOPIC command to channel operators
+                        k: Set/remove the channel key (password)
+                        l: Set/remove the user limit to channel
+
+Use ctrl+D to send the command in several parts: ’com’, then ’man’, then ’d\n’.
+In order to process a command, you have to first aggregate the received packets in order to rebuild it.
         
-LIST = 
-        ERR_NOSUCHSERVER                RPL_LISTSTART
-           RPL_LIST                        RPL_LISTEND
 
-AFFICHER LIST BAN OU LIST OP
-
-syntax a avoir :
+-------------------------SYNTAX-------------------------------
 
 
-Patch :
-
-
-- Lorsque un utilisateur join plusieur channel bug parfois avec nc 
-
+-------------------------PATCH-------------------------------
 
 /connect 127.0.0.1 6667 6
-
-
-
 

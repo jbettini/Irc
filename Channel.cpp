@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/18 19:27:01 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/29 05:39:56 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/05/30 15:48:11 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ bool    Channel::addUser(Client& client)
             return (false);
     if (isBanned(client.getUsername()))
     {
-      // :nonstop.ix.me.dal.net 474 xtem_ #4242 :Cannot join channel (+b)
         std::string tmp = ":127.0.0.1 474 " + client.getNick() + " " + this->_nameChannel + " :Cannot join channel (+b)\r\n";
         send(client.getCS(), tmp.c_str(), tmp.size(), 0);
         return (false);
