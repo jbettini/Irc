@@ -6,7 +6,7 @@
 /*   By: mgoudin <mgoudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 19:30:33 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/30 18:04:02 by mgoudin          ###   ########.fr       */
+/*   Updated: 2023/05/30 18:05:12 by mgoudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -364,6 +364,7 @@ void    server::inviteFun(Client & client, std::vector<std::string> clientInput)
     
     Client invitedClient = this->getClientWithNick(invitedUser); 
     Channel channel = this->getChannel(channel_str);
+    channel.addToInviteList(invitedClient.getNick());
     
     // What Client that send invite get:
     this->displayClient(":127.0.0.1 341 " + client.getNick() + " " + invitedClient.getNick() + " " + channel.getChannelName() + "\r\n", client);
