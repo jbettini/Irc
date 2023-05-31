@@ -170,3 +170,9 @@ std::vector<std::string> removeFirstCharacterIfColon(std::vector<std::string>& s
         strings[2] = strings[2].substr(1);
     return strings;
 }
+
+std::vector<std::string> removeFirstCharacterIfColonIdx(std::vector<std::string>& strings, size_t idx) {
+    if (strings.size() >= idx && !strings[2].empty() && strings[idx - 1][0] == ':')
+        strings[idx - 1] = strings[idx - 1].substr(1);
+    return strings;
+}
