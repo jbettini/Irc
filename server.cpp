@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mgoudin <mgoudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:43:40 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/30 16:08:38 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/06/01 17:21:27 by mgoudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ void    server::run(void) {
     int     newClient;
     char    buffer[this->MAX_BUFFER_SIZE];
     struct  pollfd      ClientFd[MAX_CLIENTS + 1];
+    std::string         current_cmd;
     
     this->init_socket();
     this->initFunLst();
@@ -83,7 +84,19 @@ void    server::run(void) {
                     this->disconnectClient(this->getClient(ClientFd[i].fd));
                 else {
                     std::cout << buffer << std::endl;
-                    this->execInput(splitBuffer(buffer, " \v\n\t\r\f"),  (this->getClient(ClientFd[i].fd)));
+                    
+                    // NO EFO, just add buffer to current_cmd
+                    if (!std::strchr(buffer, '\n'))
+                    {
+                        current_cmd += std::string(buffer);
+                    }
+                    else //EOF, we can add the last buffer to current_cmd, then execInput
+                    {
+                        current_cmd += std::string(buffer);
+                        this->execInput(splitString(current_cmd, " \v\n\t\r\f"),  (this->getClient(ClientFd[i].fd)));
+                        //reset current_cmd for next cmd
+                        current_cmd = "";
+                    }
                 }
             }
         }

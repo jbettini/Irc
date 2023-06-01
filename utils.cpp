@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mgoudin <mgoudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 19:29:12 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/30 10:52:49 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/06/01 17:18:27 by mgoudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ std::vector<std::string> removeDelimiterStrings(std::vector<std::string>& string
     return result;
 }
 
-std::vector<std::string> splitBuffer(char* buffer,std::string delimiters) {
+std::vector<std::string> splitBuffer(char* buffer, std::string delimiters) {
     std::vector<std::string> splited;
     std::string tmp(buffer);
     size_t pos = 0;
@@ -86,6 +86,28 @@ std::vector<std::string> splitBuffer(char* buffer,std::string delimiters) {
     splited.push_back(tmp);
     splited = removeDelimiterStrings(removeWhitespace(splited), delimiters);
     return splited;
+}
+
+std::vector<std::string> splitString(const std::string& input, const std::string& delimiters) {
+    std::vector<std::string> result;
+    std::string::size_type start = 0;
+    std::string::size_type end = input.find_first_of(delimiters, start);
+
+    while (end != std::string::npos) {
+        if (end != start) {
+            std::string token = input.substr(start, end - start);
+            result.push_back(token);
+        }
+        start = end + 1;
+        end = input.find_first_of(delimiters, start);
+    }
+
+    if (start < input.length()) {
+        std::string token = input.substr(start);
+        result.push_back(token);
+    }
+
+    return result;
 }
 
 bool checkNonAlphanumeric(const std::string& str) {

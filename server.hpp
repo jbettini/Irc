@@ -6,7 +6,7 @@
 /*   By: mgoudin <mgoudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/11 16:44:55 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/30 20:19:23 by mgoudin          ###   ########.fr       */
+/*   Updated: 2023/06/01 17:20:11 by mgoudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -241,6 +241,7 @@ class   server {
 
 void                        add_back(std::vector<Client> & vector, const Client & objet);
 std::vector<std::string>    splitBuffer(char* buffer, std::string delimiters);
+std::vector<std::string>    splitString(const std::string& input, const std::string& delimiters); 
 std::vector<std::string>  & removeWhitespace(std::vector<std::string>& strings);
 std::vector<std::string>    makeVecKey(std::vector<std::string> strings, std::string toFind);
 void                        printVecStr(std::vector<std::string> strings);
