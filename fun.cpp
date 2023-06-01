@@ -182,7 +182,7 @@ void    server::setPasswordRestrictionFun(Client & client, std::vector<std::stri
     }
 
     // Set restriction
-    if (i_str == "-k")
+    if (k_str == "-k")
     {
         channel.setRequirePassword(false);
         return;

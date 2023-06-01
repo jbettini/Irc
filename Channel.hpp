@@ -54,7 +54,7 @@ class   Channel {
         }
 
         bool  checkPassword(std::string pass) const {
-            return (pass = _password);
+            return (pass == _password);
         }
 
         bool        canUserChangeTopic(void) const {
@@ -74,7 +74,7 @@ class   Channel {
         }
 
         void setPassword(const std::string pass) {
-            this->_password = pass
+            this->_password = pass;
         }
 
         void    setCanUserChangeTopic(bool canUserChangeTopic) {
