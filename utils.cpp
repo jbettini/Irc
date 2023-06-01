@@ -135,6 +135,18 @@ std::string getMode(std::vector<std::string> clientInput) {
             return ("+o");
         else if (*it == "-o")
             return ("-o");
+        else if (*it == "-k")
+            return ("-k");
+        else if (*it == "+k")
+            return ("+k");
+        else if (*it == "+l")
+            return ("+l");
+        else if (*it == "-l")
+            return ("-l");
+        else if (*it == "+t")
+            return ("+t");
+        else if (*it == "-t")
+            return ("-t");
     }
     return ("");
 }

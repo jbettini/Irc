@@ -53,8 +53,16 @@ class   Channel {
             return (this->_topic);
         }
 
+        bool  checkPassword(std::string pass) const {
+            return (pass = _password);
+        }
+
         bool        canUserChangeTopic(void) const {
             return (this->_usersCanChangeTopic);
+        }
+
+        bool        isPasswordRequired(void) const {
+            return (this->_isPasswordRequired);
         }
 
         bool        isInviteOnly(void) const {
@@ -65,8 +73,16 @@ class   Channel {
             this->_topic = topic;
         }
 
+        void setPassword(const std::string pass) {
+            this->_password = pass
+        }
+
         void    setCanUserChangeTopic(bool canUserChangeTopic) {
             this->_usersCanChangeTopic = canUserChangeTopic;
+        }
+
+        void    setRequirePassword(bool require) {
+            this->_isPasswordRequired = require;
         }
 
         void    setInviteOnly(bool inviteOnly) {
@@ -164,6 +180,8 @@ class   Channel {
                 std::vector<std::string>            _opUsers;
                 std::vector<std::string>            _inviteUsers;
                 std::string                         _topic;
+                std::string                         _password;
+                bool                                _isPasswordRequired;
                 bool                                _usersCanChangeTopic;
                 bool                                _isInviteOnly;
 

@@ -79,6 +79,20 @@ MODE Channel =          i: Set/remove Invite-only channel
 //:lair.nl.eu.dal.net 403 channelName -i :No such channel
 //:yomax!~yomax@157a-3894-3542-9a96-157a.129.62.ip MODE #cacaprout -i
 
+// k
+
+//:atw.hu.eu.dal.net 403 zeubio sizzi :No such channel
+//:zeubio!~zeubio@f6b8-aac-107e-34c8-c0be.668.cb1d.2a01.ip MODE #caca +k caca
+//print nothing on -k success
+//:sakura.jp.as.dal.net 475 mhhh #caca :Cannot join channel (+k)
+//:sakura.jp.as.dal.net 482 mhhh #caca :You're not channel operator
+
+// l
+
+//:zeubio!~zeubio@f6b8-aac-107e-34c8-c0be.668.cb1d.2a01.ip MODE #caca +l 2
+//:zeubio!~zeubio@f6b8-aac-107e-34c8-c0be.668.cb1d.2a01.ip MODE #caca -l
+//:sakura.jp.as.dal.net 482 mhhh #caca :You're not channel operator
+
 Use ctrl+D to send the command in several parts: ’com’, then ’man’, then ’d\n’.
 In order to process a command, you have to first aggregate the received packets in order to rebuild it.
         

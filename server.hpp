@@ -134,6 +134,7 @@ class   server {
                 void        setTopicRestrictionFun(Client & client, std::vector<std::string> clientInput);
                 void        handleModeiFun(Client & client, std::vector<std::string> clientInput);
                 void        kickFun(Client & client, std::vector<std::string> clientInput);
+                void        setPasswordRestrictionFun(Client & client, std::vector<std::string> clientInput);
                 
                 std::string getAllUsersChannel(Channel & channel);
                 

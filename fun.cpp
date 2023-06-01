@@ -161,6 +161,47 @@ void    server::handleModeiFun(Client & client, std::vector<std::string> clientI
     this->displayClient(":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1" + " MODE " + channel.getChannelName() + " " + i_str + "\r\n", client);
 }
 
+void    server::setPasswordRestrictionFun(Client & client, std::vector<std::string> clientInput) {
+    const std::string channel_str = clientInput[1];
+    const std::string k_str = clientInput[2];
+
+    // Check if channel exist
+    if (!this->channelExist(channel_str))
+    {
+        this->displayClient(":127.0.0.1 403 " + client.getNick() + " " + channel_str + " :No such channel\r\n", client);
+        return;
+    }
+    
+    Channel& channel = this->getChannel(channel_str);
+
+    // If user is not op, he cant change channel restriction.
+    if (!channel.isOp(client.getNick()))
+    {
+        this->displayClient(":127.0.0.1 482 " + client.getNick() + " " + channel.getChannelName() + " :" + "You're not channel operator\r\n", client);
+        return;
+    }
+
+    // Set restriction
+    if (i_str == "-k")
+    {
+        channel.setRequirePassword(false);
+        return;
+    }
+    // if +k, check if user defined password
+    if (clientInput.size() < 4)
+    {
+        // +k but no password was defined, just return;
+        return;
+    }
+
+    const std::string password = clientInput[3];
+    channel.setRequirePassword(true);
+    channel.setPassword(password);
+
+    //Sending confirmation to client
+    this->displayClient(":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1" + " MODE " + channel.getChannelName() + " " + k_str + " " + password + "\r\n", client);
+}
+
 void    server::modeFun(Client & client, std::vector<std::string> clientInput) {
     std::string mode = getMode(clientInput);
     std::cout << " mode = -" << mode << "-"<< std::endl;
@@ -172,6 +213,8 @@ void    server::modeFun(Client & client, std::vector<std::string> clientInput) {
         this->opFun(client, clientInput);
     else if (mode == "-t" || mode == "+t")
         this->setTopicRestrictionFun(client, clientInput);
+    else if (mode == "-k" || mode == "+k")
+        this->setPasswordRestrictionFun(client, clientInput);
 }
 
 void    server::pingFun(Client & client, std::vector<std::string> clientInput) {
@@ -288,19 +331,30 @@ void    server::joinFun(Client & client, std::vector<std::string> clientInput) {
         return ;
     }
     else if (this->channelExist(channelName) && this->getChannel(channelName).isInviteOnly() && !this->getChannel(channelName).isInvited(client.getNick())) {
-        this->displayClient(":127.0.0.1 474 " + client.getNick() + " " + channelName + " :Cannot join channel (+b)\r\n", client);
+        this->displayClient(":127.0.0.1 474 " + client.getNick() + " " + channelName + " :Cannot join channel (+i)\r\n", client);
         return ;
+    }
+    else if (this->channelExist(channelName) && this->getChannel(channelName).isPasswordRequired()) {
+        // If password isnt defined, or passsword is wrong
+        if (clientInput.size() < 3 || !this->getChannel(channelName).checkPassword(clientInput[2]))
+        {
+            this->displayClient(":127.0.0.1 475 " + client.getNick() + " " + channelName + " :Cannot join channel (+k)\r\n", client);
+            return ;
+        }
     }
 
     //Check if channel exist
     if (this->channelExist(channelName))
     {
-        if (!(this->getChannel(channelName).addUser(client)))
+        Channel& channel = this->getChannel(channelName);
+        
+        if (!(channel.addUser(client)))
             return;
         else
             this->welcomeToChannel(client, channelName);
         return;
     }
+
     //If not, then create it
     Channel channel(channelName);
     channel.addUser(client);
