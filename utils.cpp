@@ -6,7 +6,7 @@
 /*   By: mgoudin <mgoudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 19:29:12 by jbettini          #+#    #+#             */
-/*   Updated: 2023/06/01 17:18:27 by mgoudin          ###   ########.fr       */
+/*   Updated: 2023/06/01 18:48:09 by mgoudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -209,4 +209,11 @@ std::vector<std::string> removeFirstCharacterIfColonIdx(std::vector<std::string>
     if (strings.size() >= idx && !strings[2].empty() && strings[idx - 1][0] == ':')
         strings[idx - 1] = strings[idx - 1].substr(1);
     return strings;
+}
+
+std::string removeHash(const std::string& str) {
+    if (!str.empty() && str[0] == '#') {
+        return str.substr(1);
+    }
+    return str;
 }

@@ -6,7 +6,7 @@
 /*   By: mgoudin <mgoudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:43:40 by jbettini          #+#    #+#             */
-/*   Updated: 2023/06/01 17:21:27 by mgoudin          ###   ########.fr       */
+/*   Updated: 2023/06/01 17:32:16 by mgoudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,9 +87,7 @@ void    server::run(void) {
                     
                     // NO EFO, just add buffer to current_cmd
                     if (!std::strchr(buffer, '\n'))
-                    {
                         current_cmd += std::string(buffer);
-                    }
                     else //EOF, we can add the last buffer to current_cmd, then execInput
                     {
                         current_cmd += std::string(buffer);

@@ -6,7 +6,7 @@
 /*   By: mgoudin <mgoudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/11 16:44:55 by jbettini          #+#    #+#             */
-/*   Updated: 2023/06/01 17:20:11 by mgoudin          ###   ########.fr       */
+/*   Updated: 2023/06/01 18:48:29 by mgoudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -239,26 +239,27 @@ class   server {
 
 };
 
-void                        add_back(std::vector<Client> & vector, const Client & objet);
+std::vector<std::string>  & removeWhitespace(std::vector<std::string>& strings);
 std::vector<std::string>    splitBuffer(char* buffer, std::string delimiters);
 std::vector<std::string>    splitString(const std::string& input, const std::string& delimiters); 
-std::vector<std::string>  & removeWhitespace(std::vector<std::string>& strings);
 std::vector<std::string>    makeVecKey(std::vector<std::string> strings, std::string toFind);
+std::vector<std::string>    removeFirstCharacterIfColon(std::vector<std::string>& strings);
+std::vector<std::string>    removeFirstCharacterIfColonIdx(std::vector<std::string>& strings, size_t idx);
+std::vector<std::string>    removeDelimiterStrings(std::vector<std::string>& strings, std::string& delimiters);
+std::string                 getMode(std::vector<std::string> clientInput);
+std::string                 getMsg(std::string first, std::string last, Client & client);
+std::string                 extractUsernameModeFormat(const std::string& str);
+std::string                 catVecStr(std::vector<std::string> toCat, int idx);
+std::string                 removeHash(const std::string& str);
 void                        printVecStr(std::vector<std::string> strings);
-int                         findString(std::vector<std::string> strings, std::string toFind);
 void                        printClient(std::vector<Client> strings);
+void                        updateVectorStr(std::vector<std::string> & toUpdate, std::string oldStr, std::string newStr);
+void                        printfChannel(Channel channel);
+void                        add_back(std::vector<Client> & vector, const Client & objet);
 bool                        checkNonAlphanumeric(const std::string& str);
 bool                        checkNameChannel(const std::string& str);
 bool                        checkFunWelcome(std::string fun);
-std::vector<std::string>    removeDelimiterStrings(std::vector<std::string>& strings, std::string& delimiters);
-std::string                 catVecStr(std::vector<std::string> toCat, int idx);
-std::string                 extractUsernameModeFormat(const std::string& str);
-std::string                 getMsg(std::string first, std::string last, Client & client);
 bool                        checkFormat(const std::string& str);
-std::string                 getMode(std::vector<std::string> clientInput);
-void                        updateVectorStr(std::vector<std::string> & toUpdate, std::string oldStr, std::string newStr);
-void                        printfChannel(Channel channel);
-std::vector<std::string>    removeFirstCharacterIfColon(std::vector<std::string>& strings);
-std::vector<std::string>    removeFirstCharacterIfColonIdx(std::vector<std::string>& strings, size_t idx);
+int                         findString(std::vector<std::string> strings, std::string toFind);
 
 #endif

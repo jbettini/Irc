@@ -6,7 +6,7 @@
 /*   By: mgoudin <mgoudin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 19:30:33 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/30 20:24:03 by mgoudin          ###   ########.fr       */
+/*   Updated: 2023/06/01 19:57:02 by mgoudin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -447,31 +447,6 @@ void    server::privmsgFun(Client & client, std::vector<std::string> clientInput
         this->displayClient(":127.0.0.1 401 " + client.getNick() + " " + clientInput[1] + " :No such nick/channel\r\n", client);
 }
 
-void    server::partFun(Client & client, std::vector<std::string> clientInput) {
-    if (clientInput.size() == 1)  {
-        this->displayClient(":127.0.0.1 461 " + client.getNick() + " PART :Not enough parameters\r\n", client);
-        return ;
-    }
-    else if (!(this->channelExist(clientInput[1])))
-        this->displayClient(":127.0.0.1 403 " + client.getNick() + " " + clientInput[1] + " :No such channel\r\n",client);
-    else if (!(this->getChannel(clientInput[1]).isUser(client.getNick())))
-        this->displayClient(":127.0.0.1 442 " + client.getNick() + " " + clientInput[1] + " :You're not on that channel\r\n",client);
-    else {
-        Channel channel = this->getChannel(clientInput[1]);
-        channel.removeUser(client);
-        std::string msg =  ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1 PART " + channel.getChannelName();
-        if (clientInput.size() > 2) {
-            sendToAllUserInChannel(channel.getChannelName(), msg + " " + catVecStr(removeFirstCharacterIfColon(clientInput), 2) + "\r\n", client);
-            this->displayClient(msg + " " + catVecStr(removeFirstCharacterIfColon(clientInput), 2) + "\r\n", client);
-        }
-        else {
-            sendToAllUserInChannel(channel.getChannelName(), msg + "\r\n", client);
-            this->displayClient(msg + "\r\n", client);
-        }
-        if (channel.getChannelUser().size() == 0)
-            this->removeChannelToChannelList(channel.getChannelName());
-    }
-}
 
 void    server::whoFun(Client & client, std::vector<std::string> clientInput) {
     if (client.getNick() != "" || clientInput[0] != "")
@@ -583,19 +558,45 @@ void    server::kickFun(Client & client, std::vector<std::string> clientInput){
         Channel  &   channel = this->getChannel(channelName);
         if (channel.isUser(clientInput[2]) && (!(channel.isOp(clientInput[2]))))  {
             Client       toKick = this->getClientWithNick(clientInput[2]);
-            channel.removeUser(toKick);
-            std::string kickMsg;
-            if (clientInput.size() > 4)
+            if (clientInput[3] != ":")
                 msg =  ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1 KICK " + channel.getChannelName() + " " + clientInput[2] + " :" + catVecStr(removeFirstCharacterIfColonIdx(clientInput, 4), 4) + "\r\n";
             else 
-                msg =  ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1 KICK " + channel.getChannelName() + " " + clientInput[2] + " :" + client.getNick() + "\r\n";
-            if (clientInput.size() > 4)
-                kickMsg =  ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1 KICK " + channel.getChannelName() + " :" + catVecStr(removeFirstCharacterIfColonIdx(clientInput, 4), 4) + "\r\n";
-            else 
-                kickMsg =  ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1 KICK " + channel.getChannelName() +  " :" + client.getNick() + "\r\n";
+                msg =  ":" + client.getNick() + " KICK " + channel.getChannelName() + " " + toKick.getNick() + " :" + client.getNick() + "\r\n";
+            this->displayClient(msg, toKick);
             sendToAllUserInChannel(channelName, msg, toKick);
-            this->displayClient(kickMsg, toKick);
+            channel.removeUser(toKick);
         }
+    }
+}
+// >> :mgoudin!~mgoudin@freenode-a99.759.j1faas.IP KICK #4242 mgoudin_ :
+// ":" + kicker.GetNickname() + " KICK " + channel.getName() + " " + target.GetNickname() + " :" + reasonStr + "\r\n";
+
+void    server::partFun(Client & client, std::vector<std::string> clientInput) {
+    if (clientInput.size() == 1)  {
+        this->displayClient(":127.0.0.1 461 " + client.getNick() + " PART :Not enough parameters\r\n", client);
+        return ;
+    }
+    else if (!(this->channelExist(clientInput[1])))
+        this->displayClient(":127.0.0.1 403 " + client.getNick() + " " + clientInput[1] + " :No such channel\r\n",client);
+    else if (!(this->getChannel(clientInput[1]).isUser(client.getNick())))
+        this->displayClient(":127.0.0.1 442 " + client.getNick() + " " + clientInput[1] + " :You're not on that channel\r\n",client);
+    else {
+        Channel& channel = this->getChannel(clientInput[1]);
+        std::string msg;
+        std::string partMsg;
+        if (clientInput.size() > 2)
+            msg =  ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1 PART " + channel.getChannelName() + " :" + catVecStr(removeFirstCharacterIfColonIdx(clientInput, 3), 3) + "\r\n";
+        else 
+            msg =  ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1 PART " + channel.getChannelName() + "\r\n";
+        if (clientInput.size() > 2)
+            partMsg =  ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1 PART " + channel.getChannelName() + " :" + catVecStr(removeFirstCharacterIfColonIdx(clientInput, 2), 2) + "\r\n";
+        else 
+            partMsg =  ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1 PART " + channel.getChannelName() + " " + client.getNick() + " :" + client.getNick() + "\r\n";
+        sendToAllUserInChannel(channel.getChannelName(), msg, client);
+        this->displayClient(partMsg, client);
+        channel.removeUser(client);
+        if (channel.getChannelUser().size() == 0)
+            this->removeChannelToChannelList(channel.getChannelName());
     }
 }
 
