@@ -37,6 +37,10 @@ class   Channel {
                     return (this->_Users);
         }
 
+        int getCapacity(void) {
+            return (this->_Users.size());
+        }
+
         std::vector<std::string> &  getSilentList(void) {
                     return (this->_silentUsers);
         }
@@ -53,6 +57,10 @@ class   Channel {
             return (this->_topic);
         }
 
+        int  getClientLimit(void) const {
+            return (this->_clientLimit);
+        }
+
         bool  checkPassword(std::string pass) const {
             return (pass == _password);
         }
@@ -63,6 +71,10 @@ class   Channel {
 
         bool        isPasswordRequired(void) const {
             return (this->_isPasswordRequired);
+        }
+
+        bool        isClientLimitActivated(void) const {
+            return (this->_isUserLimitActivated);
         }
 
         bool        isInviteOnly(void) const {
@@ -77,8 +89,16 @@ class   Channel {
             this->_password = pass;
         }
 
+        void setClientLimit(const int n) {
+            this->_clientLimit = n;
+        }
+
         void    setCanUserChangeTopic(bool canUserChangeTopic) {
             this->_usersCanChangeTopic = canUserChangeTopic;
+        }
+
+        void    setClientLimitActivated(bool activated) {
+            this->_isUserLimitActivated = activated;
         }
 
         void    setRequirePassword(bool require) {
@@ -184,6 +204,8 @@ class   Channel {
                 bool                                _isPasswordRequired;
                 bool                                _usersCanChangeTopic;
                 bool                                _isInviteOnly;
+                bool                                _isUserLimitActivated;
+                int                                 _clientLimit;
 
 };
 

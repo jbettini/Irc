@@ -202,6 +202,61 @@ void    server::setPasswordRestrictionFun(Client & client, std::vector<std::stri
     this->displayClient(":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1" + " MODE " + channel.getChannelName() + " " + k_str + " " + password + "\r\n", client);
 }
 
+void    server::setClientLimitRestrictionFun(Client & client, std::vector<std::string> clientInput) {
+    const std::string channel_str = clientInput[1];
+    const std::string l_str = clientInput[2];
+
+    // Check if channel exist
+    if (!this->channelExist(channel_str))
+    {
+        this->displayClient(":127.0.0.1 403 " + client.getNick() + " " + channel_str + " :No such channel\r\n", client);
+        return;
+    }
+    
+    Channel& channel = this->getChannel(channel_str);
+
+    // If user is not op, he cant change channel restriction.
+    if (!channel.isOp(client.getNick()))
+    {
+        this->displayClient(":127.0.0.1 482 " + client.getNick() + " " + channel.getChannelName() + " :" + "You're not channel operator\r\n", client);
+        return;
+    }
+
+    // Set restriction
+    if (l_str == "-l")
+    {
+        channel.setClientLimitActivated(false);
+        this->displayClient(":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1" + " MODE " + channel.getChannelName() + " " + l_str + "\r\n", client);
+        return;
+    }
+    // if +l, check if user defined client limit
+    if (clientInput.size() < 4)
+    {
+        this->displayClient(":127.0.0.1 461 " + client.getNick() + " MODE +l :Not enough parameters\r\n", client);
+        return;
+    }
+
+    try
+    {
+        const int maxClient = stod(clientInput[3]);
+        if (maxClient < 1)
+        {
+            //maxClient is set to 0 or negative number, just return;
+            return;
+        }
+        channel.setClientLimitActivated(true);
+        channel.setClientLimit(maxClient);
+
+        //Sending confirmation to client
+        this->displayClient(":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1" + " MODE " + channel.getChannelName() + " " + l_str + " " + std::to_string(maxClient) + "\r\n", client);
+    }
+    catch (std::exception e)
+    {
+        //stod failed; maybe int max was reach, just return;
+        return;
+    }
+}
+
 void    server::modeFun(Client & client, std::vector<std::string> clientInput) {
     std::string mode = getMode(clientInput);
     std::cout << " mode = -" << mode << "-"<< std::endl;
@@ -215,6 +270,8 @@ void    server::modeFun(Client & client, std::vector<std::string> clientInput) {
         this->setTopicRestrictionFun(client, clientInput);
     else if (mode == "-k" || mode == "+k")
         this->setPasswordRestrictionFun(client, clientInput);
+    else if (mode == "-l" || mode == "+l")
+        this->setClientLimitRestrictionFun(client, clientInput);
 }
 
 void    server::pingFun(Client & client, std::vector<std::string> clientInput) {
@@ -339,6 +396,14 @@ void    server::joinFun(Client & client, std::vector<std::string> clientInput) {
         if (clientInput.size() < 3 || !this->getChannel(channelName).checkPassword(clientInput[2]))
         {
             this->displayClient(":127.0.0.1 475 " + client.getNick() + " " + channelName + " :Cannot join channel (+k)\r\n", client);
+            return ;
+        }
+    }
+    else if (this->channelExist(channelName) && this->getChannel(channelName).isClientLimitActivated()) {
+        // If client limit, check if channel is full
+        if (this->getChannel(channelName).getCapacity() >= this->getChannel(channelName).getClientLimit())
+        {
+            this->displayClient(":127.0.0.1 475 " + client.getNick() + " " + channelName + " :Cannot join channel (+l)\r\n", client);
             return ;
         }
     }

@@ -92,6 +92,7 @@ MODE Channel =          i: Set/remove Invite-only channel
 //:zeubio!~zeubio@f6b8-aac-107e-34c8-c0be.668.cb1d.2a01.ip MODE #caca +l 2
 //:zeubio!~zeubio@f6b8-aac-107e-34c8-c0be.668.cb1d.2a01.ip MODE #caca -l
 //:sakura.jp.as.dal.net 482 mhhh #caca :You're not channel operator
+//:atw.hu.eu.dal.net 461 zeub MODE +l :Not enough parameters
 
 Use ctrl+D to send the command in several parts: ’com’, then ’man’, then ’d\n’.
 In order to process a command, you have to first aggregate the received packets in order to rebuild it.
