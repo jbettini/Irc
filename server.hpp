@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mgoudin <mgoudin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/11 16:44:55 by jbettini          #+#    #+#             */
-/*   Updated: 2023/06/01 18:48:29 by mgoudin          ###   ########.fr       */
+/*   Updated: 2023/06/01 23:47:10 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,6 +136,7 @@ class   server {
                 void        kickFun(Client & client, std::vector<std::string> clientInput);
                 void        setPasswordRestrictionFun(Client & client, std::vector<std::string> clientInput);
                 void        setClientLimitRestrictionFun(Client & client, std::vector<std::string> clientInput);
+                void        sendToAllUser(std::string channelName, std::string msg);
                 
                 std::string getAllUsersChannel(Channel & channel);
                 

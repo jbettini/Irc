@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mgoudin <mgoudin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:43:40 by jbettini          #+#    #+#             */
-/*   Updated: 2023/06/01 17:32:16 by mgoudin          ###   ########.fr       */
+/*   Updated: 2023/06/01 23:41:55 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,7 @@ void    server::run(void) {
                         this->execInput(splitString(current_cmd, " \v\n\t\r\f"),  (this->getClient(ClientFd[i].fd)));
                         //reset current_cmd for next cmd
                         current_cmd = "";
+                        buffer[0] = 0;
                     }
                 }
             }

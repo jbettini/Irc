@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 19:34:23 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/30 15:50:25 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/06/01 23:47:17 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,17 @@ void    server::sendToAllUserInChannel(std::string channelName, std::string msg,
     }
 }
 
+void    server::sendToAllUser(std::string channelName, std::string msg) {
+    for(std::vector<Channel>::iterator it = this->_ChannelList.begin(); it != this->_ChannelList.end(); it++) {
+        if ((*it).getChannelName() == channelName) {
+            std::vector<Client> it2 = (*it).getChannelUser();
+            for (std::vector<Client>::iterator it3 = it2.begin();it3 != it2.end();it3++)
+                    this->displayClient(msg, *it3);
+            break ;
+        }
+    }
+}
+
 void    server::welcomeToChannel(Client & client, std::string channelName) {
 
     this->displayClient(":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1.ip JOIN : " + channelName + "\r\n", client);
@@ -38,7 +49,7 @@ void    server::welcomeToChannel(Client & client, std::string channelName) {
 }
 
 void    server::displayClient(std::string   msg, Client client) {
-    std::cout << "msg = " << msg << std::endl;
+    std::cout << "msg = " << msg << "----" << std::endl;
     send(client.getCS(), msg.c_str(), msg.size(), 0);
 }
 

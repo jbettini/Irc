@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/17 19:31:19 by jbettini          #+#    #+#             */
-/*   Updated: 2023/05/27 08:21:07 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/06/01 23:35:03 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,14 @@ class   Client {
         }
         std::vector<std::string> & getAllChannel(void){
             return this->_allChannel;
+        }
+        void    removeChannel(std::string chanelName) {
+            for (std::vector<std::string>::iterator it = this->_allChannel.begin(); it != this->_allChannel.end(); it++) {
+                if (*it == chanelName) {
+                    this->_allChannel.erase(it);
+                    break;
+                }    
+            }
         }
 
         //OPERATORS

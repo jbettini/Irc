@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   fun.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mgoudin <mgoudin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 19:30:33 by jbettini          #+#    #+#             */
-/*   Updated: 2023/06/01 19:57:02 by mgoudin          ###   ########.fr       */
+/*   Updated: 2023/06/01 23:47:26 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,6 @@ void    server::banFun(Client & client, std::vector<std::string> clientInput) {
     std::string userToBan;
     Channel  &   channel = this->getChannel(channelName);
     std::string mode = getMode(clientInput);
-    if (clientInput.size() == 3 && clientInput[2] == mode) {
-        //for ()
-        return ;
-    }
     if (!(this->channelExist(channelName)))
         this->displayClient(":127.0.0.1 403 " + client.getNick() + " " + channelName + " :No such channel\r\n",client);
     else if (!(channel.isOp(client.getNick()))) {
@@ -568,10 +564,19 @@ void    server::kickFun(Client & client, std::vector<std::string> clientInput){
         }
     }
 }
-// >> :mgoudin!~mgoudin@freenode-a99.759.j1faas.IP KICK #4242 mgoudin_ :
-// ":" + kicker.GetNickname() + " KICK " + channel.getName() + " " + target.GetNickname() + " :" + reasonStr + "\r\n";
 
+        //msg =   ":127.0.0.1 PART " + channel.getChannelName() + "\r\n";
+        // msg = ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1.ip PART : " + channel.getChannelName() + "\r\n";
+        // :d!d@localhost PART #irctest                         
+        // :jbettini!~jbettini@freenode-a99.759.j1faas.IP PART :#42         freenode syntax
+        // :helloioooo!~fufu@157a-3894-3542-9a96-157a.129.62.ip PART #42    dal.net  syntax
+        // :ServeurIRC 341 Utilisateur #NomDuCanal :Vous avez quitté le canal avec succès
+        // :jbettini!jbettini@HOST PART #e :No reason specified
+        // :jbettini!jbettini@HOST PART #e :No reason specified
+        // :jbettini!jbettini@HOST PART #e :No reason specified
+        
 void    server::partFun(Client & client, std::vector<std::string> clientInput) {
+    std::cout << "In part Fun " << std::endl;
     if (clientInput.size() == 1)  {
         this->displayClient(":127.0.0.1 461 " + client.getNick() + " PART :Not enough parameters\r\n", client);
         return ;
@@ -581,23 +586,21 @@ void    server::partFun(Client & client, std::vector<std::string> clientInput) {
     else if (!(this->getChannel(clientInput[1]).isUser(client.getNick())))
         this->displayClient(":127.0.0.1 442 " + client.getNick() + " " + clientInput[1] + " :You're not on that channel\r\n",client);
     else {
+        std::cout << "In else of part Fun " << std::endl;
         Channel& channel = this->getChannel(clientInput[1]);
         std::string msg;
-        std::string partMsg;
-        if (clientInput.size() > 2)
-            msg =  ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1 PART " + channel.getChannelName() + " :" + catVecStr(removeFirstCharacterIfColonIdx(clientInput, 3), 3) + "\r\n";
-        else 
-            msg =  ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1 PART " + channel.getChannelName() + "\r\n";
-        if (clientInput.size() > 2)
-            partMsg =  ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1 PART " + channel.getChannelName() + " :" + catVecStr(removeFirstCharacterIfColonIdx(clientInput, 2), 2) + "\r\n";
-        else 
-            partMsg =  ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1 PART " + channel.getChannelName() + " " + client.getNick() + " :" + client.getNick() + "\r\n";
-        sendToAllUserInChannel(channel.getChannelName(), msg, client);
-        this->displayClient(partMsg, client);
+        client.removeChannel(channel.getChannelName());
         channel.removeUser(client);
+        if (clientInput.size() > 2)
+            msg =   ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1.ip PART " + channel.getChannelName() + " :" + catVecStr(removeFirstCharacterIfColonIdx(clientInput, 3), 3) + "\r\n";
+        else 
+            msg =   ":" + client.getNick() + "!" + client.getUsername() + "@HOST PART " + channel.getChannelName() + " :No reason specified" + "\r\n";
+        sendToAllUser(channel.getChannelName(), msg);
         if (channel.getChannelUser().size() == 0)
             this->removeChannelToChannelList(channel.getChannelName());
+        std::cout << "Out else of part Fun " << std::endl;
     }
+    std::cout << "Out part Fun " << std::endl;
 }
 
 void    server::initFunLst(void)
@@ -617,6 +620,5 @@ void    server::initFunLst(void)
     this->_FunLst["WHOIS"] = &server::whoFun;
     this->_FunLst["TOPIC"] = &server::topicFun;
     this->_FunLst["INVITE"] = &server::inviteFun;
-    // this->_FunLst["LIST"] = &server::;
     this->_FunLst["KICK"] = &server::kickFun;
 }
