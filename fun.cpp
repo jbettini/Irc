@@ -96,7 +96,7 @@ void    server::opFun(Client & client, std::vector<std::string> clientInput) {
 
 void    server::setTopicRestrictionFun(Client & client, std::vector<std::string> clientInput) {
     const std::string channel_str = clientInput[1];
-    const std::string i_str = clientInput[1];
+    const std::string i_str = clientInput[2];
 
     // Check if channel exist
     if (!this->channelExist(channel_str))
@@ -105,7 +105,7 @@ void    server::setTopicRestrictionFun(Client & client, std::vector<std::string>
         return;
     }
     
-    Channel channel = this->getChannel(channel_str);
+    Channel& channel = this->getChannel(channel_str);
 
     // If user is not op, he cant change channel restriction.
     if (!channel.isOp(client.getNick()))
@@ -121,12 +121,12 @@ void    server::setTopicRestrictionFun(Client & client, std::vector<std::string>
         channel.setCanUserChangeTopic(true);
         
     //Sending confirmation to client
-    this->displayClient(":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1" + "MODE " + channel.getChannelName() + " " + i_str + "\r\n", client);
+    this->displayClient(":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1" + " MODE " + channel.getChannelName() + " " + i_str + "\r\n", client);
 }
 
 void    server::handleModeiFun(Client & client, std::vector<std::string> clientInput) {
     const std::string channel_or_client_str = clientInput[1];
-    const std::string i_str = clientInput[1];
+    const std::string i_str = clientInput[2];
     
     // If nick exist, client sent +i/-i for invisible mode
     if (this->checkNickExist(channel_or_client_str))
@@ -143,7 +143,7 @@ void    server::handleModeiFun(Client & client, std::vector<std::string> clientI
         return;
     }
 
-    Channel channel = this->getChannel(channel_or_client_str);
+    Channel& channel = this->getChannel(channel_or_client_str);
 
     // If user is not op, he cant change channel restriction.
     if (!channel.isOp(client.getNick()))
@@ -158,7 +158,7 @@ void    server::handleModeiFun(Client & client, std::vector<std::string> clientI
     else
         channel.setInviteOnly(true);
     //Sending confirmation to client
-    this->displayClient(":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1" + "MODE " + channel.getChannelName() + " " + i_str + "\r\n", client);
+    this->displayClient(":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1" + " MODE " + channel.getChannelName() + " " + i_str + "\r\n", client);
 }
 
 void    server::modeFun(Client & client, std::vector<std::string> clientInput) {
@@ -287,6 +287,11 @@ void    server::joinFun(Client & client, std::vector<std::string> clientInput) {
         this->displayClient(":127.0.0.1 474 " + client.getNick() + " " + channelName + " :Cannot join channel (+b)\r\n", client);
         return ;
     }
+    else if (this->channelExist(channelName) && this->getChannel(channelName).isInviteOnly() && !this->getChannel(channelName).isInvited(client.getNick())) {
+        this->displayClient(":127.0.0.1 474 " + client.getNick() + " " + channelName + " :Cannot join channel (+b)\r\n", client);
+        return ;
+    }
+
     //Check if channel exist
     if (this->channelExist(channelName))
     {
@@ -382,7 +387,7 @@ void    server::topicFun(Client & client, std::vector<std::string> clientInput) 
     }
     
     const std::string channelName = std::string(clientInput[1]);
-    Channel channel = this->getChannel(channelName);
+    Channel& channel = this->getChannel(channelName);
     //1 params case (just print)
     if (clientInput.size() == 2)
     {
@@ -429,8 +434,8 @@ void    server::inviteFun(Client & client, std::vector<std::string> clientInput)
         return;
     }
     
-    Client invitedClient = this->getClientWithNick(invitedUser); 
-    Channel channel = this->getChannel(channel_str);
+    Client& invitedClient = this->getClientWithNick(invitedUser); 
+    Channel& channel = this->getChannel(channel_str);
     channel.addToInviteList(invitedClient.getNick());
     
     // What Client that send invite get:
@@ -438,7 +443,7 @@ void    server::inviteFun(Client & client, std::vector<std::string> clientInput)
     this->displayClient(":127.0.0.1 401 NOTICE @" + channel.getChannelName() + " :" + client.getNick() + " invited " + invitedClient.getNick() + " into channel " + channel.getChannelName() + "\r\n", client);
 
     // What Client that receive invite get:
-    this->displayClient(":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1" + "INVITE " + invitedClient.getNick() + " :" + channel.getChannelName() + "\r\n", invitedClient);
+    this->displayClient(":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1" + " INVITE " + invitedClient.getNick() + " :" + channel.getChannelName() + "\r\n", invitedClient);
 }
 
 void    server::initFunLst(void)
