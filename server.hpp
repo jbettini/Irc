@@ -133,6 +133,7 @@ class   server {
                 void        inviteFun(Client & client, std::vector<std::string> clientInput);
                 void        setTopicRestrictionFun(Client & client, std::vector<std::string> clientInput);
                 void        handleModeiFun(Client & client, std::vector<std::string> clientInput);
+                void        kickFun(Client & client, std::vector<std::string> clientInput);
                 
                 std::string getAllUsersChannel(Channel & channel);
                 
@@ -255,5 +256,6 @@ std::string                 getMode(std::vector<std::string> clientInput);
 void                        updateVectorStr(std::vector<std::string> & toUpdate, std::string oldStr, std::string newStr);
 void                        printfChannel(Channel channel);
 std::vector<std::string>    removeFirstCharacterIfColon(std::vector<std::string>& strings);
+std::vector<std::string>    removeFirstCharacterIfColonIdx(std::vector<std::string>& strings, size_t idx);
 
 #endif

@@ -446,6 +446,40 @@ void    server::inviteFun(Client & client, std::vector<std::string> clientInput)
     this->displayClient(":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1" + " INVITE " + invitedClient.getNick() + " :" + channel.getChannelName() + "\r\n", invitedClient);
 }
 
+void    server::kickFun(Client & client, std::vector<std::string> clientInput){
+    std::string channelName = clientInput[1];
+    std::string msg;
+
+    if (clientInput.size() == 1)  {
+        this->displayClient(":127.0.0.1 461 " + client.getNick() + " KICK :Not enough parameters\r\n", client);
+        return ;
+    }
+    else if (!(this->channelExist(clientInput[1])))
+        this->displayClient(":127.0.0.1 403 " + client.getNick() + " " + clientInput[1] + " :No such channel\r\n",client);
+    else if (!(this->getChannel(clientInput[1]).isUser(client.getNick())))
+        this->displayClient(":127.0.0.1 442 " + client.getNick() + " " + clientInput[1] + " :You're not on that channel\r\n",client);
+    else if (!(this->getChannel(channelName).isOp(client.getNick())))
+            this->displayClient(":127.0.0.1 482 " + channelName + " :You're not channel operator\r\n", client);
+    else {
+        Channel  &   channel = this->getChannel(channelName);
+        if (channel.isUser(clientInput[2]) && (!(channel.isOp(clientInput[2]))))  {
+            Client       toKick = this->getClientWithNick(clientInput[2]);
+            channel.removeUser(toKick);
+            std::string kickMsg;
+            if (clientInput.size() > 4)
+                msg =  ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1 KICK " + channel.getChannelName() + " " + clientInput[2] + " :" + catVecStr(removeFirstCharacterIfColonIdx(clientInput, 4), 4) + "\r\n";
+            else 
+                msg =  ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1 KICK " + channel.getChannelName() + " " + clientInput[2] + " :" + client.getNick() + "\r\n";
+            if (clientInput.size() > 4)
+                kickMsg =  ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1 KICK " + channel.getChannelName() + " :" + catVecStr(removeFirstCharacterIfColonIdx(clientInput, 4), 4) + "\r\n";
+            else 
+                kickMsg =  ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1 KICK " + channel.getChannelName() +  " :" + client.getNick() + "\r\n";
+            sendToAllUserInChannel(channelName, msg, toKick);
+            this->displayClient(kickMsg, toKick);
+        }
+    }
+}
+
 void    server::initFunLst(void)
 {
     this->_FunLst["PING"] = &server::pingFun;
@@ -464,5 +498,5 @@ void    server::initFunLst(void)
     this->_FunLst["TOPIC"] = &server::topicFun;
     this->_FunLst["INVITE"] = &server::inviteFun;
     // this->_FunLst["LIST"] = &server::;
-    // this->_FunLst["KICK"] = &server::;
+    this->_FunLst["KICK"] = &server::kickFun;
 }
