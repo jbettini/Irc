@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 16:43:40 by jbettini          #+#    #+#             */
-/*   Updated: 2023/06/01 23:41:55 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/06/02 19:42:52 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,17 +57,18 @@ void    server::run(void) {
         if (ClientFd[0].revents & POLLIN) {
             if ((newClient = accept(this->_socket, 0, 0)) < 0)
                 throw acceptException();
-            else
-                std::cout << "new Client" << std::endl;
+            else {
     // Ajout du nouveau Client à la liste
-            for (int i = 1; i < this->MAX_CLIENTS + 1; i++)
-            {
-                if (ClientFd[i].fd == 0) {
-                    ClientFd[i].fd = newClient;
-                    ClientFd[i].events = POLLIN;
-                    Client newUser(newClient, i);
-                    this->_ClientList.push_back(newUser);
-                    break;
+                std::cout << "new Client" << std::endl;
+                for (int i = 1; i < this->MAX_CLIENTS + 1; i++)
+                {
+                    if (ClientFd[i].fd == 0) {
+                        ClientFd[i].fd = newClient;
+                        ClientFd[i].events = POLLIN;
+                        Client newUser(newClient, i);
+                        this->_ClientList.push_back(newUser);
+                        break;
+                    }
                 }
             }
         }

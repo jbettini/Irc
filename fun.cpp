@@ -6,7 +6,7 @@
 /*   By: jbettini <jbettini@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 19:30:33 by jbettini          #+#    #+#             */
-/*   Updated: 2023/06/01 23:47:26 by jbettini         ###   ########.fr       */
+/*   Updated: 2023/06/02 19:42:16 by jbettini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ void    server::banFun(Client & client, std::vector<std::string> clientInput) {
     std::string mode = getMode(clientInput);
     if (!(this->channelExist(channelName)))
         this->displayClient(":127.0.0.1 403 " + client.getNick() + " " + channelName + " :No such channel\r\n",client);
+    else if ((clientInput[2] == "+b" || clientInput[2] == "-b") && clientInput.size() == 3)
+        this->banLstFun(client, clientInput);
     else if (!(channel.isOp(client.getNick()))) {
         this->displayClient(":127.0.0.1 482 " + channelName + " :You're not channel operator\r\n", client);
     }
@@ -602,10 +604,8 @@ void    server::kickFun(Client & client, std::vector<std::string> clientInput){
     std::string channelName = clientInput[1];
     std::string msg;
 
-    if (clientInput.size() == 1)  {
+    if (clientInput.size() == 1) 
         this->displayClient(":127.0.0.1 461 " + client.getNick() + " KICK :Not enough parameters\r\n", client);
-        return ;
-    }
     else if (!(this->channelExist(clientInput[1])))
         this->displayClient(":127.0.0.1 403 " + client.getNick() + " " + clientInput[1] + " :No such channel\r\n",client);
     else if (!(this->getChannel(clientInput[1]).isUser(client.getNick())))
@@ -615,7 +615,7 @@ void    server::kickFun(Client & client, std::vector<std::string> clientInput){
     else {
         Channel  &   channel = this->getChannel(channelName);
         if (channel.isUser(clientInput[2]) && (!(channel.isOp(clientInput[2]))))  {
-            Client       toKick = this->getClientWithNick(clientInput[2]);
+            Client       toKick     = this->getClientWithNick(clientInput[2]);
             if (clientInput[3] != ":")
                 msg =  ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1 KICK " + channel.getChannelName() + " " + clientInput[2] + " :" + catVecStr(removeFirstCharacterIfColonIdx(clientInput, 4), 4) + "\r\n";
             else 
@@ -626,73 +626,57 @@ void    server::kickFun(Client & client, std::vector<std::string> clientInput){
         }
     }
 }
-
-        //msg =   ":127.0.0.1 PART " + channel.getChannelName() + "\r\n";
-        // msg = ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1.ip PART : " + channel.getChannelName() + "\r\n";
-        // :d!d@localhost PART #irctest                         
-        // :jbettini!~jbettini@freenode-a99.759.j1faas.IP PART :#42         freenode syntax
-        // :helloioooo!~fufu@157a-3894-3542-9a96-157a.129.62.ip PART #42    dal.net  syntax
-        // :ServeurIRC 341 Utilisateur #NomDuCanal :Vous avez quitté le canal avec succès
-        // :jbettini!jbettini@HOST PART #e :No reason specified
-        // :jbettini!jbettini@HOST PART #e :No reason specified
-        // :jbettini!jbettini@HOST PART #e :No reason specified
         
-/*void    server::partFun(Client & client, std::vector<std::string> clientInput) {
-    std::cout << "In part Fun " << std::endl;
-    if (clientInput.size() == 1)  {
+void    server::partFun(Client & client, std::vector<std::string> clientInput) {
+    if (clientInput.size() == 1)
         this->displayClient(":127.0.0.1 461 " + client.getNick() + " PART :Not enough parameters\r\n", client);
-        return ;
-    }
     else if (!(this->channelExist(clientInput[1])))
         this->displayClient(":127.0.0.1 403 " + client.getNick() + " " + clientInput[1] + " :No such channel\r\n",client);
     else if (!(this->getChannel(clientInput[1]).isUser(client.getNick())))
         this->displayClient(":127.0.0.1 442 " + client.getNick() + " " + clientInput[1] + " :You're not on that channel\r\n",client);
     else {
-        std::cout << "In else of part Fun " << std::endl;
         Channel& channel = this->getChannel(clientInput[1]);
         std::string msg;
-        client.removeChannel(channel.getChannelName());
-        channel.removeUser(client);
         if (clientInput.size() > 2)
             msg =   ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1.ip PART " + channel.getChannelName() + " :" + catVecStr(removeFirstCharacterIfColonIdx(clientInput, 3), 3) + "\r\n";
         else 
-            msg =   ":" + client.getNick() + "!" + client.getUsername() + "@HOST PART " + channel.getChannelName() + " :No reason specified" + "\r\n";
+            msg =   ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1.ip PART " + channel.getChannelName() + " :" + client.getNick() + "\r\n";
         sendToAllUser(channel.getChannelName(), msg);
+        client.removeChannel(channel.getChannelName());
+        channel.removeUser(client);
         if (channel.getChannelUser().size() == 0)
             this->removeChannelToChannelList(channel.getChannelName());
-        std::cout << "Out else of part Fun " << std::endl;
     }
-    std::cout << "Out part Fun " << std::endl;
-}*/
-
-void    server::partFun(Client & client, std::vector<std::string> clientInput) {
-    // Check if enought params (needs 2)
-    if (clientInput.size() < 2)
-    {
-        this->displayClient(":127.0.0.1 461 " + client.getNick() + " PART :Not enough parameters\r\n", client);
-        return;
-    }
-
-    const std::string channel_str = clientInput[1];
-    //Send error if channel doesnt exist
-    if (!this->channelExist(channel_str) || !client.isInChannel(channel_str))
-    {
-        this->displayClient(":127.0.0.1 403 " + client.getNick() + " " + channel_str + " :No such channel\r\n", client);
-        return;
-    }
-
-    Channel& channel = this->getChannel(channel_str);
-
-    //Remove user in channel
-    channel.removeUser(client);
-    //Remove channel in user
-    client.removeChannel(channel.getChannelName());
-
-    //Sending confirmation to client, and all user in channel
-    const std::string msg = ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1" + " PART " + channel.getChannelName() + "\r\n";
-    channel.sendMessage(client, msg);
-    this->displayClient(msg, client);
 }
+
+// void    server::partFun(Client & client, std::vector<std::string> clientInput) {
+//     // Check if enought params (needs 2)
+//     if (clientInput.size() < 2)
+//     {
+//         this->displayClient(":127.0.0.1 461 " + client.getNick() + " PART :Not enough parameters\r\n", client);
+//         return;
+//     }
+
+//     const std::string channel_str = clientInput[1];
+//     //Send error if channel doesnt exist
+//     if (!this->channelExist(channel_str) || !client.isInChannel(channel_str))
+//     {
+//         this->displayClient(":127.0.0.1 403 " + client.getNick() + " " + channel_str + " :No such channel\r\n", client);
+//         return;
+//     }
+
+//     Channel& channel = this->getChannel(channel_str);
+
+//     //Remove user in channel
+//     channel.removeUser(client);
+//     //Remove channel in user
+//     client.removeChannel(channel.getChannelName());
+
+//     //Sending confirmation to client, and all user in channel
+//     const std::string msg = ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1" + " PART " + channel.getChannelName() + "\r\n";
+//     channel.sendMessage(client, msg);
+//     this->displayClient(msg, client);
+// }
 
 void    server::initFunLst(void)
 {
