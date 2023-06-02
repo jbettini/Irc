@@ -97,6 +97,12 @@ class   Client {
                 }    
             }
         }
+        bool    isInChannel(std::string channelName) {
+            for (std::vector<std::string>::iterator it = this->_allChannel.begin(); it != this->_allChannel.end(); it++) {
+                if (*it == channelName) return (true);
+            }
+            return (false);
+        }
 
         //OPERATORS
 

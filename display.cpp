@@ -42,7 +42,7 @@ void    server::sendToAllUser(std::string channelName, std::string msg) {
 
 void    server::welcomeToChannel(Client & client, std::string channelName) {
 
-    this->displayClient(":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1.ip JOIN : " + channelName + "\r\n", client);
+    this->displayClient(":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1 JOIN :" + channelName + "\r\n", client);
     this->displayClient(":127.0.0.1 353 " + client.getNick() + " = " + channelName + " :" + this->getAllUsersChannel(this->getChannel(channelName)) + "\r\n", client);
     this->displayClient(":127.0.0.1 366 " + client.getNick() + " " + channelName  + " :End of /NAMES list.\r\n", client);
     this->sendToAllUserInChannel(channelName, ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1.ip JOIN :" + channelName + "\r\n", client);

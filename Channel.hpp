@@ -186,6 +186,58 @@ class   Channel {
             return (false);
         }
 
+        void    sendWhoLst(Client& client)
+        {
+            //Send Begining msg /WhoLst
+
+            //Convert std::time to string
+            std::ostringstream oss;
+            oss << _timestamp;
+            std::string timestampStr = oss.str();
+
+            const std::string start_msg = ":127.0.0.1 329 " + client.getNick() + " " + _nameChannel + " " + timestampStr + ".\r\n";
+            send(client.getCS(), start_msg.c_str(), start_msg.size(), 0);
+
+            //Send foreach client
+            std::string msg;
+            for (std::vector<Client>::iterator it = this->_Users.begin(); it != this->_Users.end(); it++)
+            {
+                msg = ":127.0.0.1 352 " + client.getNick() + " " + _nameChannel + " ~" + client.getUsername() + " 127.0.0.1 127.0.0.1 " + it->getNick() + " H@ :0 " + it->getUsername() + "\r\n";
+                send(client.getCS(), msg.c_str(), msg.size(), 0);
+            }
+
+            //Send end MSG
+            const std::string end_msg = ":127.0.0.1 315 " + client.getNick() + " " + _nameChannel + " :End of /WHO list.\r\n";
+            send(client.getCS(), end_msg.c_str(), end_msg.size(), 0);
+        }
+
+        void    sendBanLst(Client& client)
+        {
+            //Send foreach client
+            std::string msg;
+            for (std::vector<std::string>::iterator it = this->_banedUsers.begin(); it != this->_banedUsers.end(); it++)
+            {
+                msg = ":127.0.0.1 367 " + (*it) + " " + _nameChannel + "\r\n";
+                send(client.getCS(), msg.c_str(), msg.size(), 0);
+            }
+
+            //Send end MSG
+            const std::string end_msg = ":127.0.0.1 368 " + client.getNick() + " " + _nameChannel + " :End of Channel Ban list.\r\n";
+            send(client.getCS(), end_msg.c_str(), end_msg.size(), 0);
+        }
+
+        std::string stringifyModeLst()
+        {
+            std::string res = "+";
+            if (_isPasswordRequired)
+                res += "k";
+            if (_isUserLimitActivated)
+                res += "l";
+            if (_usersCanChangeTopic)
+                res += "t";
+            return (res);
+        }
+
         //OPERATORS
 
         bool operator==(const Channel& other) const {
@@ -206,6 +258,7 @@ class   Channel {
                 bool                                _isInviteOnly;
                 bool                                _isUserLimitActivated;
                 int                                 _clientLimit;
+                std::time_t                         _timestamp;
 
 };
 

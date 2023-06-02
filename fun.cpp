@@ -253,9 +253,52 @@ void    server::setClientLimitRestrictionFun(Client & client, std::vector<std::s
     }
 }
 
+void    server::banLstFun(Client & client, std::vector<std::string> clientInput) {
+    //Check if enough params
+    if (clientInput.size() < 3)
+    {
+        this->displayClient(":127.0.0.1 461 " + client.getNick() + " MODE +l :Not enough parameters\r\n", client);
+        return;
+    }
+
+    const std::string channel_str = clientInput[1];
+
+    // Check if channel exist
+    if (!this->channelExist(channel_str))
+    {
+        this->displayClient(":127.0.0.1 403 " + client.getNick() + " " + channel_str + " :No such channel\r\n", client);
+        return;
+    }
+    
+    Channel& channel = this->getChannel(channel_str);
+    channel.sendBanLst(client);
+}
+
+void    server::modeLstFun(Client & client, std::vector<std::string> clientInput) {
+    const std::string channel_str = clientInput[1];
+
+    // Check if channel exist
+    if (!this->channelExist(channel_str))
+    {
+        this->displayClient(":127.0.0.1 403 " + client.getNick() + " " + channel_str + " :No such channel\r\n", client);
+        return;
+    }
+
+    // Send mode lst
+    Channel& channel = this->getChannel(channel_str);
+    this->displayClient(":127.0.0.1 324 " + client.getNick() + " " + channel_str + " " + channel.stringifyModeLst() +"\r\n", client);
+}
+
 void    server::modeFun(Client & client, std::vector<std::string> clientInput) {
+    //If only 2args, it's /mode channel_name
+    //Todo, parse this into a function
+    if (clientInput.size() < 3)
+    {
+        const std::string channel_str = clientInput[1];
+        this->displayClient(":127.0.0.1 324 " + client.getNick() + " " + channel_str + " +\r\n", client);
+        return;
+    }
     std::string mode = getMode(clientInput);
-    std::cout << " mode = -" << mode << "-"<< std::endl;
     if (mode == "+i" || mode == "-i")
         this->handleModeiFun(client, clientInput);
     else if (mode == "+b" || mode == "-b")
@@ -268,6 +311,8 @@ void    server::modeFun(Client & client, std::vector<std::string> clientInput) {
         this->setPasswordRestrictionFun(client, clientInput);
     else if (mode == "-l" || mode == "+l")
         this->setClientLimitRestrictionFun(client, clientInput);
+    else if (mode == "b")
+        this->banLstFun(client, clientInput);
 }
 
 void    server::pingFun(Client & client, std::vector<std::string> clientInput) {
@@ -445,8 +490,20 @@ void    server::privmsgFun(Client & client, std::vector<std::string> clientInput
 
 
 void    server::whoFun(Client & client, std::vector<std::string> clientInput) {
-    if (client.getNick() != "" || clientInput[0] != "")
-        return ;
+    //This function only works for /who channel, maybe todo /who client
+
+    if (clientInput.size() < 2)
+        return;
+    const std::string client_or_channel_str = clientInput[1];
+
+    //Check if channel exist
+    if (this->channelExist(client_or_channel_str))
+    {
+        Channel& channel = this->getChannel(client_or_channel_str);
+        
+        channel.sendWhoLst(client);
+    }
+
     return ;
 }
 
@@ -575,7 +632,7 @@ void    server::kickFun(Client & client, std::vector<std::string> clientInput){
         // :jbettini!jbettini@HOST PART #e :No reason specified
         // :jbettini!jbettini@HOST PART #e :No reason specified
         
-void    server::partFun(Client & client, std::vector<std::string> clientInput) {
+/*void    server::partFun(Client & client, std::vector<std::string> clientInput) {
     std::cout << "In part Fun " << std::endl;
     if (clientInput.size() == 1)  {
         this->displayClient(":127.0.0.1 461 " + client.getNick() + " PART :Not enough parameters\r\n", client);
@@ -601,7 +658,43 @@ void    server::partFun(Client & client, std::vector<std::string> clientInput) {
         std::cout << "Out else of part Fun " << std::endl;
     }
     std::cout << "Out part Fun " << std::endl;
+}*/
+
+void    server::partFun(Client & client, std::vector<std::string> clientInput) {
+    // Check if enought params (needs 2)
+    if (clientInput.size() < 2)
+    {
+        this->displayClient(":127.0.0.1 461 " + client.getNick() + " PART :Not enough parameters\r\n", client);
+        return;
+    }
+
+    const std::string channel_str = clientInput[1];
+    //Send error if channel doesnt exist
+    if (!this->channelExist(channel_str) || !client.isInChannel(channel_str))
+    {
+        this->displayClient(":127.0.0.1 403 " + client.getNick() + " " + channel_str + " :No such channel\r\n", client);
+        return;
+    }
+
+    Channel& channel = this->getChannel(channel_str);
+
+    //Remove user in channel
+    channel.removeUser(client);
+    //Remove channel in user
+    client.removeChannel(channel.getChannelName());
+
+    //Sending confirmation to client, and all user in channel
+    const std::string msg = ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1" + " PART " + channel.getChannelName() + "\r\n";
+    channel.sendMessage(client, msg);
+    this->displayClient(msg, client);
 }
+
+//:caca!~caca@28a-57ef-dea-1881-5613.668.cb1d.2a01.ip PART #cacachannel
+//:sakura.jp.as.dal.net 403 proutman channel_str :No such channel
+//:atw.hu.eu.dal.net 461 caca PART :Not enough parameters
+
+//to all user in channel
+//:proutman!~matt@5c28-b3bc-35ed-9e25-da3.abo.wanadoo.fr PART #cacaland
 
 void    server::initFunLst(void)
 {

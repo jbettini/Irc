@@ -137,6 +137,8 @@ class   server {
                 void        setPasswordRestrictionFun(Client & client, std::vector<std::string> clientInput);
                 void        setClientLimitRestrictionFun(Client & client, std::vector<std::string> clientInput);
                 void        sendToAllUser(std::string channelName, std::string msg);
+                void        modeLstFun(Client & client, std::vector<std::string> clientInput);
+                void        banLstFun(Client & client, std::vector<std::string> clientInput);
                 
                 std::string getAllUsersChannel(Channel & channel);
                 

@@ -169,6 +169,8 @@ std::string getMode(std::vector<std::string> clientInput) {
             return ("+t");
         else if (*it == "-t")
             return ("-t");
+        else if ((it + 1) == clientInput.end() && (*it) == "b")
+            return ("b");
     }
     return ("");
 }

@@ -14,7 +14,7 @@
 
 Channel::Channel(void) {}
 
-Channel::Channel(std::string name) : _nameChannel(name), _isPasswordRequired(false), _usersCanChangeTopic(true), _isInviteOnly(false), _isUserLimitActivated(false) {}
+Channel::Channel(std::string name) : _nameChannel(name), _isPasswordRequired(false), _usersCanChangeTopic(true), _isInviteOnly(false), _isUserLimitActivated(false), _timestamp(std::time(NULL)) {}
 
 Channel &    Channel::operator=(const Channel & rhs) {
     
@@ -31,6 +31,7 @@ Channel &    Channel::operator=(const Channel & rhs) {
     this->_isUserLimitActivated = rhs._isUserLimitActivated;
     this->_clientLimit = rhs._clientLimit;
     this->_password = rhs._password;
+    this->_timestamp = rhs._timestamp;
     return *this;
 }
 
