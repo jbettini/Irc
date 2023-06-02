@@ -257,7 +257,7 @@ void    server::banLstFun(Client & client, std::vector<std::string> clientInput)
     //Check if enough params
     if (clientInput.size() < 3)
     {
-        this->displayClient(":127.0.0.1 461 " + client.getNick() + " MODE +l :Not enough parameters\r\n", client);
+        this->displayClient(":127.0.0.1 461 " + client.getNick() + " MODE b :Not enough parameters\r\n", client);
         return;
     }
 
@@ -277,6 +277,13 @@ void    server::banLstFun(Client & client, std::vector<std::string> clientInput)
 void    server::modeLstFun(Client & client, std::vector<std::string> clientInput) {
     const std::string channel_str = clientInput[1];
 
+    //Check if enough params, if not, user is only doing /mode
+    if (clientInput.size() < 2)
+    {
+        this->displayClient(":127.0.0.1 461 " + client.getNick() + " MODE :Not enough parameters\r\n", client);
+        return;
+    }
+
     // Check if channel exist
     if (!this->channelExist(channel_str))
     {
@@ -291,11 +298,9 @@ void    server::modeLstFun(Client & client, std::vector<std::string> clientInput
 
 void    server::modeFun(Client & client, std::vector<std::string> clientInput) {
     //If only 2args, it's /mode channel_name
-    //Todo, parse this into a function
     if (clientInput.size() < 3)
     {
-        const std::string channel_str = clientInput[1];
-        this->displayClient(":127.0.0.1 324 " + client.getNick() + " " + channel_str + " +\r\n", client);
+        this->modeLstFun(client, clientInput);
         return;
     }
     std::string mode = getMode(clientInput);
@@ -688,13 +693,6 @@ void    server::partFun(Client & client, std::vector<std::string> clientInput) {
     channel.sendMessage(client, msg);
     this->displayClient(msg, client);
 }
-
-//:caca!~caca@28a-57ef-dea-1881-5613.668.cb1d.2a01.ip PART #cacachannel
-//:sakura.jp.as.dal.net 403 proutman channel_str :No such channel
-//:atw.hu.eu.dal.net 461 caca PART :Not enough parameters
-
-//to all user in channel
-//:proutman!~matt@5c28-b3bc-35ed-9e25-da3.abo.wanadoo.fr PART #cacaland
 
 void    server::initFunLst(void)
 {
