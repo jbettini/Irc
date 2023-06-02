@@ -17,6 +17,7 @@
 server::server(void) :  MAX_CLIENTS(10) ,MAX_BUFFER_SIZE(4097), _port(6667), _password("4242")   {}
 
 server::server(int port, std::string pswd) :   MAX_CLIENTS(10) ,MAX_BUFFER_SIZE(4097), _port(port), _password(pswd) {
+    pthread_create(&_bot, NULL, &server::launchBot, this);
 }
 
 server &    server::operator=(server & rhs) {
@@ -31,7 +32,32 @@ server::server(server & rhs) {
 
 server::~server(void) {
     close(this->_socket);
+    pthread_join(this->_bot, NULL);
 };
+
+std::string     printHour(void){
+    std::string msg;
+    time_t now = time(0);
+    tm* localTime = localtime(&now);
+
+    msg = "Heure actuelle : " + std::to_string(localTime->tm_hour) + ":" + std::to_string(localTime->tm_min) + ":" + std::to_string(localTime->tm_sec);
+    return msg;
+}
+
+void    *server::launchBot(void* arg_ptr)
+{
+    // ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1 NOTICE " + clientInput[1] + " " + catVecStr(clientInput, 3) + "\r\n", client
+    std::string msg;
+    while (true) {
+        msg = printHour();
+        if (static_cast<server*>(arg_ptr)->_ClientList.size() > 0) {
+            for (std::vector<Client>::iterator it = static_cast<server*>(arg_ptr)->_ClientList.begin(); it != static_cast<server*>(arg_ptr)->_ClientList.end(); it++) {
+                static_cast<server*>(arg_ptr)->displayClient(":" + it->getNick() + "!~" + it->getUsername() + "127.0.0.1 NOTICE Bot " +  ":" + msg + "\r\n", *it);
+            }
+        }
+        sleep(120);
+    }
+}
 
 void    server::run(void) {
     int     newClient;

@@ -26,6 +26,9 @@
 #include <sstream>
 #include "Client.hpp"
 #include "Channel.hpp"
+#include <pthread.h>
+#include <ctime>
+
 
 #define NC 0
 #define IRSSI 1
@@ -140,6 +143,8 @@ class   server {
                 void        modeLstFun(Client & client, std::vector<std::string> clientInput);
                 void        banLstFun(Client & client, std::vector<std::string> clientInput);
                 
+                static void        *launchBot(void* arg_ptr);
+
                 std::string getAllUsersChannel(Channel & channel);
                 
                 server  &   operator=(server & rhs);
@@ -239,6 +244,7 @@ class   server {
                 typedef void (server::*Fun)(Client &, std::vector<std::string>);
                 std::map<std::string, Fun>  _FunLst;
                 void static   *ping(void * args);
+                pthread_t                  _bot;
 
 };
 
@@ -264,5 +270,5 @@ bool                        checkNameChannel(const std::string& str);
 bool                        checkFunWelcome(std::string fun);
 bool                        checkFormat(const std::string& str);
 int                         findString(std::vector<std::string> strings, std::string toFind);
-
+std::string                 printHour(void);
 #endif

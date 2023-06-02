@@ -523,10 +523,10 @@ void    server::noticeFun(Client & client, std::vector<std::string> clientInput)
         if (this->getChannel(clientInput[1]).isBanned(client.getUsername()) || !(this->getChannel(clientInput[1]).isUser(client.getNick())))
             return ;
         else 
-            sendToAllUserInChannel(clientInput[1], ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1 PRIVMSG " + clientInput[1] + " " + catVecStr(clientInput, 3) + "\r\n", client);
+            sendToAllUserInChannel(clientInput[1], ":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1 NOTICE " + clientInput[1] + " " + catVecStr(clientInput, 3) + "\r\n", client);
     }
     else if (this->checkNickExist(clientInput[1]))
-        this->displayClient(":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1 PRIVMSG " + clientInput[1] + " " + catVecStr(clientInput, 3) + "\r\n", client);
+        this->displayClient(":" + client.getNick() + "!~" + client.getUsername() + "@127.0.0.1 NOTICE " + clientInput[1] + " " + catVecStr(clientInput, 3) + "\r\n", client);
     else
         return ;
 }
